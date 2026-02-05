@@ -1,8 +1,44 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3794616B-6C16-4204-96D0-E3EEB34BBCA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C31367A5-624F-404D-9024-DE759DB85915}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Domain", "src\MakeSport.Domain\MakeSport.Domain.csproj", "{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Application", "src\MakeSport.Application\MakeSport.Application.csproj", "{CF53C758-6DCE-4232-BEC0-D4898F16D434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Infrastructure.Postgres", "src\MakeSport.Infrastructure.Postgres\MakeSport.Infrastructure.Postgres.csproj", "{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.API", "src\MakeSport.API\MakeSport.API.csproj", "{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+		{CF53C758-6DCE-4232-BEC0-D4898F16D434} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF53C758-6DCE-4232-BEC0-D4898F16D434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF53C758-6DCE-4232-BEC0-D4898F16D434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF53C758-6DCE-4232-BEC0-D4898F16D434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF53C758-6DCE-4232-BEC0-D4898F16D434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
