@@ -6,5 +6,10 @@ namespace MakeSport.API.Controllers;
 [Route("[controller]")]
 public class TestBaseController : ControllerBase
 {
-    
+    [HttpGet]
+    public async Task<IActionResult> TestGet()
+    {
+        await Task.Delay(100);
+        return Ok("Hello World");
+    }
 }
