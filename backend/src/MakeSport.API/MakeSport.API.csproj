@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MakeSport.Application.DI\MakeSport.Application.DI.csproj" />
       <ProjectReference Include="..\MakeSport.Infrastructure.DI\MakeSport.Infrastructure.DI.csproj" />
     </ItemGroup>
 
