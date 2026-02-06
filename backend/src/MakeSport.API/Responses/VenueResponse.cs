@@ -1,6 +1,6 @@
 ﻿namespace MakeSport.API.Responses;
 
-public class CreateVenueResponse
+public class VenueResponse
 {
     public Guid Id { get; set; }
     

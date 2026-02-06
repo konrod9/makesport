@@ -1,6 +1,7 @@
 ﻿using MakeSport.API.Requests;
 using MakeSport.API.Responses;
-using MakeSport.Application.UseCases;
+using MakeSport.Application.UseCases.CreateVenue;
+using MakeSport.Application.UseCases.GetVenues;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MakeSport.API.Controllers;
@@ -20,13 +21,24 @@ public class VenuesController : ControllerBase
     {
         var command = new CreateVenueCommand(request.Name, request.Description);
         var venue = await useCase.Handle(command, cancellationToken);
-        
-        // TODO: поменять на CreateAtRoute после того как будет добавлен GetVenue
-        return Ok(new CreateVenueResponse()
+
+        return CreatedAtRoute(nameof(GetVenues), new VenueResponse()
         {
             Id = venue.Id,
             Name = venue.Name,
             Description = venue.Description
         });
+    }
+    
+    [HttpGet(Name = nameof(GetVenues))]
+    [ProducesResponseType(200, Type = typeof(VenueResponse[]))]
+    public async Task<IActionResult> GetVenues(
+        [FromServices] IGetVenuesUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetVenuesQuery();
+        var venues = await useCase.Handle(query, cancellationToken);
+        
+        return Ok(venues);
     }
 }

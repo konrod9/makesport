@@ -1,5 +1,6 @@
 ﻿using MakeSport.Application.DTOs;
 using MakeSport.Application.UseCases;
+using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Domain.Venues;
 
 namespace MakeSport.Infrastructure.Postgres.Storages;
