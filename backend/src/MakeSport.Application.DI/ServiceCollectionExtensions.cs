@@ -1,4 +1,5 @@
-﻿using MakeSport.Application.UseCases.CreateVenue;
+﻿using FluentValidation;
+using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Application.UseCases.GetVenues;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,9 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IGetVenuesUseCase, GetVenuesUseCase>()
             .AddScoped<ICreateVenueUseCase, CreateVenueUseCase>();
+        
+        services
+            .AddValidatorsFromAssemblyContaining<CreateVenueCommand>(includeInternalTypes: true);
 
         return services;
     }
