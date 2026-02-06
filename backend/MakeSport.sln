@@ -12,6 +12,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Infrastructure.Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.API", "src\MakeSport.API\MakeSport.API.csproj", "{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{36C380F7-8526-4AA4-AEF2-CF14434352AE}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Infrastructure.DI", "src\MakeSport.Infrastructure.DI\MakeSport.Infrastructure.DI.csproj", "{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +29,7 @@ Global
 		{CF53C758-6DCE-4232-BEC0-D4898F16D434} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{A83EA9A5-D89F-4973-B00F-649EBBC6AE7F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -40,5 +48,9 @@ Global
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
