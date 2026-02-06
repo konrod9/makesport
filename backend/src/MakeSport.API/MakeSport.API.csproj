@@ -11,4 +11,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MakeSport.Infrastructure.DI\MakeSport.Infrastructure.DI.csproj" />
+    </ItemGroup>
+
 </Project>
