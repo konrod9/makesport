@@ -16,7 +16,7 @@ public class VenuesController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> CreateVenue(
         [FromBody] CreateVenueRequest request,
-        [FromServices] CreateVenueUseCase useCase,
+        [FromServices] ICreateVenueUseCase useCase,
         CancellationToken cancellationToken)
     {
         var command = new CreateVenueCommand(request.Name, request.Description);
