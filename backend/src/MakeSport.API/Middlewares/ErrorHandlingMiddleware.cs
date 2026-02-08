@@ -39,7 +39,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
             }
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
-            await httpContext.Response.WriteAsJsonAsync(problemDetails, problemDetailsFactory.GetType());
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, problemDetails.GetType());
         }
     }
 }
