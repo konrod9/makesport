@@ -1,3 +1,4 @@
+using MakeSport.API.Middlewares;
 using MakeSport.Application.DI;
 using MakeSport.Infrastructure.DI;
 
@@ -16,5 +17,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
