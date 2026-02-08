@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Infrastructure.DI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Application.DI", "src\MakeSport.Application.DI\MakeSport.Application.DI.csproj", "{FE8437B3-D8E1-447B-A101-458B26C1DD72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Application.Tests", "test\MakeSport.Application.Tests\MakeSport.Application.Tests.csproj", "{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,7 @@ Global
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{CCEEF3F7-C2BE-4971-AC38-61D5BBFC39C9} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{FE8437B3-D8E1-447B-A101-458B26C1DD72} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
+		{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A} = {C31367A5-624F-404D-9024-DE759DB85915}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +62,9 @@ Global
 		{FE8437B3-D8E1-447B-A101-458B26C1DD72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE8437B3-D8E1-447B-A101-458B26C1DD72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE8437B3-D8E1-447B-A101-458B26C1DD72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
