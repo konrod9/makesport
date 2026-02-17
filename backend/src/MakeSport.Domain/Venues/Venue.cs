@@ -7,4 +7,6 @@ public class Venue
     public string Name { get; set; }
     
     public string Description { get; set; }
+    
+    public GeoCoordinate Location { get; set; }
 }
