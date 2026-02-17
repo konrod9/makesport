@@ -19,7 +19,7 @@ public class VenuesController : ControllerBase
         [FromServices] ICreateVenueUseCase useCase,
         CancellationToken cancellationToken)
     {
-        var command = new CreateVenueCommand(request.Name, request.Description);
+        var command = new CreateVenueCommand(request.Name, request.Description, request.Latitude, request.Longitude);
         var venue = await useCase.Handle(command, cancellationToken);
 
         return CreatedAtRoute(nameof(GetVenues), new VenueResponse()

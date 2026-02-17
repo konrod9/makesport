@@ -16,7 +16,7 @@ public class CreateVenueStorage(
             VenueId = guidFactory.Create(),
             Name = name,
             Description = description,
-            Location = new GeoCoordinate(lat, lon)
+            Location = GeoCoordinate.Create(lat, lon)
         };
         
         await dbContext.Venues.AddAsync(venue, cancellationToken);
