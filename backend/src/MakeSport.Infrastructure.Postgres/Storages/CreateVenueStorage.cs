@@ -9,13 +9,14 @@ public class CreateVenueStorage(
     VenueDbContext dbContext,
     IGuidFactory guidFactory) : ICreateVenueStorage
 {
-    public async Task<VenueDto> CreateAsync(string name, string description, CancellationToken cancellationToken)
+    public async Task<VenueDto> CreateAsync(string name, string description, double lat, double lon, CancellationToken cancellationToken)
     {
         var venue = new Venue()
         {
             VenueId = guidFactory.Create(),
             Name = name,
-            Description = description
+            Description = description,
+            Location = new GeoCoordinate(lat, lon)
         };
         
         await dbContext.Venues.AddAsync(venue, cancellationToken);
