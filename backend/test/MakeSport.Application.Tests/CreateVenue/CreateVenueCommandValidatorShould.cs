@@ -10,13 +10,13 @@ public class CreateVenueCommandValidatorShould
     [Fact]
     public void ReturnSuccess_WhenCommandIsValid()
     {
-        var validCommand = new CreateVenueCommand("Valid-name", "Valid-description");
+        var validCommand = new CreateVenueCommand("Valid-name", "Valid-description", 60.0123, 59.0123);
         sut.Validate(validCommand);
     }
 
     public static IEnumerable<object[]> GetInvalidCommands()
     {
-        var validCommand = new CreateVenueCommand("Valid-name", "Valid-description");
+        var validCommand = new CreateVenueCommand("Valid-name", "Valid-description", 60.0123, 59.0123);
         yield return [validCommand with { Name = string.Empty }];
         // Name with more than 50 length
         yield return [validCommand with { Name = "012345678901234567890123456789012345678901234567890"}];

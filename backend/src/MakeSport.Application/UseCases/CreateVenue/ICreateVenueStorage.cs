@@ -4,5 +4,5 @@ namespace MakeSport.Application.UseCases.CreateVenue;
 
 public interface ICreateVenueStorage
 {
-    Task<VenueDto> CreateAsync(string name, string description, CancellationToken cancellationToken);
+    Task<VenueDto> CreateAsync(string name, string description, double lat, double lon, CancellationToken cancellationToken);
 }

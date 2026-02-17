@@ -15,7 +15,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IGetVenuesStorage, GetVenuesStorage>()
             .AddScoped<ICreateVenueStorage, CreateVenueStorage>()
             .AddScoped<IGuidFactory, GuidFactory>()
-            .AddDbContextPool<VenueDbContext>(options => options.UseNpgsql(dbConnectionString));
+            .AddDbContextPool<VenueDbContext>(options => options.UseNpgsql(dbConnectionString, 
+                o => o.UseNetTopologySuite()));
         
         return services;
     }

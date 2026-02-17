@@ -19,14 +19,16 @@ public class VenuesController : ControllerBase
         [FromServices] ICreateVenueUseCase useCase,
         CancellationToken cancellationToken)
     {
-        var command = new CreateVenueCommand(request.Name, request.Description);
+        var command = new CreateVenueCommand(request.Name, request.Description, request.Latitude, request.Longitude);
         var venue = await useCase.Handle(command, cancellationToken);
 
         return CreatedAtRoute(nameof(GetVenues), new VenueResponse()
         {
             Id = venue.Id,
             Name = venue.Name,
-            Description = venue.Description
+            Description = venue.Description,
+            Latitude = venue.Latitude,
+            Longitude = venue.Longitude
         });
     }
     
@@ -39,6 +41,13 @@ public class VenuesController : ControllerBase
         var query = new GetVenuesQuery();
         var venues = await useCase.Handle(query, cancellationToken);
         
-        return Ok(venues);
+        return Ok(venues.Select(v => new VenueResponse()
+        {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description,
+                Latitude = v.Latitude,
+                Longitude = v.Longitude
+        }));
     }
 }

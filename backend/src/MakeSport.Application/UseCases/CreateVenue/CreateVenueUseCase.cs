@@ -11,6 +11,6 @@ public class CreateVenueUseCase(
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
         
-        return await storage.CreateAsync(command.Name, command.Description, cancellationToken);
+        return await storage.CreateAsync(command.Name, command.Description, command.Latitude, command.Longitude, cancellationToken);
     }
 }

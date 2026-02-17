@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -12,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MakeSport.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(VenueDbContext))]
-    [Migration("20260206044721_InitVenues")]
+    [Migration("20260217122401_InitVenues")]
     partial class InitVenues
     {
         /// <inheritdoc />
@@ -23,6 +24,7 @@ namespace MakeSport.Infrastructure.Postgres.Migrations
                 .HasAnnotation("ProductVersion", "9.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("MakeSport.Domain.Venues.Venue", b =>
@@ -37,6 +39,11 @@ namespace MakeSport.Infrastructure.Postgres.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
+
+                    b.Property<Point>("Location")
+                        .IsRequired()
+                        .HasColumnType("geography (Point,4326)")
+                        .HasColumnName("location");
 
                     b.Property<string>("Name")
                         .IsRequired()
