@@ -26,7 +26,9 @@ public class VenuesController : ControllerBase
         {
             Id = venue.Id,
             Name = venue.Name,
-            Description = venue.Description
+            Description = venue.Description,
+            Latitude = venue.Latitude,
+            Longitude = venue.Longitude
         });
     }
     
