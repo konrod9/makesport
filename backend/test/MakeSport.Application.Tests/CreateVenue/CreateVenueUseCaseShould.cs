@@ -21,7 +21,7 @@ public class CreateVenueUseCaseShould
     {
         storage = new Mock<ICreateVenueStorage>();
         createVenueSetup = storage.Setup(s => 
-            s.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
+            s.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<CancellationToken>()));
         
         validator = new Mock<IValidator<CreateVenueCommand>>();
         validatorSetup = validator.Setup(v => 
@@ -39,10 +39,10 @@ public class CreateVenueUseCaseShould
         var expectedVenue = new VenueDto(venueId, "Name", "Description");
         createVenueSetup.ReturnsAsync(expectedVenue);
         
-        var actual = await sut.Handle(new CreateVenueCommand("Name", "Description"), CancellationToken.None);
+        var actual = await sut.Handle(new CreateVenueCommand("Name", "Description", 60.1234, 60.1234), CancellationToken.None);
         actual.Should().Be(expectedVenue);
         
         storage.Verify(s => 
-            s.CreateAsync("Name", "Description", It.IsAny<CancellationToken>()), Times.Once);
+            s.CreateAsync("Name", "Description", 60.1234, 60.1234, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
