@@ -1,4 +1,5 @@
 ﻿using MakeSport.Domain.Venues;
+using MakeSport.Infrastructure.Postgres.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,5 +24,10 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
         builder.Property(v => v.Description)
             .HasMaxLength(500)
             .HasColumnName("description");
+
+        builder.Property(v => v.Location)
+            .HasConversion(new GeoCoordinateConverter())
+            .HasColumnType("geography (Point,4326)")
+            .HasColumnName("location");
     }
 }
