@@ -36,7 +36,7 @@ public class CreateVenueUseCaseShould
     {
         var venueId = Guid.Parse("A2426F6B-BB0F-495A-8934-30027FADF3BB");
 
-        var expectedVenue = new VenueDto(venueId, "Name", "Description");
+        var expectedVenue = new VenueDto(venueId, "Name", "Description", 60.1234, 60.1234);
         createVenueSetup.ReturnsAsync(expectedVenue);
         
         var actual = await sut.Handle(new CreateVenueCommand("Name", "Description", 60.1234, 60.1234), CancellationToken.None);

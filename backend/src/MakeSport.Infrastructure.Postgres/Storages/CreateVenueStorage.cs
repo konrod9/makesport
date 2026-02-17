@@ -22,6 +22,6 @@ public class CreateVenueStorage(
         await dbContext.Venues.AddAsync(venue, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new VenueDto(venue.VenueId, venue.Name, venue.Description);
+        return new VenueDto(venue.VenueId, venue.Name, venue.Description, venue.Location.Latitude, venue.Location.Longitude);
     }
 }

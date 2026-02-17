@@ -39,6 +39,13 @@ public class VenuesController : ControllerBase
         var query = new GetVenuesQuery();
         var venues = await useCase.Handle(query, cancellationToken);
         
-        return Ok(venues);
+        return Ok(venues.Select(v => new VenueResponse()
+        {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description,
+                Latitude = v.Latitude,
+                Longitude = v.Longitude
+        }));
     }
 }

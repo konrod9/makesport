@@ -11,7 +11,9 @@ public class GetVenuesStorage(VenueDbContext dbContext) : IGetVenuesStorage
         return await dbContext.Venues.Select(venue => new VenueDto(
                 venue.VenueId,
                 venue.Name,
-                venue.Description))
+                venue.Description,
+                venue.Location.Latitude,
+                venue.Location.Longitude))
             .ToArrayAsync(cancellationToken);
     }
 }
