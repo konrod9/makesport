@@ -1,8 +1,8 @@
-namespace MakeSport.Domain.Venues;
+namespace MakeSport.Domain.Venues.ValueObjects;
 
-public class GeoCoordinate
+public record GeoCoordinates
 {
-    public GeoCoordinate(double latitude, double longitude)
+    private GeoCoordinates(double latitude, double longitude)
     {
         Latitude = latitude;
         Longitude = longitude;
@@ -12,7 +12,7 @@ public class GeoCoordinate
     
     public double Longitude { get; }
     
-    public static GeoCoordinate Create(double latitude, double longitude)
+    public static GeoCoordinates Create(double latitude, double longitude)
     {
         if (latitude < -90 || latitude > 90)
         {
@@ -24,6 +24,6 @@ public class GeoCoordinate
             throw new ArgumentOutOfRangeException(nameof(longitude), "Longitude must be between -180 and 180 degrees.");
         }
 
-        return new GeoCoordinate(latitude, longitude);
+        return new GeoCoordinates(latitude, longitude);
     }
 }

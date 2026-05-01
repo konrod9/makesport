@@ -1,5 +1,7 @@
 using FluentValidation;
 using MakeSport.Application.DTOs;
+using MakeSport.Domain.Venues;
+using MakeSport.Domain.Venues.ValueObjects;
 
 namespace MakeSport.Application.UseCases.CreateVenue;
 
@@ -10,7 +12,9 @@ public class CreateVenueUseCase(
     public async Task<VenueDto> Handle(CreateVenueCommand command, CancellationToken cancellationToken)
     {
         await validator.ValidateAndThrowAsync(command, cancellationToken);
-        
-        return await storage.CreateAsync(command.Name, command.Description, command.Latitude, command.Longitude, cancellationToken);
+
+        var venueId = VenueId.NewId();
+
+        var venue = Venue.Create(venueId, command.Title, command.Description, command);
     }
 }

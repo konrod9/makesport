@@ -7,7 +7,7 @@ public class CreateVenueCommandValidator : AbstractValidator<CreateVenueCommand>
 {
     public CreateVenueCommandValidator()
     {
-        RuleFor(c => c.Name)
+        RuleFor(c => c.Title)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
             .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
         

@@ -2,6 +2,7 @@
 using MakeSport.Application.UseCases;
 using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Domain.Venues;
+using MakeSport.Domain.Venues.ValueObjects;
 
 namespace MakeSport.Infrastructure.Postgres.Storages;
 
@@ -13,15 +14,15 @@ public class CreateVenueStorage(
     {
         var venue = new Venue()
         {
-            VenueId = guidFactory.Create(),
-            Name = name,
+            Id = guidFactory.Create(),
+            Title = name,
             Description = description,
-            Location = GeoCoordinate.Create(lat, lon)
+            Location = GeoCoordinates.Create(lat, lon)
         };
         
         await dbContext.Venues.AddAsync(venue, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new VenueDto(venue.VenueId, venue.Name, venue.Description, venue.Location.Latitude, venue.Location.Longitude);
+        return new VenueDto(venue.Id, venue.Title, venue.Description, venue.Location.Latitude, venue.Location.Longitude);
     }
 }
