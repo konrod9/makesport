@@ -21,10 +21,10 @@ public record Address
     public static Result<Address, Error> Create(string city, string street, string? building)
     {
         if (string.IsNullOrWhiteSpace(street))
-            return Errors.General.ValueIsRequired(nameof(street));
+            return GeneralErrors.ValueIsRequired(nameof(street));
         
         if (string.IsNullOrWhiteSpace(city))
-            return Errors.General.ValueIsRequired(nameof(city));
+            return GeneralErrors.ValueIsRequired(nameof(city));
 
         return new Address(city, street, building);
     }

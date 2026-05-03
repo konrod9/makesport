@@ -39,8 +39,9 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 .IsRequired(false);
         });
 
+        // TODO: Переделать на OwnsOne
         builder.Property(v => v.Location)
-            .HasConversion(new GeoCoordinateConverter())
+            //.HasConversion(new GeoCoordinateConverter())
             .HasColumnType("geography (Point,4326)")
             .HasColumnName("location");
     }
