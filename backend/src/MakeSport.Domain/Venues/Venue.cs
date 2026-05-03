@@ -10,7 +10,7 @@ public class Venue
         
     }
     
-    private Venue(VenueId id, string title, string description, Address address, Coordinates location)
+    private Venue(VenueId id, string title, string? description, Address address, Coordinates location)
     {
         Id = id;
         Title = title;
@@ -23,13 +23,13 @@ public class Venue
     
     public string Title { get; private set; }
     
-    public string Description { get; private set; }
+    public string? Description { get; private set; }
     
     public Address Address { get; private set; }
     
     public Coordinates Location { get; private set; }
     
-    public static Venue Create(VenueId id, string title, string description, Address address, Coordinates location)
+    public static Venue Create(VenueId id, string title, string? description, Address address, Coordinates location)
     {
         return new Venue(id, title, description, address, location);
     }

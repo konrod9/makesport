@@ -1,7 +1,9 @@
 using CSharpFunctionalExtensions;
 using FluentValidation;
+using MakeSport.Application.Validation;
 using MakeSport.Contracts.Dtos;
 using MakeSport.Contracts.Requests;
+using MakeSport.Domain.Shared;
 using MakeSport.Domain.Venues;
 using MakeSport.Domain.Venues.ValueObjects;
 
@@ -16,18 +18,24 @@ public class CreateVenueUseCase
         _validator = validator;
     }
 
-    public async Task<Result<VenueDto, string>> Handle(CreateVenueRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> Handle(CreateVenueRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            //return validationResult.ToError();
+            return validationResult.ToError();
         }
 
         var venueId = VenueId.NewId();
-
-        // TODO: создавать Address и другие value objects 
+        var address = Address.Create(request.Address.City, request.Address.Street, request.Address.Building).Value;
+        var coordinates = Coordinates.Create(request.Coordinates.Latitude, request.Coordinates.Longitude).Value;
         
-        var venue = Venue.Create(venueId, command.Title, command.Description, command);
+        var venue = Venue.Create(venueId, request.Title, request.Description, address, coordinates);
+        
+        // TODO: Добавить сохранение в репозиторий
+        
+        // TODO: Добавить логирование
+        
+        return venue.Id.Value;
     }
 }
