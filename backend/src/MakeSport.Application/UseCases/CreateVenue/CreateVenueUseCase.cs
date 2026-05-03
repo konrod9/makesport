@@ -1,21 +1,25 @@
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using MakeSport.Application.Validation;
-using MakeSport.Contracts.Dtos;
 using MakeSport.Contracts.Requests;
 using MakeSport.Domain.Shared;
 using MakeSport.Domain.Venues;
 using MakeSport.Domain.Venues.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace MakeSport.Application.UseCases.CreateVenue;
 
 public class CreateVenueUseCase
 {
     private readonly IValidator<CreateVenueRequest> _validator;
+    private readonly IVenuesRepository _repository;
+    private readonly ILogger<CreateVenueUseCase> _logger;
 
-    public CreateVenueUseCase(IValidator<CreateVenueRequest> validator)
+    public CreateVenueUseCase(IValidator<CreateVenueRequest> validator, IVenuesRepository repository, ILogger<CreateVenueUseCase> logger)
     {
         _validator = validator;
+        _repository = repository;
+        _logger = logger;
     }
 
     public async Task<Result<Guid, Error>> Handle(CreateVenueRequest request, CancellationToken cancellationToken)
@@ -32,9 +36,11 @@ public class CreateVenueUseCase
         
         var venue = Venue.Create(venueId, request.Title, request.Description, address, coordinates);
         
-        // TODO: Добавить сохранение в репозиторий
+        var result = await _repository.AddAsync(venue, cancellationToken);
+        if (result.IsFailure)
+            return result.Error;
         
-        // TODO: Добавить логирование
+        _logger.LogInformation("Created venue {VenueId}", venue.Id);
         
         return venue.Id.Value;
     }
