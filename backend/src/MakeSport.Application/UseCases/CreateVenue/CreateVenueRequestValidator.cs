@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MakeSport.Application.Exceptions;
+using MakeSport.Contracts.Requests;
 
 namespace MakeSport.Application.UseCases.CreateVenue;
 
-public class CreateVenueCommandValidator : AbstractValidator<CreateVenueCommand>
+public class CreateVenueRequestValidator : AbstractValidator<CreateVenueRequest>
 {
-    public CreateVenueCommandValidator()
+    public CreateVenueRequestValidator()
     {
         RuleFor(c => c.Title)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)

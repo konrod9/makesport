@@ -16,8 +16,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MakeSport.Application.DI\MakeSport.Application.DI.csproj" />
-      <ProjectReference Include="..\MakeSport.Infrastructure.DI\MakeSport.Infrastructure.DI.csproj" />
+      <ProjectReference Include="..\MakeSport.Application\MakeSport.Application.csproj" />
+      <ProjectReference Include="..\MakeSport.Contracts\MakeSport.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

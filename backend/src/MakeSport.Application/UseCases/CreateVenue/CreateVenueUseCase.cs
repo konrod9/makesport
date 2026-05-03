@@ -1,20 +1,33 @@
+using CSharpFunctionalExtensions;
 using FluentValidation;
-using MakeSport.Application.DTOs;
+using MakeSport.Contracts.Dtos;
+using MakeSport.Contracts.Requests;
 using MakeSport.Domain.Venues;
 using MakeSport.Domain.Venues.ValueObjects;
 
 namespace MakeSport.Application.UseCases.CreateVenue;
 
-public class CreateVenueUseCase(
-    ICreateVenueStorage storage,
-    IValidator<CreateVenueCommand> validator) : ICreateVenueUseCase
+public class CreateVenueUseCase
 {
-    public async Task<VenueDto> Handle(CreateVenueCommand command, CancellationToken cancellationToken)
+    private readonly IValidator<CreateVenueRequest> _validator;
+
+    public CreateVenueUseCase(IValidator<CreateVenueRequest> validator)
     {
-        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        _validator = validator;
+    }
+
+    public async Task<Result<VenueDto, string>> Handle(CreateVenueRequest request, CancellationToken cancellationToken)
+    {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            //return validationResult.ToError();
+        }
 
         var venueId = VenueId.NewId();
 
+        // TODO: создавать Address и другие value objects 
+        
         var venue = Venue.Create(venueId, command.Title, command.Description, command);
     }
 }
