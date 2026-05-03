@@ -5,7 +5,7 @@ namespace MakeSport.Domain.Venues.ValueObjects;
 
 public record Address
 {
-    private Address(string city, string street, int? building)
+    private Address(string city, string street, string? building)
     {
         City = city;
         Street = street;
@@ -16,9 +16,9 @@ public record Address
     
     public string Street { get; }
     
-    public int? Building { get; }
+    public string? Building { get; }
     
-    public static Result<Address, Error> Create(string city, string street, int? building)
+    public static Result<Address, Error> Create(string city, string street, string? building)
     {
         if (string.IsNullOrWhiteSpace(street))
             return Errors.General.ValueIsRequired(nameof(street));

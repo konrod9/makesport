@@ -10,7 +10,7 @@ public class Venue
         
     }
     
-    private Venue(VenueId id, string title, string description, Address address, GeoCoordinates location)
+    private Venue(VenueId id, string title, string description, Address address, Coordinates location)
     {
         Id = id;
         Title = title;
@@ -27,9 +27,9 @@ public class Venue
     
     public Address Address { get; private set; }
     
-    public GeoCoordinates Location { get; private set; }
+    public Coordinates Location { get; private set; }
     
-    public static Venue Create(VenueId id, string title, string description, Address address, GeoCoordinates location)
+    public static Venue Create(VenueId id, string title, string description, Address address, Coordinates location)
     {
         return new Venue(id, title, description, address, location);
     }
