@@ -1,3 +1,4 @@
+using FluentValidation;
 using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Application.UseCases.GetVenues;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ public static class DependencyInjection
             .AddScoped<GetVenuesUseCase>()
             .AddScoped<CreateVenueUseCase>();
         
-        // TODO: Зарегестрировать валидаторы
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;
     }

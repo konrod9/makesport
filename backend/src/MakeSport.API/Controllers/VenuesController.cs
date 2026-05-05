@@ -15,24 +15,12 @@ public class VenuesController : ControllerBase
     [ProducesResponseType(201, Type = typeof(CreateVenueRequest))]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> CreateVenue(
+    public async Task<EndpointResult<Guid>> CreateVenue(
         [FromBody] CreateVenueRequest request,
         [FromServices] CreateVenueUseCase useCase,
         CancellationToken cancellationToken)
     {
-        var venue = await useCase.Handle(request, cancellationToken);
-        
-        /*var command = new CreateVenueCommand(request.Title, request.Description, request.Latitude, request.Longitude);
-        var venue = await useCase.Handle(command, cancellationToken);
-
-        return CreatedAtRoute(nameof(GetVenues), new VenueResponse()
-        {
-            Id = venue.Id,
-            Name = venue.Name,
-            Description = venue.Description,
-            Latitude = venue.Latitude,
-            Longitude = venue.Longitude
-        });*/
+        return await useCase.Handle(request, cancellationToken);
     }
     
     [HttpGet(Name = nameof(GetVenues))]
