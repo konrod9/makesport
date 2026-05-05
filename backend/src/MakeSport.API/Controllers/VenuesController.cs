@@ -1,8 +1,8 @@
-﻿using MakeSport.API.Requests;
-using MakeSport.API.Responses;
+﻿using CSharpFunctionalExtensions;
 using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Application.UseCases.GetVenues;
 using MakeSport.Contracts.Requests;
+using MakeSport.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MakeSport.API.Controllers;
@@ -36,21 +36,11 @@ public class VenuesController : ControllerBase
     }
     
     [HttpGet(Name = nameof(GetVenues))]
-    [ProducesResponseType(200, Type = typeof(VenueResponse[]))]
-    public async Task<IActionResult> GetVenues(
+    public async Task<EndpointResult<PaginationVenuesResponse>> GetVenues(
+        [FromQuery] GetVenuesRequest request,
         [FromServices] GetVenuesUseCase useCase,
         CancellationToken cancellationToken)
     {
-        var query = new GetVenuesQuery();
-        var venues = await useCase.Handle(query, cancellationToken);
-        
-        return Ok(venues.Select(v => new VenueResponse()
-        {
-                Id = v.Id,
-                Name = v.Name,
-                Description = v.Description,
-                Latitude = v.Latitude,
-                Longitude = v.Longitude
-        }));
+        return await useCase.Handle(request, cancellationToken);
     }
 }

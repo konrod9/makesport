@@ -1,21 +1,12 @@
-﻿using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
-using MakeSport.Application.DTOs;
-using MakeSport.Application.UseCases.CreateVenue;
-using Moq;
-using Moq.Language.Flow;
-using Xunit.Sdk;
-
-namespace MakeSport.Application.Tests.CreateVenue;
+﻿namespace MakeSport.Application.Tests.CreateVenue;
 
 public class CreateVenueUseCaseShould
 {
-    private readonly CreateVenueUseCase sut;
+    /*private readonly CreateVenueUseCase sut;
     private readonly Mock<ICreateVenueStorage> storage;
     private readonly ISetup<ICreateVenueStorage, Task<VenueDto>> createVenueSetup;
     private readonly Mock<IValidator<CreateVenueCommand>> validator;
-    private readonly IReturnsResult<IValidator<CreateVenueCommand>> validatorSetup;
+    private readonly IReturnsResult<IValidator<CreateVenueCommand>> validatorSetup;*/
 
     /*public CreateVenueUseCaseShould()
     {
