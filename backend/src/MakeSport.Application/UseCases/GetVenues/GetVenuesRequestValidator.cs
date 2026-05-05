@@ -1,4 +1,5 @@
 using FluentValidation;
+using MakeSport.Application.Validation;
 using MakeSport.Contracts.Requests;
 using MakeSport.Domain.Shared;
 

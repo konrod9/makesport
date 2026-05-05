@@ -3,7 +3,7 @@ using CSharpFunctionalExtensions;
 using FluentValidation;
 using MakeSport.Domain.Shared;
 
-namespace MakeSport.Application;
+namespace MakeSport.Application.Validation;
 
 public static class CustomValidators
 {

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MakeSport.Application.Exceptions;
+using MakeSport.Application.Validation;
 using MakeSport.Contracts.Requests;
 using MakeSport.Domain.Venues.ValueObjects;
 
