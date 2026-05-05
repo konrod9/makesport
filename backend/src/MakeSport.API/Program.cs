@@ -8,8 +8,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
-
 app.UseSwagger();
 app.UseSwaggerUI();
 

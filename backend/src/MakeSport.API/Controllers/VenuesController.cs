@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using MakeSport.API.Configuration;
 using MakeSport.Application.UseCases.CreateVenue;
 using MakeSport.Application.UseCases.GetVenues;
 using MakeSport.Contracts.Requests;

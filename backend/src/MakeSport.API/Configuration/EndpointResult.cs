@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using MakeSport.Domain.Shared;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
-namespace MakeSport.API;
+namespace MakeSport.API.Configuration;
 
 public class EndpointResult : IResult
 {

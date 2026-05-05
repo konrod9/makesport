@@ -1,7 +1,7 @@
 using MakeSport.Domain.Shared;
 using MakeSport.Domain.Shared.Enums;
 
-namespace MakeSport.API;
+namespace MakeSport.API.Configuration;
 
 public class ErrorResult : IResult
 {
