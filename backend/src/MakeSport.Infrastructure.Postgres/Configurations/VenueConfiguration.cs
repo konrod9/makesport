@@ -11,22 +11,37 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
     {
         builder.ToTable("venues");
         
-        builder.HasKey(v => v.VenueId).HasName("pk_venues");
+        builder.HasKey(v => v.Id).HasName("pk_venues");
         
-        builder.Property(v => v.VenueId)
+        builder.Property(v => v.Id)
             .HasColumnName("id");
         
-        builder.Property(v => v.Name)
+        builder.Property(v => v.Title)
             .IsRequired()
             .HasMaxLength(50)
             .HasColumnName("name");
-        
+
         builder.Property(v => v.Description)
             .HasMaxLength(500)
-            .HasColumnName("description");
+            .HasColumnName("description")
+            .IsRequired(false);
 
-        builder.Property(v => v.Location)
-            .HasConversion(new GeoCoordinateConverter())
+        builder.OwnsOne(v => v.Address, sa =>
+        {
+            sa.Property(a => a.Street).HasMaxLength(100)
+                .HasColumnName("street");
+
+            sa.Property(a => a.City).HasMaxLength(50)
+                .HasColumnName("city");
+
+            sa.Property(a => a.Building)
+                .HasColumnName("building")
+                .IsRequired(false);
+        });
+
+        // TODO: Переделать на OwnsOne
+        builder.Property(v => v.Coordinates)
+            //.HasConversion(new GeoCoordinateConverter())
             .HasColumnType("geography (Point,4326)")
             .HasColumnName("location");
     }

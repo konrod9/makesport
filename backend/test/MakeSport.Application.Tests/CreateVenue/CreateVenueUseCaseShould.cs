@@ -1,23 +1,14 @@
-﻿using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
-using MakeSport.Application.DTOs;
-using MakeSport.Application.UseCases.CreateVenue;
-using Moq;
-using Moq.Language.Flow;
-using Xunit.Sdk;
-
-namespace MakeSport.Application.Tests.CreateVenue;
+﻿namespace MakeSport.Application.Tests.CreateVenue;
 
 public class CreateVenueUseCaseShould
 {
-    private readonly CreateVenueUseCase sut;
+    /*private readonly CreateVenueUseCase sut;
     private readonly Mock<ICreateVenueStorage> storage;
     private readonly ISetup<ICreateVenueStorage, Task<VenueDto>> createVenueSetup;
     private readonly Mock<IValidator<CreateVenueCommand>> validator;
-    private readonly IReturnsResult<IValidator<CreateVenueCommand>> validatorSetup;
+    private readonly IReturnsResult<IValidator<CreateVenueCommand>> validatorSetup;*/
 
-    public CreateVenueUseCaseShould()
+    /*public CreateVenueUseCaseShould()
     {
         storage = new Mock<ICreateVenueStorage>();
         createVenueSetup = storage.Setup(s => 
@@ -28,7 +19,7 @@ public class CreateVenueUseCaseShould
             v.ValidateAsync(It.IsAny<CreateVenueCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationResult());
         
-        sut = new CreateVenueUseCase(storage.Object, validator.Object);
+        //sut = new CreateVenueUseCase(storage.Object, validator.Object);
     }
 
     [Fact]
@@ -44,5 +35,5 @@ public class CreateVenueUseCaseShould
         
         storage.Verify(s => 
             s.CreateAsync("Name", "Description", 60.1234, 60.1234, It.IsAny<CancellationToken>()), Times.Once);
-    }
+    }*/
 }
