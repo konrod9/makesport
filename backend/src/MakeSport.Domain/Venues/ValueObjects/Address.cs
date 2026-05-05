@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using MakeSport.Contracts.Dtos;
 using MakeSport.Domain.Shared;
 
 namespace MakeSport.Domain.Venues.ValueObjects;

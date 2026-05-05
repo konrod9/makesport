@@ -40,7 +40,7 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
         });
 
         // TODO: Переделать на OwnsOne
-        builder.Property(v => v.Location)
+        builder.Property(v => v.Coordinates)
             //.HasConversion(new GeoCoordinateConverter())
             .HasColumnType("geography (Point,4326)")
             .HasColumnName("location");

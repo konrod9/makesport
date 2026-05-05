@@ -2,6 +2,7 @@ using CSharpFunctionalExtensions;
 using MakeSport.Application.UseCases;
 using MakeSport.Domain.Shared;
 using MakeSport.Domain.Venues;
+using MakeSport.Infrastructure.Postgres.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;

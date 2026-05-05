@@ -1,3 +1,5 @@
+using MakeSport.Application;
+using MakeSport.Infrastructure.Postgres.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +12,7 @@ public static class DependencyInjection
         services
             // TODO: зарегистрировать репозиторий
             .AddScoped<IGuidFactory, GuidFactory>()
-            .AddDbContextPool<VenueDbContext>(options => 
+            .AddDbContextPool<IVenuesReadDbContext, VenueDbContext>(options => 
                 options.UseNpgsql(dbConnectionString, o => o.UseNetTopologySuite()));
         
         return services;
