@@ -54,3 +54,11 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(envelope);
     }
 }
+
+public static class ExceptionMiddlewareExtensions
+{
+    public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<ExceptionMiddleware>();
+    }
+}
