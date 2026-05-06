@@ -1,4 +1,5 @@
 using MakeSport.Application;
+using MakeSport.Application.UseCases;
 using MakeSport.Infrastructure.Postgres.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ public static class DependencyInjection
     public static IServiceCollection AddVenueStorage(this IServiceCollection services, string? dbConnectionString)
     {
         services
-            // TODO: зарегистрировать репозиторий
+            .AddScoped<IVenuesRepository, VenuesRepository>()
             .AddScoped<IGuidFactory, GuidFactory>()
             .AddDbContextPool<IVenuesReadDbContext, VenueDbContext>(options => 
                 options.UseNpgsql(dbConnectionString, o => o.UseNetTopologySuite()));

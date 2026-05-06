@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MakeSport.Application\MakeSport.Application.csproj" />
       <ProjectReference Include="..\MakeSport.Contracts\MakeSport.Contracts.csproj" />
+      <ProjectReference Include="..\MakeSport.Infrastructure.Postgres\MakeSport.Infrastructure.Postgres.csproj" />
     </ItemGroup>
 
 </Project>

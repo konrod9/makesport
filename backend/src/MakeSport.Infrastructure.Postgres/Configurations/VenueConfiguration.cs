@@ -1,7 +1,10 @@
 ﻿using MakeSport.Domain.Venues;
+using MakeSport.Domain.Venues.ValueObjects;
 using MakeSport.Infrastructure.Postgres.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NetTopologySuite.Geometries;
+using Coordinates = MakeSport.Domain.Venues.ValueObjects.Coordinates;
 
 namespace MakeSport.Infrastructure.Postgres.Configurations;
 
@@ -9,12 +12,13 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 {
     public void Configure(EntityTypeBuilder<Venue> builder)
     {
+        // TODO: Вынести в константы ограничения длины
         builder.ToTable("venues");
         
         builder.HasKey(v => v.Id).HasName("pk_venues");
-        
+
         builder.Property(v => v.Id)
-            .HasColumnName("id");
+            .HasConversion(id => id.Value, value => VenueId.Create(value));
         
         builder.Property(v => v.Title)
             .IsRequired()
@@ -23,8 +27,7 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.Property(v => v.Description)
             .HasMaxLength(500)
-            .HasColumnName("description")
-            .IsRequired(false);
+            .HasColumnName("description");
 
         builder.OwnsOne(v => v.Address, sa =>
         {
@@ -39,10 +42,11 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 .IsRequired(false);
         });
 
-        // TODO: Переделать на OwnsOne
         builder.Property(v => v.Coordinates)
-            //.HasConversion(new GeoCoordinateConverter())
+            .HasConversion(
+                c => new Point(c.Latitude, c.Longitude),
+                p => Coordinates.Create(p.X, p.Y).Value)
             .HasColumnType("geography (Point,4326)")
-            .HasColumnName("location");
+            .HasColumnName("coordinates");
     }
 }

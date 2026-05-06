@@ -1,6 +1,6 @@
 using MakeSport.Domain.Shared;
 
-namespace MakeSport.API;
+namespace MakeSport.API.Configuration;
 
 public class SuccessResult : IResult
 {
