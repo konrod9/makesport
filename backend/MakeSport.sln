@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.API", "src\MakeSp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{36C380F7-8526-4AA4-AEF2-CF14434352AE}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
+		docker-compose-dev.yml = docker-compose-dev.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeSport.Application.Tests", "test\MakeSport.Application.Tests\MakeSport.Application.Tests.csproj", "{0D4A9E97-0956-4C2F-9BE5-BFE1E07AAB0A}"
