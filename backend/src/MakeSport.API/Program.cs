@@ -1,18 +1,38 @@
+using System.Globalization;
 using MakeSport.API.Configuration;
 using MakeSport.Application;
 using MakeSport.Infrastructure.Postgres;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+try
+{
+    Log.Information("Starting application");
 
-builder.Services.AddVenuesServices();
-builder.Services.AddVenueStorage(builder.Configuration.GetConnectionString("Postgres"));
+    var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
 
-app.ConfigureApp();
+    builder.Services.AddVenuesServices();
+    builder.Services.AddVenueStorage(builder.Configuration.GetConnectionString("Postgres"));
 
-app.Run();
+    var app = builder.Build();
+
+    app.ConfigureApp();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
