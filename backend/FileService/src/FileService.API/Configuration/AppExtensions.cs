@@ -10,6 +10,9 @@ public static class AppExtensions
         app.UseExceptionMiddleware();
         app.UseRequestCorrelationId();
         app.UseSerilogRequestLogging();
+        
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.MapControllers();
 
