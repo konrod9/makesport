@@ -1,7 +1,7 @@
 using System.Globalization;
-using MakeSport.API.Configuration;
-using MakeSport.Application;
-using MakeSport.Infrastructure.Postgres;
+using FileService.API.Configuration;
+using FileService.Application;
+using FileService.Infrastructure.Postgres;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -19,10 +19,9 @@ try
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
 
-    builder.Services.AddVenuesServices();
-    builder.Services.AddVenueStorage(builder.Configuration.GetConnectionString("Postgres"));
+    builder.Services.AddApplication();
+    builder.Services.AddStorage(builder.Configuration.GetConnectionString("Postgres"));
 
     var app = builder.Build();
 
