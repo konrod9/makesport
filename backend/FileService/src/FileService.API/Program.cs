@@ -2,6 +2,7 @@ using System.Globalization;
 using FileService.API.Configuration;
 using FileService.Application;
 using FileService.Infrastructure.Postgres;
+using FileService.Infrastructure.S3;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -23,6 +24,7 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddStorage(builder.Configuration.GetConnectionString("Postgres"));
+    builder.Services.AddS3(builder.Configuration);
 
     var app = builder.Build();
 
