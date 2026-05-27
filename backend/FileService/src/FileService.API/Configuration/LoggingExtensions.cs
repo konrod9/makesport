@@ -12,7 +12,7 @@ public static class LoggingExtensions
             .ReadFrom.Services(sp)
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
-            .Enrich.WithProperty("ServiceName", "VenuesService"));
+            .Enrich.WithProperty("ServiceName", "FileService"));
         
         return services;
     }

@@ -1,9 +1,11 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
+using FileService.Application;
 using Microsoft.Extensions.Options;
 
 namespace FileService.Infrastructure.S3;
 
-public class S3Provider
+public class S3Provider : IS3Provider
 {
     private readonly IAmazonS3 _s3Client;
     private readonly S3Options _s3Options;
@@ -14,7 +16,33 @@ public class S3Provider
         _s3Options = s3Options.Value;
     }
 
-    public async Task UploadFileAsync(Stream stream)
+    public async Task UploadFileAsync(Stream stream, string bucketName, string key, string contentType,
+        CancellationToken ct)
     {
+        var request = new PutObjectRequest
+        {
+            BucketName = bucketName,
+            Key = key,
+            InputStream = stream,
+            ContentType = contentType
+        };
+
+        await _s3Client.PutObjectAsync(request, ct);
+    }
+
+    public async Task<string> GenerateDownloadUrlAsync(string bucketName, string key)
+    {
+        var request = new GetPreSignedUrlRequest
+        {
+            BucketName = bucketName,
+            Key = key,
+            Verb = HttpVerb.GET,
+            Expires = DateTime.UtcNow.AddHours(_s3Options.DownloadUrlExpirationHours),
+            Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP
+        };
+
+        var response = await _s3Client.GetPreSignedURLAsync(request);
+
+        return response;
     }
 }

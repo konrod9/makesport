@@ -1,8 +1,8 @@
-﻿using Amazon.Extensions.NETCore.Setup;
-using Amazon.Runtime;
-using Amazon.S3;
+﻿using Amazon.S3;
+using FileService.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace FileService.Infrastructure.S3;
 
@@ -12,21 +12,23 @@ public static class DependencyInjectionS3Extensions
     {
         services.Configure<S3Options>(configuration.GetSection(nameof(S3Options)));
         
-        var s3Options = configuration.GetSection(nameof(S3Options)).Get<S3Options>()
-            ?? throw new ApplicationException("Missing configuration section: S3Options");
-        
-        var options = new AWSOptions
+        services.AddScoped<IS3Provider, S3Provider>();
+
+        services.AddSingleton<IAmazonS3>(sp =>
         {
-            DefaultClientConfig =
+            var s3Options = sp.GetRequiredService<IOptions<S3Options>>().Value;
+            
+            var config = new AmazonS3Config
             {
                 ServiceURL = s3Options.ServiceUrl,
-                UseHttp = !s3Options.WithSsl
-            },
-            Credentials = new BasicAWSCredentials(s3Options.AccessKey, s3Options.SecretKey)
-        };
-        
-        services.AddAWSService<IAmazonS3>(options);
-        
+                UseHttp = !s3Options.WithSsl,
+                ForcePathStyle = true
+            };
+
+            return new AmazonS3Client(s3Options.AccessKey, s3Options.SecretKey, config);
+        });
+
+        services.AddHostedService<S3BucketInitializationService>();
         return services;
     }
 }
