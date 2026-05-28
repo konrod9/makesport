@@ -18,7 +18,7 @@ public class FilesController : ControllerBase
     {
         var key = $"raw/{Guid.NewGuid()}";
         
-        await s3Provider.UploadFileAsync(file.OpenReadStream(), "pictures", key, file.ContentType, ct);
+        //await s3Provider.UploadFileAsync(file.OpenReadStream(), "pictures", key, file.ContentType, ct);
 
         return new EndpointResult(UnitResult.Success<Error>());
     }
