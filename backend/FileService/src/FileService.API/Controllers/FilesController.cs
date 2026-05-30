@@ -1,5 +1,6 @@
 ﻿using FileService.API.Configuration;
 using FileService.Application.UseCases.CompleteMultipartUpload;
+using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
 using FileService.Contracts;
@@ -28,4 +29,10 @@ public class FilesController : ControllerBase
         [FromBody] GetMediaAssetsRequest request,
         [FromServices] GetMediaAssetsUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
+    
+    [HttpGet("/{mediaAssetId:guid}")]
+    public async Task<EndpointResult<GetMediaAssetInfoDto?>> GetMediaAsset(
+        Guid mediaAssetId,
+        [FromServices] GetMediaAssetInfoUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(mediaAssetId, ct);
 }

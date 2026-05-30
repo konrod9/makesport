@@ -19,11 +19,11 @@ public class GetMediaAssetInfoUseCase
     }
 
     public async Task<Result<GetMediaAssetInfoDto?, Error>> Handle(
-        GetMediaAssetInfoRequest request, 
+        Guid mediaAssetId, 
         CancellationToken cancellationToken)
     {
         var mediaAsset = await _readDbContext.MediaAssetsQuery
-            .FirstOrDefaultAsync(m => m.Id == request.MediaAssetId, cancellationToken);
+            .FirstOrDefaultAsync(m => m.Id == mediaAssetId, cancellationToken);
         if (mediaAsset == null)
             return Result.Success<GetMediaAssetInfoDto?, Error>(null);
         
