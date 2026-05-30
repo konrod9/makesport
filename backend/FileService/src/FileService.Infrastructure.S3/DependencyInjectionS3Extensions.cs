@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using FileService.Application;
+using FileService.Application.FilesStorage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,13 +12,13 @@ public static class DependencyInjectionS3Extensions
     public static IServiceCollection AddS3(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<S3Options>(configuration.GetSection(nameof(S3Options)));
-        
-        services.AddScoped<IS3Provider, S3Provider>();
+
+        services.AddScoped<IFileStorageProvider, S3Provider>();
 
         services.AddSingleton<IAmazonS3>(sp =>
         {
             var s3Options = sp.GetRequiredService<IOptions<S3Options>>().Value;
-            
+
             var config = new AmazonS3Config
             {
                 ServiceURL = s3Options.ServiceUrl,
@@ -29,6 +30,9 @@ public static class DependencyInjectionS3Extensions
         });
 
         services.AddHostedService<S3BucketInitializationService>();
+
+        services.AddTransient<IChunkSizeCalculator, ChunkSizeCalculator>();
+
         return services;
     }
 }

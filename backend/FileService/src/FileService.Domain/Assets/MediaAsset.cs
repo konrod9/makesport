@@ -1,4 +1,7 @@
-﻿namespace FileService.Domain;
+﻿using CSharpFunctionalExtensions;
+using FileService.Domain.Shared;
+
+namespace FileService.Domain.Assets;
 
 public abstract class MediaAsset
 {
@@ -27,15 +30,32 @@ public abstract class MediaAsset
         Guid id,
         MediaData mediaData,
         AssetType assetType,
-        MediaOwner owner,
         MediaStatus status,
         StorageKey key)
     {
         Id = id;
         MediaData = mediaData;
         AssetType = assetType;
-        Owner = owner;
         Status = status;
         Key = key;
+    }
+
+    public static Result<MediaAsset, Error> CreateForUpload(MediaData mediaData, AssetType assetType)
+    {
+        var assetId = Guid.NewGuid();
+        
+        switch (assetType)
+        {
+            case AssetType.Video:
+                var videoResult = VideoAsset.CreateForUpload(assetId, mediaData);
+                return videoResult.IsFailure ? videoResult.Error : videoResult.Value;
+            case AssetType.Image:
+                // TODO: Сделать для изображений
+                break;
+            case AssetType.Avatar:
+            case AssetType.Preview:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);
+        }
     }
 }

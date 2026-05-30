@@ -1,29 +1,27 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Domain;
 using FileService.Domain.Shared;
 
-namespace FileService.Application;
+namespace FileService.Application.FilesStorage;
 
-public interface IS3Provider
+public interface IFileStorageProvider
 {
     Task<Result<string, Error>> StartMultipartUploadAsync(
-        string bucketName,
-        string key,
-        string contentType,
+        StorageKey storageKey,
+        MediaData mediaData,
         CancellationToken ct);
 
-    Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
-        string bucketName,
-        string key,
+    Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
+        StorageKey storageKey,
         string uploadId,
         int totalChunks,
         CancellationToken ct);
 
-    Task<Result<string, Error>> GenerateDownloadUrlAsync(string bucketName, string key);
+    Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
-        string bucketName,
-        string key,
+        StorageKey storageKey,
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
         CancellationToken ct);

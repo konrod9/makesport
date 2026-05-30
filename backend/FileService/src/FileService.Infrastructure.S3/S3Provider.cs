@@ -2,14 +2,16 @@
 using Amazon.S3.Model;
 using CSharpFunctionalExtensions;
 using FileService.Application;
+using FileService.Application.FilesStorage;
 using FileService.Contracts;
+using FileService.Domain;
 using FileService.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FileService.Infrastructure.S3;
 
-public class S3Provider : IDisposable, IS3Provider
+public class S3Provider : IDisposable, IFileStorageProvider
 {
     private readonly IAmazonS3 _s3Client;
     private readonly S3Options _s3Options;
@@ -26,18 +28,17 @@ public class S3Provider : IDisposable, IS3Provider
     }
 
     public async Task<Result<string, Error>> StartMultipartUploadAsync(
-        string bucketName,
-        string key,
-        string contentType,
+        StorageKey storageKey,
+        MediaData mediaData,
         CancellationToken ct)
     {
         try
         {
             var request = new InitiateMultipartUploadRequest
             {
-                BucketName = bucketName,
-                Key = key,
-                ContentType = contentType
+                BucketName = storageKey.Location,
+                Key = storageKey.Value,
+                ContentType = mediaData.ContentType.Value
             };
 
             var response = await _s3Client.InitiateMultipartUploadAsync(request, ct);
@@ -47,14 +48,13 @@ public class S3Provider : IDisposable, IS3Provider
         catch (Exception ex)
         {
             _logger.LogError("Failed to start multipart upload for bucket {BucketName} and key {Key}. Error: {ErrorMessage}",
-                bucketName, key, ex.Message);
+                storageKey.Location, storageKey.Value, ex.Message);
             return S3ErrorMapper.ToError(ex);
         }
     }
     
-    public async Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
-        string bucketName,
-        string key,
+    public async Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
+        StorageKey storageKey,
         string uploadId,
         int totalChunks,
         CancellationToken ct)
@@ -70,8 +70,8 @@ public class S3Provider : IDisposable, IS3Provider
                     {
                         var request = new GetPreSignedUrlRequest
                         {
-                            BucketName = bucketName,
-                            Key = key,
+                            BucketName = storageKey.Location,
+                            Key = storageKey.Value,
                             Verb = HttpVerb.PUT,
                             UploadId = uploadId,
                             PartNumber = partNumber,
@@ -81,7 +81,7 @@ public class S3Provider : IDisposable, IS3Provider
 
                         var url = await _s3Client.GetPreSignedURLAsync(request);
 
-                        return url;
+                        return new ChunkUploadUrl(partNumber, url);
                     }
                     finally
                     {
@@ -96,20 +96,20 @@ public class S3Provider : IDisposable, IS3Provider
         catch (Exception ex)
         {
             _logger.LogError("Failed to generate chunk upload URLs for bucket {BucketName}. Error: {ErrorMessage}",
-                bucketName, ex.Message);
+                storageKey.Location, ex.Message);
             
             return S3ErrorMapper.ToError(ex);
         }
     }
 
-    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(string bucketName, string key)
+    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey)
     {
         try
         {
             var request = new GetPreSignedUrlRequest
             {
-                BucketName = bucketName,
-                Key = key,
+                BucketName = storageKey.Location,
+                Key = storageKey.Value,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddHours(_s3Options.DownloadUrlExpirationHours),
                 Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP
@@ -128,8 +128,7 @@ public class S3Provider : IDisposable, IS3Provider
     }
     
     public async Task<Result<string, Error>> CompleteMultipartUploadAsync(
-        string bucketName,
-        string key,
+        StorageKey storageKey,
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
         CancellationToken ct)
@@ -138,8 +137,8 @@ public class S3Provider : IDisposable, IS3Provider
         {
             var request = new CompleteMultipartUploadRequest
             {
-                BucketName = bucketName,
-                Key = key,
+                BucketName = storageKey.Location,
+                Key = storageKey.Value,
                 UploadId = uploadId,
                 PartETags = partETags.Select(p => new PartETag
                 {

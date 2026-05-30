@@ -51,4 +51,10 @@ public static class FileServiceErrors
     {
         return Error.Failure("unknown.error", "An unknown error occurred.");
     }
+    
+    public static Error DatabaseError() =>
+        Error.Failure("file-service.database.error", "Error while accessing the database in file service");
+    
+    public static Error OperationCancelled() =>
+        Error.Failure("file-service.cancelled", "Operation was cancelled");
 }

@@ -12,7 +12,7 @@ public static class AssetTypeExtensions
 {
     public static AssetType ToAssetType(this string value)
     {
-        return value switch
+        return value.ToLowerInvariant() switch
         {
             "video" => AssetType.Video,
             "image" => AssetType.Image,

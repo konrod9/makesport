@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Domain.Shared;
 
-namespace FileService.Domain;
+namespace FileService.Domain.Assets;
 
 public class VideoAsset : MediaAsset
 {
@@ -15,9 +15,8 @@ public class VideoAsset : MediaAsset
     private VideoAsset(
         Guid id,
         MediaData mediaData,
-        MediaOwner owner,
         MediaStatus status,
-        StorageKey key) : base(id, mediaData, AssetType.Video, owner, status, key)
+        StorageKey key) : base(id, mediaData, AssetType.Video, status, key)
     {
     }
 
@@ -37,7 +36,7 @@ public class VideoAsset : MediaAsset
         return UnitResult.Success<Error>();
     }
 
-    public static Result<VideoAsset, Error> CreateForUpload(Guid id, MediaData mediaData, MediaOwner mediaOwner)
+    public static Result<VideoAsset, Error> CreateForUpload(Guid id, MediaData mediaData)
     {
         var validationResult = Validate(mediaData);
         if (validationResult.IsFailure)
@@ -50,7 +49,6 @@ public class VideoAsset : MediaAsset
         return new VideoAsset(
             id,
             mediaData,
-            mediaOwner,
             MediaStatus.Uploading,
             key.Value
         );
