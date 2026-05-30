@@ -1,4 +1,4 @@
-﻿namespace FileService.Contracts.Requests;
+﻿namespace FileService.Application.UseCases.StartMultipartUpload;
 
 public record StartMultipartUploadRequest(
     string FileName,

@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using FileService.Application.Dtos;
 using FileService.Contracts;
 using FileService.Domain;
 using FileService.Domain.Shared;
@@ -19,6 +20,10 @@ public interface IFileStorageProvider
         CancellationToken ct);
 
     Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
+
+    Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
+        IEnumerable<StorageKey> storageKeys,
+        CancellationToken ct = default);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
         StorageKey storageKey,

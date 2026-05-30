@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using CSharpFunctionalExtensions;
 using FileService.Application;
+using FileService.Application.Dtos;
 using FileService.Application.FilesStorage;
 using FileService.Contracts;
 using FileService.Domain;
@@ -47,12 +48,13 @@ public class S3Provider : IDisposable, IFileStorageProvider
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to start multipart upload for bucket {BucketName} and key {Key}. Error: {ErrorMessage}",
+            _logger.LogError(
+                "Failed to start multipart upload for bucket {BucketName} and key {Key}. Error: {ErrorMessage}",
                 storageKey.Location, storageKey.Value, ex.Message);
             return S3ErrorMapper.ToError(ex);
         }
     }
-    
+
     public async Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
         StorageKey storageKey,
         string uploadId,
@@ -97,7 +99,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
         {
             _logger.LogError("Failed to generate chunk upload URLs for bucket {BucketName}. Error: {ErrorMessage}",
                 storageKey.Location, ex.Message);
-            
+
             return S3ErrorMapper.ToError(ex);
         }
     }
@@ -111,7 +113,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
                 BucketName = storageKey.Location,
                 Key = storageKey.Value,
                 Verb = HttpVerb.GET,
-                Expires = DateTime.UtcNow.AddHours(_s3Options.DownloadUrlExpirationHours),
+                Expires = DateTime.UtcNow.AddDays(_s3Options.DownloadUrlExpirationDays),
                 Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP
             };
 
@@ -126,7 +128,49 @@ public class S3Provider : IDisposable, IFileStorageProvider
             return S3ErrorMapper.ToError(e);
         }
     }
-    
+
+    public async Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
+        IEnumerable<StorageKey> storageKeys,
+        CancellationToken ct)
+    {
+        try
+        {
+            var tasks = storageKeys.Select(async storageKey =>
+            {
+                await _requestsSemaphore.WaitAsync(ct);
+
+                try
+                {
+                    var request = new GetPreSignedUrlRequest
+                    {
+                        BucketName = storageKey.Location,
+                        Key = storageKey.Value,
+                        Verb = HttpVerb.GET,
+                        Expires = DateTime.UtcNow.AddDays(_s3Options.DownloadUrlExpirationDays),
+                        Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP
+                    };
+
+                    var url = await _s3Client.GetPreSignedURLAsync(request);
+
+                    return new MediaUrl(storageKey, url);
+                }
+                finally
+                {
+                    _requestsSemaphore.Release();
+                }
+            });
+            
+            return await Task.WhenAll(tasks);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to generate download URLs. Error: {ErrorMessage}",
+                ex.Message);
+
+            return S3ErrorMapper.ToError(ex);
+        }
+    }
+
     public async Task<Result<string, Error>> CompleteMultipartUploadAsync(
         StorageKey storageKey,
         string uploadId,
@@ -145,7 +189,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
                     ETag = p.ETag, PartNumber = p.PartNumber
                 }).ToList()
             };
-            
+
             var response = await _s3Client.CompleteMultipartUploadAsync(request, ct);
 
             return response.Key;
@@ -153,7 +197,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
         catch (Exception ex)
         {
             _logger.LogError("Failed to complete multipart upload. Error: {ErrorMessage}", ex.Message);
-            
+
             return S3ErrorMapper.ToError(ex);
         }
     }

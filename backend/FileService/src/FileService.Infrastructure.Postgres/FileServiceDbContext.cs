@@ -1,9 +1,12 @@
-﻿using FileService.Domain.Assets;
+﻿using FileService.Application;
+using FileService.Domain.Assets;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Infrastructure.Postgres;
 
-public class FileServiceDbContext : DbContext
+public class FileServiceDbContext : DbContext, IReadDbContext
 {
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+
+    public IQueryable<MediaAsset> MediaAssetsQuery => MediaAssets.AsQueryable().AsNoTracking();
 }
