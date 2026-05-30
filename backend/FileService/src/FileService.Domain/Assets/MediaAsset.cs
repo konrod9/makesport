@@ -51,11 +51,27 @@ public abstract class MediaAsset
                 return videoResult.IsFailure ? videoResult.Error : videoResult.Value;
             case AssetType.Image:
                 // TODO: Сделать для изображений
-                break;
             case AssetType.Avatar:
             case AssetType.Preview:
             default:
                 throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);
         }
+    }
+    
+    public UnitResult<Error> MarkUploaded()
+    {
+        if (Status != MediaStatus.Uploading)
+            return UnitResult.Success<Error>();
+        
+        Status = MediaStatus.Uploaded;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> MarkFailed()
+    {
+        Status = MediaStatus.Failed;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
     }
 }

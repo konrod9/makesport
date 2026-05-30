@@ -5,5 +5,5 @@ namespace FileService.Infrastructure.Postgres;
 
 public class FileServiceDbContext : DbContext
 {
-    private DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
 }

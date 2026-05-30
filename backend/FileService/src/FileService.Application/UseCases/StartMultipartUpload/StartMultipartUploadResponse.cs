@@ -1,4 +1,6 @@
-namespace FileService.Contracts.Responses;
+using FileService.Contracts;
+
+namespace FileService.Application.UseCases.StartMultipartUpload;
 
 public record StartMultipartUploadResponse(
     Guid MediaAssetId,

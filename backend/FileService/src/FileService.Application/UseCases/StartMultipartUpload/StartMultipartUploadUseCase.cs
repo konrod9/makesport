@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.FilesStorage;
 using FileService.Contracts.Requests;
-using FileService.Contracts.Responses;
 using FileService.Domain;
 using FileService.Domain.Assets;
 using FileService.Domain.Shared;
@@ -30,7 +29,6 @@ public class StartMultipartUploadUseCase
     public async Task<Result<StartMultipartUploadResponse, Error>> Handle(StartMultipartUploadRequest request,
         CancellationToken cancellationToken)
     {
-        // Сделать валидацию всех полей
         var fileNameResult = FileName.Create(request.FileName);
         if (fileNameResult.IsFailure)
             return fileNameResult.Error;
@@ -39,7 +37,6 @@ public class StartMultipartUploadUseCase
         if (contentTypeResult.IsFailure)
             return contentTypeResult.Error;
 
-        // Посчитать количество чанков для загрузки файла и их размер
         var chunkCalculationResult = _chunkSizeCalculator.CalculateChunkSize(request.Size);
         if (chunkCalculationResult.IsFailure)
             return chunkCalculationResult.Error;

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using FileService.Application;
 using FileService.Domain.Assets;
 using FileService.Domain.Shared;
@@ -10,22 +11,22 @@ namespace FileService.Infrastructure.Postgres.Repositories;
 
 public class MediaAssetsRepository : IMediaAssetsRepository
 {
-    private readonly FileServiceDbContext _context;
+    private readonly FileServiceDbContext _dbContext;
     private readonly ILogger<MediaAssetsRepository> _logger;
 
-    public MediaAssetsRepository(FileServiceDbContext context, ILogger<MediaAssetsRepository> logger)
+    public MediaAssetsRepository(FileServiceDbContext dbContext, ILogger<MediaAssetsRepository> logger)
     {
-        _context = context;
+        _dbContext = dbContext;
         _logger = logger;
     }
     
     public async Task<Result<Guid, Error>> AddAsync(MediaAsset mediaAsset, CancellationToken cancellationToken)
     {
-        await _context.AddAsync(mediaAsset, cancellationToken);
+        await _dbContext.AddAsync(mediaAsset, cancellationToken);
         
         try
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return mediaAsset.Id;
         }
         catch (DbUpdateException ex) when(ex.InnerException is PostgresException)
@@ -43,5 +44,19 @@ public class MediaAssetsRepository : IMediaAssetsRepository
             _logger.LogError(ex, "Unexpected error while adding media asset with id {MediaAssetId}", mediaAsset.Id);
             return FileServiceErrors.DatabaseError();
         }
+    }
+
+    public async Task<Result<MediaAsset, Error>> GetBy(Expression<Func<MediaAsset, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        var mediaAsset = await _dbContext.MediaAssets.FirstOrDefaultAsync(predicate, cancellationToken);
+        if (mediaAsset is null)
+            return GeneralErrors.NotFound(null, "Media asset not found.");
+
+        return mediaAsset;
+    }
+
+    public async Task<int> SaveAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
