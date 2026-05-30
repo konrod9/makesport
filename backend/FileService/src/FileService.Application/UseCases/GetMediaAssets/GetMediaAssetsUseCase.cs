@@ -42,13 +42,18 @@ public class GetMediaAssetsUseCase
         var results = new List<GetMediaAssetDto>();
         foreach (var mediaAsset in mediaAssets)
         {
-            urlsDict.TryGetValue(mediaAsset.Key, out var url);
+            string? downloadUrl = null;
+
+            if (urlsDict.TryGetValue(mediaAsset.Key, out var url))
+            {
+                downloadUrl = url;
+            }
             
             var mediaAssetDto = new GetMediaAssetDto(
                 mediaAsset.Id,
                 mediaAsset.Status.ToString(),
                 mediaAsset.AssetType.ToString(),
-                url);
+                downloadUrl);
             
             results.Add(mediaAssetDto);
         }
