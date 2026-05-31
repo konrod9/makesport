@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
+using FileService.Application.HttpCommunication;
 using FileService.Application.UseCases.StartMultipartUpload;
-using FileService.Domain.Shared;
 using FileService.IntegrationTests.Infrastructure;
 
 namespace FileService.IntegrationTests.UseCases;
@@ -25,9 +25,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             Guid.NewGuid());
 
         var response = await AppHttpClient.PostAsJsonAsync("multipart-upload", request, cancellationToken);
-        response.EnsureSuccessStatusCode();
 
-        var data = response.Content
-            .ReadFromJsonAsync<Envelope<StartMultipartUploadResponse>>(cancellationToken: cancellationToken);
+        var result = await response.HandleResponseAsync<StartMultipartUploadResponse>(cancellationToken: cancellationToken);
     }
 }
