@@ -23,7 +23,7 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddApplication();
-    builder.Services.AddStorage(builder.Configuration.GetConnectionString("Postgres"));
+    builder.Services.AddInfrastructurePostgres(builder.Configuration);
     builder.Services.AddS3(builder.Configuration);
 
     var app = builder.Build();
@@ -40,3 +40,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program;

@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Infrastructure.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Contracts", "src\FileService.Contracts\FileService.Contracts.csproj", "{E7907111-0BA1-4BEE-AB4C-E8371E9C0D09}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F41D6C5A-F589-4BBB-997A-BA83F61EEDFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.IntegrationTests", "tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj", "{C297F5E4-1038-404B-B143-EFB28AFADF73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,10 @@ Global
 		{E7907111-0BA1-4BEE-AB4C-E8371E9C0D09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7907111-0BA1-4BEE-AB4C-E8371E9C0D09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7907111-0BA1-4BEE-AB4C-E8371E9C0D09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C297F5E4-1038-404B-B143-EFB28AFADF73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C297F5E4-1038-404B-B143-EFB28AFADF73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C297F5E4-1038-404B-B143-EFB28AFADF73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C297F5E4-1038-404B-B143-EFB28AFADF73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B6E7EB98-E390-495F-BFDF-8946BDE4A28D} = {9D67A19F-E987-41BF-86E1-5D9D4338FF30}
@@ -52,5 +60,6 @@ Global
 		{34D34386-3C06-45FA-8B7B-CFCE2A8010B1} = {9D67A19F-E987-41BF-86E1-5D9D4338FF30}
 		{FC7F467F-8601-484A-A1CE-C3667715DDE4} = {9D67A19F-E987-41BF-86E1-5D9D4338FF30}
 		{E7907111-0BA1-4BEE-AB4C-E8371E9C0D09} = {9D67A19F-E987-41BF-86E1-5D9D4338FF30}
+		{C297F5E4-1038-404B-B143-EFB28AFADF73} = {F41D6C5A-F589-4BBB-997A-BA83F61EEDFE}
 	EndGlobalSection
 EndGlobal

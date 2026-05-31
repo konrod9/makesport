@@ -6,6 +6,12 @@ namespace FileService.Infrastructure.Postgres;
 
 public class FileServiceDbContext : DbContext, IReadDbContext
 {
+    public FileServiceDbContext(DbContextOptions<FileServiceDbContext> options)
+        : base(options)
+    {
+        
+    }
+    
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
 
     public IQueryable<MediaAsset> MediaAssetsQuery => MediaAssets.AsQueryable().AsNoTracking();
