@@ -10,6 +10,10 @@ public sealed record MediaOwner
     public string Context { get; }
 
     public Guid EntityId { get; }
+    
+    private MediaOwner()
+    {
+    }
 
     private MediaOwner(string context, Guid entityId)
     {

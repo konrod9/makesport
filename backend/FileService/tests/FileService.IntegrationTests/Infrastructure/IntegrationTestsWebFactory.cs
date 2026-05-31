@@ -34,6 +34,12 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
     {
         await _dbContainer.StartAsync();
         await _minioContainer.StartAsync();
+        
+        await using var scope = Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<FileServiceDbContext>();
+
+        await dbContext.Database.EnsureDeletedAsync();
+        await dbContext.Database.EnsureCreatedAsync();
     }
 
     public new async Task DisposeAsync()

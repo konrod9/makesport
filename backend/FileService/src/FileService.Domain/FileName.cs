@@ -6,10 +6,14 @@ namespace FileService.Domain;
 public sealed record FileName
 {
     public string Value { get; }
-    
+
     public string Name { get; }
 
     public string Extension { get; }
+
+    private FileName()
+    {
+    }
 
     private FileName(string name, string extension)
     {

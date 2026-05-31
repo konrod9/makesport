@@ -12,6 +12,11 @@ public class VideoAsset : MediaAsset
 
     public static readonly string[] AllowedExtensions = ["mp4", "avi", "mov", "mkv"];
 
+    // EF Core
+    private VideoAsset()
+    {
+    }
+
     private VideoAsset(
         Guid id,
         MediaData mediaData,
@@ -45,7 +50,7 @@ public class VideoAsset : MediaAsset
         var key = StorageKey.Create(Location, null, id.ToString());
         if (key.IsFailure)
             return key.Error;
-        
+
         return new VideoAsset(
             id,
             mediaData,
