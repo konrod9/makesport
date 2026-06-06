@@ -69,9 +69,7 @@ public static class HttpResponseMessageExtensions
                 return startMultipartUploadResponse.Error;
             }
 
-            return startMultipartUploadResponse.Result is null 
-                ? GeneralErrors.Failure($"Error while reading response") 
-                : UnitResult.Success<Error>();
+            return UnitResult.Success<Error>();
         }
         catch
         {

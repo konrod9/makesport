@@ -17,8 +17,6 @@ public abstract class MediaAsset
 
     public DateTime UpdatedAt { get; protected set; } = DateTime.UtcNow;
 
-    public MediaOwner Owner { get; protected set; }
-
     public MediaStatus Status { get; protected set; }
 
     // For EF Core

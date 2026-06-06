@@ -63,7 +63,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
     {
         try
         {
-            var tasks = Enumerable.Range(0, totalChunks)
+            var tasks = Enumerable.Range(1, totalChunks)
                 .Select(async partNumber =>
                 {
                     await _requestsSemaphore.WaitAsync(ct);

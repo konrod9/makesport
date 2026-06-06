@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using FileService.Domain.Shared;
 
 namespace FileService.Domain;
@@ -27,6 +28,7 @@ public sealed record StorageKey
     /// </summary>
     public string FullPath { get; }
 
+    [JsonConstructor]
     private StorageKey(string key, string prefix, string location)
     {
         Key = key;
@@ -49,7 +51,7 @@ public sealed record StorageKey
         if (normalizedPrefixResult.IsFailure) 
             return normalizedPrefixResult.Error;
         
-        return new StorageKey(location.Trim(), normalizedPrefixResult.Value, normalizedKeyResult.Value);
+        return new StorageKey(normalizedKeyResult.Value, normalizedPrefixResult.Value, location.Trim());
     }
 
     private static Result<string, Error> NormalizePrefix(string? prefix)

@@ -17,12 +17,15 @@ public class FilesController : ControllerBase
         [FromBody] StartMultipartUploadRequest request,
         [FromServices] StartMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
-    
+
     [HttpPost("/complete-upload")]
     public async Task<EndpointResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request,
         [FromServices] CompleteMultipartUploadUseCase useCase,
-        CancellationToken ct) => await useCase.Handle(request, ct);
+        CancellationToken ct)
+    {
+        return await useCase.Handle(request, ct);
+    }
 
     [HttpPost("/batch")]
     public async Task<EndpointResult<GetMediaAssetsResponse>> GetMediaAssets(

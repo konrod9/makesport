@@ -22,19 +22,28 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
 
             mb.OwnsOne(md => md.ContentType, cb =>
             {
-                cb.Property(x => x.Category).HasConversion<string>().HasColumnName("category");
-                cb.Property(x => x.Value).HasColumnName("value");
+                cb.Property(x => x.Category)
+                    .HasConversion<string>()
+                    .HasJsonPropertyName("category");
+
+                cb.Property(x => x.Value)
+                    .HasJsonPropertyName("value");
             });
 
             mb.OwnsOne(md => md.FileName, fb =>
             {
-                fb.Property(x => x.Extension).HasColumnName("extension");
-                fb.Property(x => x.Name).HasColumnName("name");
-                fb.Property(x => x.Value).HasColumnName("value");
+                fb.Property(x => x.Extension)
+                    .HasJsonPropertyName("extension");
+                fb.Property(x => x.Name)
+                    .HasJsonPropertyName("name");
+                fb.Property(x => x.Value)
+                    .HasJsonPropertyName("value");
             });
 
-            mb.Property(md => md.Size).HasColumnName("size");
-            mb.Property(md => md.ExpectedChunksCount).HasColumnName("expected_chunks_count");
+            mb.Property(md => md.Size)
+                .HasJsonPropertyName("size");
+            mb.Property(md => md.ExpectedChunksCount)
+                .HasJsonPropertyName("expected_chunks_count");
         });
 
         builder.Property(x => x.Id).HasColumnName("id");
