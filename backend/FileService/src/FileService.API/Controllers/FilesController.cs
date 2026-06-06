@@ -22,10 +22,7 @@ public class FilesController : ControllerBase
     public async Task<EndpointResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request,
         [FromServices] CompleteMultipartUploadUseCase useCase,
-        CancellationToken ct)
-    {
-        return await useCase.Handle(request, ct);
-    }
+        CancellationToken ct) => await useCase.Handle(request, ct);
 
     [HttpPost("/batch")]
     public async Task<EndpointResult<GetMediaAssetsResponse>> GetMediaAssets(

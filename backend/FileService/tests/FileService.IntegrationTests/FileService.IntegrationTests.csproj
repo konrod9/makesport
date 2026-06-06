@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Resources\test-file.mkv">
+      <None Update="Resources\test-file.mp4">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

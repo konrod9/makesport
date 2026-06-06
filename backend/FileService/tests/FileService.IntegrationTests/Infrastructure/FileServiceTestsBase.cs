@@ -5,7 +5,7 @@ namespace FileService.IntegrationTests.Infrastructure;
 
 public class FileServiceTestsBase : IClassFixture<IntegrationTestsWebFactory>
 {
-    public const string TestFileName = "test-file.mkv";
+    public const string TestFileName = "test-file.mp4";
     
     protected FileServiceTestsBase(IntegrationTestsWebFactory factory)
     {

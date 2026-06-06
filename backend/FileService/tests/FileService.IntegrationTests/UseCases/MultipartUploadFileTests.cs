@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Amazon.S3;
 using CSharpFunctionalExtensions;
 using FileService.Application.HttpCommunication;
 using FileService.Application.UseCases.CompleteMultipartUpload;
@@ -8,13 +9,17 @@ using FileService.Domain;
 using FileService.Domain.Shared;
 using FileService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FileService.IntegrationTests.UseCases;
 
 public class MultipartUploadFileTests : FileServiceTestsBase
 {
+    private readonly IntegrationTestsWebFactory _factory;
+
     public MultipartUploadFileTests(IntegrationTestsWebFactory factory) : base(factory)
     {
+        _factory = factory;
     }
 
     [Fact]
@@ -43,6 +48,15 @@ public class MultipartUploadFileTests : FileServiceTestsBase
 
             Assert.NotNull(mediaAsset);
             Assert.Equal(MediaStatus.Uploaded, mediaAsset.Status);
+            
+            var amazonS3Client = _factory.Services.GetRequiredService<IAmazonS3>();
+
+            var objectResponse = await amazonS3Client.GetObjectAsync(
+                mediaAsset.Key.Location,
+                mediaAsset.Key.Value,
+                cancellationToken);
+            
+            Assert.Equal(objectResponse.ContentLength, fileInfo.Length);
         });
     }
 
@@ -52,7 +66,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
         var request = new StartMultipartUploadRequest(
             fileInfo.Name,
             "video",
-            "video/mkv",
+            "video/mp4",
             fileInfo.Length,
             "venue",
             Guid.NewGuid());
@@ -95,16 +109,10 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             if (bytesRead == 0)
                 break;
 
-            var content = new ByteArrayContent(chunk.Take(bytesRead).ToArray());
+            var content = new ByteArrayContent(chunk);
 
             // Ответ от S3 хранилища
             var response = await HttpClient.PutAsync(url.UploadUrl, content, cancellationToken);
-            
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Put chunk failed with {response.StatusCode}. Content: {errorContent}");
-            }
 
             var etag = response.Headers.ETag?.Tag.Trim('"');
             parts.Add(new PartETagDto(url.PartNumber, etag!));
