@@ -7,24 +7,24 @@ namespace FileService.Infrastructure.S3;
 
 public class ChunkSizeCalculator : IChunkSizeCalculator
 {
-    private readonly S3Options _s3Options;
+    private readonly FileStorageOptions _fileStorageOptions;
 
-    public ChunkSizeCalculator(IOptions<S3Options> s3Options)
+    public ChunkSizeCalculator(IOptions<FileStorageOptions> s3Options)
     {
-        _s3Options = s3Options.Value;
+        _fileStorageOptions = s3Options.Value;
     }
 
     public Result<(int ChunkSize, int TotalChunks), Error> CalculateChunkSize(long fileSize)
     {
-        if (_s3Options.RecommendedChunkSizeBytes <= 0 || _s3Options.MaxChunks <= 0)
+        if (_fileStorageOptions.RecommendedChunkSizeBytes <= 0 || _fileStorageOptions.MaxChunks <= 0)
             return GeneralErrors.ValueIsInvalid("Chunks settings is invalid");
 
-        if (fileSize <= _s3Options.RecommendedChunkSizeBytes)
+        if (fileSize <= _fileStorageOptions.RecommendedChunkSizeBytes)
             return ((int)fileSize, 1);
 
-        var calculatedChunks = (int)Math.Ceiling((double)fileSize / _s3Options.RecommendedChunkSizeBytes);
+        var calculatedChunks = (int)Math.Ceiling((double)fileSize / _fileStorageOptions.RecommendedChunkSizeBytes);
 
-        var actualChunks = Math.Min(calculatedChunks, _s3Options.MaxChunks);
+        var actualChunks = Math.Min(calculatedChunks, _fileStorageOptions.MaxChunks);
 
         var chunkSize = (fileSize + actualChunks) / actualChunks;
 

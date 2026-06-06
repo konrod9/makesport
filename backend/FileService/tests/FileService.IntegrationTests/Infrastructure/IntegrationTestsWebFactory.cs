@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using FileService.Application;
+using FileService.Application.FilesStorage;
 using FileService.Infrastructure.Postgres;
 using FileService.Infrastructure.S3;
 using Microsoft.AspNetCore.Hosting;
@@ -77,7 +78,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
 
             services.AddSingleton<IAmazonS3>(sp =>
             {
-                var s3Options = sp.GetRequiredService<IOptions<S3Options>>().Value;
+                var s3Options = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;
 
                 var minioPort = _minioContainer.GetMappedPublicPort(9000);
 

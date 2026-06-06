@@ -17,6 +17,7 @@ services:
       POSTGRES_DB: makesport-db
     volumes:
       - makesport-pg-data:/var/lib/postgresql/data
+    restart: always
         
   seq:
     container_name: makesport-seq
@@ -29,7 +30,6 @@ services:
       - "5341:5341"
     restart: always
 
-
   minio:
     container_name: makesport-minio
     image: minio/minio:latest
@@ -41,3 +41,9 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server --console-address ":9001" /data
     restart: always
+
+  redis:
+    container_name: makesport-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
