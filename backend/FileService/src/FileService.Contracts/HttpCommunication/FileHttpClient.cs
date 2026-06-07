@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FileService.Contracts.HttpCommunication;
 
-internal class FileHttpClient : IFileCommunicationService
+internal sealed class FileHttpClient : IFileCommunicationService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<FileHttpClient> _logger;
