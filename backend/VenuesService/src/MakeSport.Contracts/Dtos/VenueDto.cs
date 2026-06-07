@@ -12,7 +12,7 @@ public record VenueDto
     
     public CoordinatesDto Coordinates { get; init; }
 
-    public MediaDto? Video { get; init; }
+    public MediaDto? Video { get; set; }
 
     public IReadOnlyList<MediaDto> Images { get; init; } = [];
 }

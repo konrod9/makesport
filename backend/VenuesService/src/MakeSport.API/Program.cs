@@ -21,7 +21,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    builder.Services.AddVenuesServices();
+    builder.Services.AddVenuesServices(builder.Configuration);
     builder.Services.AddVenueStorage(builder.Configuration.GetConnectionString("Postgres"));
 
     var app = builder.Build();

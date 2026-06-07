@@ -29,6 +29,8 @@ public class Venue
     
     public Coordinates Coordinates { get; private set; }
     
+    public Guid VideoId { get; private set; }
+    
     public static Venue Create(VenueId id, string title, string? description, Address address, Coordinates location)
     {
         return new Venue(id, title, description, address, location);
