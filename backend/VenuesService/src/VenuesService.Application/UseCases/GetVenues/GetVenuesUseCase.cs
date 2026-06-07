@@ -1,0 +1,89 @@
+using CSharpFunctionalExtensions;
+using FileService.Contracts;
+using FileService.Contracts.Dtos;
+using FluentValidation;
+using VenuesService.Application.Validation;
+using VenuesService.Contracts.Dtos;
+using VenuesService.Contracts.Requests;
+using VenuesService.Contracts.Responses;
+using VenuesService.Domain.Shared;
+using Microsoft.EntityFrameworkCore;
+using Error = VenuesService.Domain.Shared.Error;
+
+namespace VenuesService.Application.UseCases.GetVenues;
+
+public class GetVenuesUseCase
+{
+    private readonly IVenuesReadDbContext _readDbContext;
+    private readonly IValidator<GetVenuesRequest> _validator;
+    private readonly IFileCommunicationService _fileCommunicationService;
+
+    public GetVenuesUseCase(IVenuesReadDbContext readDbContext, IValidator<GetVenuesRequest> validator,
+        IFileCommunicationService fileCommunicationService)
+    {
+        _readDbContext = readDbContext;
+        _validator = validator;
+        _fileCommunicationService = fileCommunicationService;
+    }
+
+    public async Task<Result<PaginationVenuesResponse, Error>> Handle(GetVenuesRequest request,
+        CancellationToken cancellationToken)
+    {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return validationResult.ToError();
+        }
+
+        var query = _readDbContext.VenuesQuery;
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(v => v.Title.Contains(request.Search));
+        }
+
+        var venuesCount = await query.CountAsync(cancellationToken);
+
+        List<VenueDto> venues = await query
+            .OrderByDescending(v => v.Title)
+            .Select(v => new VenueDto
+            {
+                Id = v.Id,
+                Title = v.Title,
+                Description = v.Description,
+                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building),
+                Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude),
+                Video = new MediaDto()
+                {
+                    Id = v.VideoId
+                }
+            })
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+
+        var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
+
+        IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
+
+        var mediaAssets = await _fileCommunicationService
+            .GetMediaAssets(new GetMediaAssetsRequest(mediaAssetIds), cancellationToken);
+        if (mediaAssets.IsFailure)
+            return Error.Failure("file-service-error", "Error while getting videos from FileService");
+
+        var mediaAssetsDict = mediaAssets.Value.MediaAssets.ToDictionary(x => x.Id, x => x);
+
+        foreach (VenueDto venue in venues)
+        {
+            if (venue.Video != null && mediaAssetsDict.TryGetValue(venue.Video.Id, out GetMediaAssetDto? mediaAsset))
+            {
+                venue.Video = new MediaDto
+                {
+                    Id = mediaAsset.Id, Status = mediaAsset.Status, Url = mediaAsset.Url,
+                };
+            }
+        }
+
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
+    }
+}

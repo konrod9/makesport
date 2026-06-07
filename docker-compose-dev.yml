@@ -1,0 +1,49 @@
+networks:
+  default:
+    name: "makesport"
+
+volumes:
+  makesport-pg-data:
+
+services:
+  postgres:
+    container_name: makesport-pg
+    image: postgis/postgis:17-3.5
+    ports:
+        - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: makesport-db
+    volumes:
+      - makesport-pg-data:/var/lib/postgresql/data
+    restart: always
+        
+  seq:
+    container_name: makesport-seq
+    image: datalust/seq:latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+    ports:
+      - "8081:80"
+      - "5341:5341"
+    restart: always
+
+  minio:
+    container_name: makesport-minio
+    image: minio/minio:latest
+    ports:
+    - "9000:9000"
+    - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server --console-address ":9001" /data
+    restart: always
+
+  redis:
+    container_name: makesport-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
