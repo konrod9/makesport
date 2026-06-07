@@ -1,12 +1,12 @@
 ﻿using System.Net.Http.Json;
 using Amazon.S3;
 using CSharpFunctionalExtensions;
-using FileService.Application.HttpCommunication;
 using FileService.Application.UseCases.CompleteMultipartUpload;
 using FileService.Application.UseCases.StartMultipartUpload;
-using FileService.Contracts;
+using FileService.Contracts.Dtos;
+using FileService.Contracts.HttpCommunication;
+using FileService.Contracts.Shared;
 using FileService.Domain;
-using FileService.Domain.Shared;
 using FileService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -134,7 +134,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
         var completeResponse =
             await AppHttpClient.PostAsJsonAsync("complete-upload", completeRequest, cancellationToken);
 
-        var completeMultipartResult = await completeResponse
+        UnitResult<Contracts.Shared.Error> completeMultipartResult = await completeResponse
             .HandleResponseAsync(cancellationToken);
 
         return completeMultipartResult;

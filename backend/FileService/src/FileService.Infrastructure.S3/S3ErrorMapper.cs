@@ -1,5 +1,5 @@
 ﻿using Amazon.S3;
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 
 namespace FileService.Infrastructure.S3;
 

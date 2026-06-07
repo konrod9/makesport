@@ -1,4 +1,4 @@
-namespace FileService.Domain.Shared.Exceptions;
+namespace FileService.Contracts.Shared.Exceptions;
 
 public class ConflictException : Exception
 {

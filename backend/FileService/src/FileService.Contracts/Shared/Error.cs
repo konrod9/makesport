@@ -1,6 +1,6 @@
-using FileService.Domain.Shared.Enums;
+using FileService.Contracts.Shared.Enums;
 
-namespace FileService.Domain.Shared;
+namespace FileService.Contracts.Shared;
 
 public record ErrorMessage(string Code, string Message, string? InvalidField = null);
 

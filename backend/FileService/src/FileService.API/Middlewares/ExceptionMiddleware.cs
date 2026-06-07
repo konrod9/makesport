@@ -1,5 +1,6 @@
-using FileService.Domain.Shared;
-using FileService.Domain.Shared.Exceptions;
+
+using FileService.Contracts.Shared;
+using FileService.Contracts.Shared.Exceptions;
 
 namespace FileService.API.Middlewares;
 

@@ -1,12 +1,11 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using CSharpFunctionalExtensions;
-using FileService.Application;
-using FileService.Application.Dtos;
 using FileService.Application.FilesStorage;
-using FileService.Contracts;
+using FileService.Application.Models;
+using FileService.Contracts.Dtos;
+using FileService.Contracts.Shared;
 using FileService.Domain;
-using FileService.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

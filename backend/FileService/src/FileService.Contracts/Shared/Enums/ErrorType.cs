@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace FileService.Domain.Shared.Enums;
+namespace FileService.Contracts.Shared.Enums;
 
 /// <summary>
 /// Типы ошибок приложения

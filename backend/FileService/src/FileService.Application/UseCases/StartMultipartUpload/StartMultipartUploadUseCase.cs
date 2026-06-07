@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.FilesStorage;
+using FileService.Contracts.Shared;
 using FileService.Domain;
 using FileService.Domain.Assets;
-using FileService.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace FileService.Application.UseCases.StartMultipartUpload;

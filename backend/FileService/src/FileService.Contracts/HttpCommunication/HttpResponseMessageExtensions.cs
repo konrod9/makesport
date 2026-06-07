@@ -1,9 +1,8 @@
 ﻿using System.Net.Http.Json;
 using CSharpFunctionalExtensions;
-using FileService.Application.UseCases.StartMultipartUpload;
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 
-namespace FileService.Application.HttpCommunication;
+namespace FileService.Contracts.HttpCommunication;
 
 public static class HttpResponseMessageExtensions
 {
@@ -14,30 +13,30 @@ public static class HttpResponseMessageExtensions
     {
         try
         {
-            var startMultipartUploadResponse = await response.Content
+            var jsonResponse = await response.Content
                 .ReadFromJsonAsync<Envelope<TResponse>>(cancellationToken: cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                return startMultipartUploadResponse?.Error ?? GeneralErrors.Failure($"Error while reading response");
+                return jsonResponse?.Error ?? GeneralErrors.Failure($"Error while reading response");
             }
 
-            if (startMultipartUploadResponse is null)
+            if (jsonResponse is null)
             {
                 return GeneralErrors.Failure($"Error while reading response");
             }
 
-            if (startMultipartUploadResponse.Error is not null)
+            if (jsonResponse.Error is not null)
             {
-                return startMultipartUploadResponse.Error;
+                return jsonResponse.Error;
             }
 
-            if (startMultipartUploadResponse.Result is null)
+            if (jsonResponse.Result is null)
             {
                 return GeneralErrors.Failure($"Error while reading response");
             }
 
-            return startMultipartUploadResponse.Result;
+            return jsonResponse.Result;
         }
         catch
         {
@@ -51,22 +50,22 @@ public static class HttpResponseMessageExtensions
     {
         try
         {
-            var startMultipartUploadResponse = await response.Content
+            var jsonResponse = await response.Content
                 .ReadFromJsonAsync<Envelope>(cancellationToken: cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                return startMultipartUploadResponse?.Error ?? GeneralErrors.Failure($"Error while reading response");
+                return jsonResponse?.Error ?? GeneralErrors.Failure($"Error while reading response");
             }
 
-            if (startMultipartUploadResponse is null)
+            if (jsonResponse is null)
             {
                 return GeneralErrors.Failure($"Error while reading response");
             }
 
-            if (startMultipartUploadResponse.Error is not null)
+            if (jsonResponse.Error is not null)
             {
-                return startMultipartUploadResponse.Error;
+                return jsonResponse.Error;
             }
 
             return UnitResult.Success<Error>();

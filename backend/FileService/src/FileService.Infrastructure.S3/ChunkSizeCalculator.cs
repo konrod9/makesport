@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.FilesStorage;
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 using Microsoft.Extensions.Options;
 
 namespace FileService.Infrastructure.S3;

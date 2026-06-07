@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
+using FileService.Contracts.Shared;
 using FileService.Domain.Assets;
-using FileService.Domain.Shared;
 
 namespace FileService.Application;
 

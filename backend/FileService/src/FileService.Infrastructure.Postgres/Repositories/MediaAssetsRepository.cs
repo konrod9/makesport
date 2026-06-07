@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using FileService.Application;
+using FileService.Contracts.Shared;
 using FileService.Domain.Assets;
-using FileService.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;

@@ -1,5 +1,5 @@
-using FileService.Domain.Shared;
-using FileService.Domain.Shared.Enums;
+using FileService.Contracts.Shared;
+using FileService.Contracts.Shared.Enums;
 
 namespace FileService.API.Configuration;
 

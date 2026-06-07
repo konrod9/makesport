@@ -41,4 +41,7 @@ finally
     Log.CloseAndFlush();
 }
 
-public partial class Program;
+namespace FileService.API
+{
+    public partial class Program;
+}

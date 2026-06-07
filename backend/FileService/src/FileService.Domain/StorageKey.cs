@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CSharpFunctionalExtensions;
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 
 namespace FileService.Domain;
 

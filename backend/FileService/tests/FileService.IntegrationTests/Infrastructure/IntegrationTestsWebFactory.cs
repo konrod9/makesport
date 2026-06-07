@@ -1,8 +1,8 @@
 ﻿using Amazon.S3;
+using FileService.API;
 using FileService.Application;
 using FileService.Application.FilesStorage;
 using FileService.Infrastructure.Postgres;
-using FileService.Infrastructure.S3;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

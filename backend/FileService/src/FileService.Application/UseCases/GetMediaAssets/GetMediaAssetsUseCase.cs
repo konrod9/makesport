@@ -1,11 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.FilesStorage;
-using FileService.Contracts;
+using FileService.Contracts.Dtos;
+using FileService.Contracts.Shared;
 using FileService.Domain;
-using FileService.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FileService.Application.UseCases.GetMediaAssets;

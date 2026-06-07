@@ -4,6 +4,7 @@ using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
 using FileService.Contracts;
+using FileService.Contracts.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileService.API.Controllers;

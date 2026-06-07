@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace FileService.API.Configuration;

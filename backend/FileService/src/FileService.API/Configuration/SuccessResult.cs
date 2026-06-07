@@ -1,4 +1,4 @@
-using FileService.Domain.Shared;
+using FileService.Contracts.Shared;
 
 namespace FileService.API.Configuration;
 

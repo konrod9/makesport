@@ -39,12 +39,14 @@ public class GetVenuesUseCase
 
         var venues = await query
             .OrderByDescending(v => v.Title)
-            .Select(v => new VenueDto(
-                v.Id,
-                v.Title,
-                v.Description,
-                new AddressDto(v.Address.City, v.Address.Street, v.Address.Building),
-                new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude)))
+            .Select(v => new VenueDto
+            {
+                Id = v.Id,
+                Title = v.Title,
+                Description = v.Description,
+                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building),
+                Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude)
+            })
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);

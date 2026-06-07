@@ -1,4 +1,4 @@
-namespace FileService.Domain.Shared;
+namespace FileService.Contracts.Shared;
 
 public static class GeneralErrors
 {

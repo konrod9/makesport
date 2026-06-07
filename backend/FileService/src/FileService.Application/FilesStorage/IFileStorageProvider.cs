@@ -1,8 +1,8 @@
 using CSharpFunctionalExtensions;
-using FileService.Application.Dtos;
-using FileService.Contracts;
+using FileService.Application.Models;
+using FileService.Contracts.Dtos;
+using FileService.Contracts.Shared;
 using FileService.Domain;
-using FileService.Domain.Shared;
 
 namespace FileService.Application.FilesStorage;
 

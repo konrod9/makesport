@@ -1,3 +1,3 @@
-﻿namespace FileService.Application.UseCases.GetMediaAssets;
+﻿namespace FileService.Contracts.Dtos;
 
 public record GetMediaAssetsRequest(IReadOnlyCollection<Guid> MediaAssetIds);
