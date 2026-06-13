@@ -59,7 +59,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
             {venue.name}
           </h3>
           <div className="flex items-center gap-1 shrink-0">
-            <Star className="h-4 w-4 fill-primary text-primary" />
+            <Star className="h-4 w-4 fill-chart-3 text-chart-3" />
             <span className="text-sm font-medium text-foreground">
               {venue.rating}
             </span>

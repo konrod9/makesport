@@ -5,6 +5,7 @@ import type { Venue } from "@/shared/lib/data";
 import { FiltersSidebar } from "@/shared/components/filters-sidebar";
 import { useMemo, useState } from "react";
 import { VenueCard } from "@/shared/components/venue-card";
+import { VenueDetailsDialog } from "@/shared/components/venue-details-dialog";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,11 +145,11 @@ export default function Home() {
         </div>
       </main>
 
-      {/* <VenueDetailsDialog
+      <VenueDetailsDialog
         venue={selectedVenue}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-      /> */}
+      />
     </div>
   );
 }

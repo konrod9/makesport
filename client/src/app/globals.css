@@ -128,3 +128,39 @@
     @apply font-sans;
   }
 }
+
+[data-slot="dialog-content"]::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-slot="dialog-content"]::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+  margin: 8px;
+}
+
+[data-slot="dialog-content"]::-webkit-scrollbar-thumb {
+  background: oklch(0.78 0 0);
+  border-radius: 9999px;
+}
+
+.dark [data-slot="dialog-content"]::-webkit-scrollbar-thumb {
+  background: oklch(0.35 0 0);
+}
+
+[data-slot="dialog-content"]::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.65 0 0);
+}
+
+.dark [data-slot="dialog-content"]::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.45 0 0);
+}
+
+[data-slot="dialog-content"] {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.78 0 0) transparent;
+}
+
+.dark [data-slot="dialog-content"] {
+  scrollbar-color: oklch(0.35 0 0) transparent;
+}
