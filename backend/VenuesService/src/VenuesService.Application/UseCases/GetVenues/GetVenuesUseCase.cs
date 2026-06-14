@@ -51,7 +51,15 @@ public class GetVenuesUseCase
                 Id = v.Id,
                 Title = v.Title,
                 Description = v.Description,
-                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building),
+                SportType = v.SportType,
+                Surface = v.Surface,
+                Rating = v.Rating,
+                ReviewCount = v.ReviewCount,
+                IsOpen = v.IsOpen,
+                HasLighting = v.HasLighting,
+                IsFree = v.IsFree,
+                WorkingHours = v.WorkingHours,
+                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building, v.Address.FullName),
                 Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude),
                 Video = new MediaDto()
                 {

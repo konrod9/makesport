@@ -13,7 +13,7 @@ using VenuesService.Infrastructure.Postgres.Database;
 namespace VenuesService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(VenuesDbContext))]
-    [Migration("20260614111858_initial")]
+    [Migration("20260614141605_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -42,6 +42,36 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
+                    b.Property<bool>("HasLighting")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_lighting");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_free");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_open");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision")
+                        .HasColumnName("rating");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("review_count");
+
+                    b.Property<string>("SportType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("sport_type");
+
+                    b.Property<string>("Surface")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("surface");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -50,6 +80,10 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
 
                     b.Property<Guid>("VideoId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("WorkingHours")
+                        .HasColumnType("text")
+                        .HasColumnName("working_hours");
 
                     b.HasKey("Id")
                         .HasName("pk_venues");

@@ -3,15 +3,14 @@ export type Venue = {
   title: string;
   description: string;
   sportType: string;
-  surfact: string;
+  surface: string;
   rating: number;
   reviewCount: number;
-  preview: string;
-  images: string[];
+  images: MediaDto[];
   isOpen: boolean;
   hasLighting: boolean;
   isFree: boolean;
-  workingHours: string;
+  workingHours?: string;
   video?: MediaDto;
   address: AddressDto;
   coordinates: CoordinatesDto;
