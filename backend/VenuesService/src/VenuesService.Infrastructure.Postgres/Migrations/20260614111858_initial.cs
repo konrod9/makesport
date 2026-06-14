@@ -7,7 +7,7 @@ using NetTopologySuite.Geometries;
 namespace VenuesService.Infrastructure.Postgres.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,7 +25,8 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                     city = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     street = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     building = table.Column<string>(type: "text", nullable: true),
-                    coordinates = table.Column<Point>(type: "geography (Point,4326)", nullable: false)
+                    coordinates = table.Column<Point>(type: "geography (Point,4326)", nullable: false),
+                    VideoId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

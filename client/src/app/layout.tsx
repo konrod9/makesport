@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/shared/lib/utils";
-import { Header } from "@/shared/components/header";
+import Layout from "@/features/layout/app-layout";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -41,8 +41,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Header />
-        {children}
+        <Layout>{children}</Layout>
       </body>
     </html>
   );

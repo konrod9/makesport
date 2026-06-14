@@ -1,25 +1,35 @@
-type Venue = {
+export type Venue = {
   id: string;
   title: string;
   description: string;
+  sportType: string;
+  surfact: string;
+  rating: number;
+  reviewCount: number;
+  preview: string;
+  images: string[];
+  isOpen: boolean;
+  hasLighting: boolean;
+  isFree: boolean;
+  workingHours: string;
   video?: MediaDto;
   address: AddressDto;
   coordinates: CoordinatesDto;
 };
 
-type MediaDto = {
+export type MediaDto = {
   id: string;
   url: string;
   status: MediaStatus;
 };
 
-type AddressDto = {
+export type AddressDto = {
   city: string;
   street: string;
   building?: string;
 };
 
-type CoordinatesDto = {
+export type CoordinatesDto = {
   latitude: number;
   longitue: number;
 };

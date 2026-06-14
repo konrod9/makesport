@@ -63,8 +63,10 @@ public class GetVenuesUseCase
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
+        
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
 
-        IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
+        /*IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
 
         var mediaAssets = await _fileCommunicationService
             .GetMediaAssets(new GetMediaAssetsRequest(mediaAssetIds), cancellationToken);
@@ -84,6 +86,6 @@ public class GetVenuesUseCase
             }
         }
 
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);*/
     }
 }
