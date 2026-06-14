@@ -26,6 +26,7 @@ export type AddressDto = {
   city: string;
   street: string;
   building?: string;
+  fullName: string;
 };
 
 export type CoordinatesDto = {

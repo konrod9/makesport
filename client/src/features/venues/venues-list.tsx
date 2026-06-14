@@ -34,13 +34,17 @@ export function VenuesList() {
   };
 
   const filteredVenues = useMemo(() => {
-    return venues.filter((venue) => {
+    const venuesList = data?.venues ?? [];
+    return venuesList.filter((venue) => {
       const matchesSearch =
-        venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venue.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venue.address.toLowerCase().includes(searchQuery.toLowerCase());
+        venue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        venue.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()); /*||
+        venue.address.toLowerCase().includes(searchQuery.toLowerCase())*/
 
-      const matchesCity = selectedCity === "all" || venue.city === selectedCity;
+      const matchesCity =
+        selectedCity === "all" || venue.address.city === selectedCity;
       const matchesSport =
         selectedSport === "all" || venue.sportType === selectedSport;
       const matchesSurface =
@@ -67,6 +71,7 @@ export function VenuesList() {
     onlyFree,
     onlyOpen,
     hasLighting,
+    data,
   ]);
 
   const resetFilters = () => {
@@ -120,7 +125,7 @@ export function VenuesList() {
               <p className="text-sm text-muted-foreground">
                 Найдено:{" "}
                 <span className="text-foreground font-medium">
-                  {filteredVenues.length}
+                  {filteredVenues?.length}
                 </span>{" "}
                 площадок
               </p>

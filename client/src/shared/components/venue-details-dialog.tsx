@@ -17,7 +17,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
-import type { Venue } from "@/shared//lib/data";
+import { Venue } from "@/entities/venues/types";
 
 interface VenueDetailsDialogProps {
   venue: Venue | null;
@@ -87,7 +87,7 @@ export function VenueDetailsDialog({
           <DialogHeader className="space-y-2">
             <div className="flex items-start justify-between gap-3">
               <DialogTitle className="text-xl text-foreground text-balance leading-tight">
-                {venue.name}
+                {venue.title}
               </DialogTitle>
               <div className="flex items-center gap-1 shrink-0 rounded-md bg-secondary px-2 py-1">
                 <Star className="h-4 w-4 fill-chart-3 text-chart-3" />
@@ -166,9 +166,11 @@ export function VenueDetailsDialog({
             <MapPin className="h-4 w-4 text-chart-3 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-foreground">
-                {venue.address}
+                {venue.address.fullName}
               </p>
-              <p className="text-sm text-muted-foreground">{venue.city}</p>
+              <p className="text-sm text-muted-foreground">
+                {venue.address.city}
+              </p>
             </div>
           </div>
 

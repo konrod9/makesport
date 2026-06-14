@@ -1,10 +1,10 @@
 "use client";
 
 import { Star, MapPin, Clock, Lightbulb, CircleDollarSign } from "lucide-react";
-import type { Venue } from "@/shared/lib/data";
 import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
+import { Venue } from "@/entities/venues/types";
 
 interface VenueCardProps {
   venue: Venue;
@@ -56,7 +56,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-semibold text-foreground line-clamp-1 group-hover:text-chart-3 transition-colors">
-            {venue.name}
+            {venue.title}
           </h3>
           <div className="flex items-center gap-1 shrink-0">
             <Star className="h-4 w-4 fill-chart-3 text-chart-3" />
@@ -86,7 +86,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
           <div className="flex items-center gap-2">
             <MapPin className="h-3.5 w-3.5 text-chart-3" />
             <span className="line-clamp-1">
-              {venue.address}, {venue.city}
+              {venue.address.street}, {venue.address.city}
             </span>
           </div>
           <div className="flex items-center gap-4">
