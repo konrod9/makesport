@@ -125,22 +125,6 @@ export default function AddVenuePage() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-
-  //   // Simulate API call
-  //   await venuesApi.createVenue(new )
-
-  //   setIsSubmitting(false);
-  //   setIsSuccess(true);
-
-  //   // Redirect after showing success
-  //   setTimeout(() => {
-  //     router.push("/venues");
-  //   }, 2000);
-  // };
-
   if (isSuccess) {
     return (
       <div className="min-h-screen">
@@ -200,8 +184,11 @@ export default function AddVenuePage() {
                 <Input
                   id="name"
                   placeholder="Например: Баскетбольная площадка в парке Горького"
-                  className="bg-input border-border"
-                  // TODO: Добавить изменения стиля на деструктивный, если erros.title
+                  className={`bg-input border-border ${
+                    errors.title
+                      ? "border-destructive focus-visible:ring-destructive"
+                      : ""
+                  }`}
                   {...register("title", { required: "Название обязательно" })}
                 />
               </div>
@@ -241,7 +228,11 @@ export default function AddVenuePage() {
                       >
                         <SelectTrigger
                           id="city"
-                          className="bg-input border-border"
+                          className={`bg-input border-border ${
+                            errors.address?.city
+                              ? "border-destructive focus-visible:ring-destructive"
+                              : ""
+                          }`}
                         >
                           <SelectValue placeholder="Выберите город" />
                         </SelectTrigger>
@@ -261,7 +252,11 @@ export default function AddVenuePage() {
                   <Input
                     id="address"
                     placeholder="ул. Примерная, 123"
-                    className="bg-input border-border"
+                    className={`bg-input border-border ${
+                      errors.address?.street
+                        ? "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
                     {...register("address.street", {
                       required: "Улица обязательна",
                     })}
@@ -292,7 +287,11 @@ export default function AddVenuePage() {
                       >
                         <SelectTrigger
                           id="sportType"
-                          className="bg-input border-border"
+                          className={`bg-input border-border ${
+                            errors.sportType
+                              ? "border-destructive focus-visible:ring-destructive"
+                              : ""
+                          }`}
                         >
                           <SelectValue placeholder="Выберите вид спорта" />
                         </SelectTrigger>
@@ -320,7 +319,11 @@ export default function AddVenuePage() {
                       >
                         <SelectTrigger
                           id="surface"
-                          className="bg-input border-border"
+                          className={`bg-input border-border ${
+                            errors.surface
+                              ? "border-destructive focus-visible:ring-destructive"
+                              : ""
+                          }`}
                         >
                           <SelectValue placeholder="Выберите покрытие" />
                         </SelectTrigger>
