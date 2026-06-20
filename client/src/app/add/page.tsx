@@ -1,5 +1,6 @@
 "use client";
 
+import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/shared/components/header";
@@ -33,25 +34,73 @@ import { cities, sportTypes, surfaces } from "@/shared/lib/data";
 import Link from "next/link";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Button } from "@/shared/components/ui/button";
+import { AddressDto, CoordinatesDto } from "@/entities/venues/types";
+import { useCreateVenue } from "@/features/venues/model/use-create-venue";
+
+type CreateVenueData = {
+  title: string;
+  description?: string;
+  address: AddressDto;
+  coordinates: CoordinatesDto;
+  sportType: string;
+  surface: string;
+  workingHours: string;
+  hasLighting: boolean;
+  isFree: boolean;
+  isOpen: boolean;
+};
 
 export default function AddVenuePage() {
+  const initialData: CreateVenueData = {
+    title: "",
+    description: "",
+    address: {
+      city: "",
+      street: "",
+      building: "",
+      fullName: "",
+    },
+    coordinates: {
+      latitude: 0,
+      longitue: 0,
+    },
+    sportType: "",
+    surface: "",
+    workingHours: "",
+    hasLighting: false,
+    isFree: true,
+    isOpen: true,
+  };
+
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [images, setImages] = useState<string[]>([]);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    city: "",
-    address: "",
-    sportType: "",
-    surface: "",
-    workingHoursStart: "08:00",
-    workingHoursEnd: "22:00",
-    hasLighting: false,
-    isFree: true,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    control,
+  } = useForm<CreateVenueData>({
+    defaultValues: initialData,
   });
+
+  const { createVenue, isPending, error, isError } = useCreateVenue();
+
+  const onSubmit = (data: CreateVenueData) => {
+    console.log(data);
+    createVenue(data, {
+      onSuccess: () => {
+        setIsSuccess(true);
+        reset(initialData);
+        setTimeout(() => {
+          router.push("/venues");
+        }, 2000);
+      },
+    });
+  };
 
   const handleImageUpload = () => {
     // Simulate image upload with placeholder
@@ -69,21 +118,21 @@ export default function AddVenuePage() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  //   // Simulate API call
+  //   await venuesApi.createVenue(new )
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+  //   setIsSubmitting(false);
+  //   setIsSuccess(true);
 
-    // Redirect after showing success
-    setTimeout(() => {
-      router.push("/");
-    }, 2000);
-  };
+  //   // Redirect after showing success
+  //   setTimeout(() => {
+  //     router.push("/venues");
+  //   }, 2000);
+  // };
 
   if (isSuccess) {
     return (
@@ -131,7 +180,7 @@ export default function AddVenuePage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Info */}
           <Card className="border-border bg-card">
             <CardHeader>
@@ -144,12 +193,9 @@ export default function AddVenuePage() {
                 <Input
                   id="name"
                   placeholder="Например: Баскетбольная площадка в парке Горького"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
                   className="bg-input border-border"
-                  required
+                  // TODO: Добавить изменения стиля на деструктивный, если erros.title
+                  {...register("title", { required: "Название обязательно" })}
                 />
               </div>
               <div className="space-y-2">
@@ -157,11 +203,8 @@ export default function AddVenuePage() {
                 <Textarea
                   id="description"
                   placeholder="Опишите площадку: состояние, особенности, что есть рядом..."
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
                   className="bg-input border-border min-h-[120px] resize-none"
+                  {...register("description")}
                 />
               </div>
             </CardContent>
@@ -179,36 +222,42 @@ export default function AddVenuePage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">Город *</Label>
-                  <Select
-                    value={formData.city}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, city: value })
-                    }
-                  >
-                    <SelectTrigger id="city" className="bg-input border-border">
-                      <SelectValue placeholder="Выберите город" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map((city) => (
-                        <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="address.city">Город *</Label>
+                  <Controller<CreateVenueData>
+                    name="address.city"
+                    control={control}
+                    rules={{ required: "Город обязателен" }}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          id="city"
+                          className="bg-input border-border"
+                        >
+                          <SelectValue placeholder="Выберите город" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="address">Адрес *</Label>
                   <Input
                     id="address"
                     placeholder="ул. Примерная, 123"
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
                     className="bg-input border-border"
-                    required
+                    {...register("address.street", {
+                      required: "Улица обязательна",
+                    })}
                   />
                 </div>
               </div>
@@ -225,49 +274,59 @@ export default function AddVenuePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sportType">Вид спорта *</Label>
-                  <Select
-                    value={formData.sportType}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, sportType: value })
-                    }
-                  >
-                    <SelectTrigger
-                      id="sportType"
-                      className="bg-input border-border"
-                    >
-                      <SelectValue placeholder="Выберите вид спорта" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sportTypes.map((sport) => (
-                        <SelectItem key={sport} value={sport}>
-                          {sport}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Controller<CreateVenueData>
+                    name="sportType"
+                    control={control}
+                    rules={{ required: "Вид спорта обязателен" }}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          id="sportType"
+                          className="bg-input border-border"
+                        >
+                          <SelectValue placeholder="Выберите вид спорта" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sportTypes.map((sport) => (
+                            <SelectItem key={sport} value={sport}>
+                              {sport}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="surface">Покрытие *</Label>
-                  <Select
-                    value={formData.surface}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, surface: value })
-                    }
-                  >
-                    <SelectTrigger
-                      id="surface"
-                      className="bg-input border-border"
-                    >
-                      <SelectValue placeholder="Выберите покрытие" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {surfaces.map((surface) => (
-                        <SelectItem key={surface} value={surface}>
-                          {surface}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Controller<CreateVenueData>
+                    name="surface"
+                    control={control}
+                    rules={{ required: "Покрытие обязательно" }}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          id="surface"
+                          className="bg-input border-border"
+                        >
+                          <SelectValue placeholder="Выберите покрытие" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {surfaces.map((surface) => (
+                            <SelectItem key={surface} value={surface}>
+                              {surface}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -291,13 +350,7 @@ export default function AddVenuePage() {
                   <Input
                     id="workingHoursStart"
                     type="time"
-                    value={formData.workingHoursStart}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        workingHoursStart: e.target.value,
-                      })
-                    }
+                    {...register("workingHours")}
                     className="bg-input border-border"
                   />
                 </div>
@@ -306,41 +359,19 @@ export default function AddVenuePage() {
                   <Input
                     id="workingHoursEnd"
                     type="time"
-                    value={formData.workingHoursEnd}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        workingHoursEnd: e.target.value,
-                      })
-                    }
                     className="bg-input border-border"
                   />
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="hasLighting"
-                    checked={formData.hasLighting}
-                    onCheckedChange={(checked) =>
-                      setFormData({
-                        ...formData,
-                        hasLighting: checked as boolean,
-                      })
-                    }
-                  />
+                  <Checkbox id="hasLighting" {...register("hasLighting")} />
                   <Label htmlFor="hasLighting" className="cursor-pointer">
                     Есть освещение
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isFree"
-                    checked={formData.isFree}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, isFree: checked as boolean })
-                    }
-                  />
+                  <Checkbox id="isFree" {...register("isFree")} />
                   <Label htmlFor="isFree" className="cursor-pointer">
                     Бесплатная
                   </Label>
@@ -401,14 +432,13 @@ export default function AddVenuePage() {
               type="submit"
               size="lg"
               className="flex-1"
-              disabled={
-                isSubmitting ||
-                !formData.name ||
-                !formData.city ||
-                !formData.address ||
-                !formData.sportType ||
-                !formData.surface
-              }
+              // disabled={
+              //   isSubmitting ||
+              //   !initialData.title ||
+              //   !initialData.address.city ||
+              //   !initialData.sportType ||
+              //   !initialData.surface
+              // }
             >
               {isSubmitting ? "Отправка..." : "Добавить площадку"}
             </Button>
@@ -416,7 +446,7 @@ export default function AddVenuePage() {
               type="button"
               variant="outline"
               size="lg"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/venues")}
             >
               Отмена
             </Button>
