@@ -40,6 +40,7 @@ import {
   WorkingHoursDto,
 } from "@/entities/venues/types";
 import { useCreateVenue } from "@/features/venues/model/use-create-venue";
+import { FormError } from "@/shared/components/ui/form-error";
 
 type CreateVenueData = {
   title: string;
@@ -107,6 +108,14 @@ export default function AddVenuePage() {
         }, 2000);
       },
     });
+  };
+
+  const getErrorMessage = (): string => {
+    if (isError) {
+      return error ? error.message : "Незвестная ошибка";
+    }
+
+    return "";
   };
 
   const handleImageUpload = () => {
@@ -191,6 +200,7 @@ export default function AddVenuePage() {
                   }`}
                   {...register("title", { required: "Название обязательно" })}
                 />
+                <FormError message={errors.title?.message} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Описание</Label>
@@ -246,6 +256,7 @@ export default function AddVenuePage() {
                       </Select>
                     )}
                   />
+                  <FormError message={errors.address?.city?.message} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="address">Адрес *</Label>
@@ -261,6 +272,7 @@ export default function AddVenuePage() {
                       required: "Улица обязательна",
                     })}
                   />
+                  <FormError message={errors.address?.street?.message} />
                 </div>
               </div>
             </CardContent>
@@ -305,6 +317,7 @@ export default function AddVenuePage() {
                       </Select>
                     )}
                   />
+                  <FormError message={errors.sportType?.message} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="surface">Покрытие *</Label>
@@ -337,6 +350,7 @@ export default function AddVenuePage() {
                       </Select>
                     )}
                   />
+                  <FormError message={errors.surface?.message} />
                 </div>
               </div>
             </CardContent>
@@ -437,6 +451,10 @@ export default function AddVenuePage() {
             </CardContent>
           </Card>
 
+          {error && (
+            <div className="text-red-500 mb-0">{getErrorMessage()}</div>
+          )}
+
           {/* Submit */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button
@@ -445,7 +463,7 @@ export default function AddVenuePage() {
               className="flex-1"
               disabled={isPending}
             >
-              {isSubmitting ? "Отправка..." : "Добавить площадку"}
+              {isPending ? "Отправка..." : "Добавить площадку"}
             </Button>
             <Button
               type="button"
