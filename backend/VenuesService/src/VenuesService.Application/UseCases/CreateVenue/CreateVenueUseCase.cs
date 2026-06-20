@@ -32,7 +32,8 @@ public class CreateVenueUseCase
         var venueId = VenueId.NewId();
         var address = Address.Create(request.Address.City, request.Address.Street, request.Address.Building).Value;
         var coordinates = Coordinates.Create(request.Coordinates.Latitude, request.Coordinates.Longitude).Value;
-
+        var workingHours = WorkingHours.Create(request.WorkingHours.WorkingStart, request.WorkingHours.WorkingEnd).Value;        
+        
         var venue = Venue.Create(
             venueId, 
             request.Title,
@@ -42,7 +43,7 @@ public class CreateVenueUseCase
             request.IsOpen,
             request.HasLighting, 
             request.IsFree, 
-            request.WorkingHours, 
+            workingHours, 
             request.Surface, 
             request.SportType);
 

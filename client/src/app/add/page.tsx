@@ -34,7 +34,11 @@ import { cities, sportTypes, surfaces } from "@/shared/lib/data";
 import Link from "next/link";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Button } from "@/shared/components/ui/button";
-import { AddressDto, CoordinatesDto } from "@/entities/venues/types";
+import {
+  AddressDto,
+  CoordinatesDto,
+  WorkingHoursDto,
+} from "@/entities/venues/types";
 import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 
 type CreateVenueData = {
@@ -44,7 +48,7 @@ type CreateVenueData = {
   coordinates: CoordinatesDto;
   sportType: string;
   surface: string;
-  workingHours: string;
+  workingHours: WorkingHoursDto;
   hasLighting: boolean;
   isFree: boolean;
   isOpen: boolean;
@@ -66,7 +70,10 @@ export default function AddVenuePage() {
     },
     sportType: "",
     surface: "",
-    workingHours: "",
+    workingHours: {
+      workingStart: "",
+      workingEnd: "",
+    },
     hasLighting: false,
     isFree: true,
     isOpen: true,
@@ -90,7 +97,7 @@ export default function AddVenuePage() {
   const { createVenue, isPending, error, isError } = useCreateVenue();
 
   const onSubmit = (data: CreateVenueData) => {
-    console.log(data);
+    //console.log(data);
     createVenue(data, {
       onSuccess: () => {
         setIsSuccess(true);
@@ -346,20 +353,21 @@ export default function AddVenuePage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="workingHoursStart">Открытие</Label>
+                  <Label htmlFor="workingHours.workingStart">Открытие</Label>
                   <Input
                     id="workingHoursStart"
                     type="time"
-                    {...register("workingHours")}
+                    {...register("workingHours.workingStart")}
                     className="bg-input border-border"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="workingHoursEnd">Закрытие</Label>
+                  <Label htmlFor="workingHours.workingEnd">Закрытие</Label>
                   <Input
                     id="workingHoursEnd"
                     type="time"
                     className="bg-input border-border"
+                    {...register("workingHours.workingEnd")}
                   />
                 </div>
               </div>
@@ -432,13 +440,7 @@ export default function AddVenuePage() {
               type="submit"
               size="lg"
               className="flex-1"
-              // disabled={
-              //   isSubmitting ||
-              //   !initialData.title ||
-              //   !initialData.address.city ||
-              //   !initialData.sportType ||
-              //   !initialData.surface
-              // }
+              disabled={isPending}
             >
               {isSubmitting ? "Отправка..." : "Добавить площадку"}
             </Button>

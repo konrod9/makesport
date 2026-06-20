@@ -8,7 +8,7 @@ import { type Venue, venues } from "@/shared/lib/data";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 export function VenuesList() {
   const [page, setPage] = useState(1);

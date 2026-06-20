@@ -14,12 +14,12 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
     {
         // TODO: Вынести в константы ограничения длины
         builder.ToTable("venues");
-        
+
         builder.HasKey(v => v.Id).HasName("pk_venues");
 
         builder.Property(v => v.Id)
             .HasConversion(id => id.Value, value => VenueId.Create(value));
-        
+
         builder.Property(v => v.Title)
             .IsRequired()
             .HasMaxLength(50)
@@ -28,20 +28,24 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
         builder.Property(v => v.Description)
             .HasMaxLength(500)
             .HasColumnName("description");
-        
+
         builder.Property(v => v.IsOpen).HasColumnName("is_open");
         builder.Property(v => v.HasLighting).HasColumnName("has_lighting");
         builder.Property(v => v.IsFree).HasColumnName("is_free");
-        
-        builder.Property(v => v.WorkingHours).HasColumnName("working_hours")
-            .IsRequired(false);
+
+        builder.OwnsOne(v => v.WorkingHours, sa =>
+        {
+            sa.Property(w => w.WorkingStart).HasColumnName("working_start");
+
+            sa.Property(w => w.WorkingEnd).HasColumnName("working_end");
+        });
 
         builder.Property(v => v.Rating).HasColumnName("rating");
         builder.Property(v => v.ReviewCount).HasColumnName("review_count");
-        
+
         builder.Property(v => v.SportType).HasColumnName("sport_type");
         builder.Property(v => v.Surface).HasColumnName("surface");
-        
+
         builder.OwnsOne(v => v.Address, sa =>
         {
             sa.Property(a => a.Street).HasMaxLength(100)

@@ -18,7 +18,7 @@ public class Venue
         bool isOpen, 
         bool hasLighting,
         bool isFree, 
-        string? workingHours, 
+        WorkingHours workingHours, 
         double rating, 
         int reviewCount,
         string surface, 
@@ -49,7 +49,7 @@ public class Venue
     public bool HasLighting { get; private set; }
     public bool IsFree { get; private set; }
 
-    public string? WorkingHours { get; private set; }
+    public WorkingHours WorkingHours { get; private set; }
 
     public double Rating { get; private set; }
     public int ReviewCount { get; private set; }
@@ -73,7 +73,7 @@ public class Venue
         bool isOpen, 
         bool hasLighting,
         bool isFree, 
-        string? workingHours, 
+        WorkingHours workingHours, 
         string surface, 
         string sportType)
     {

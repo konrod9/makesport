@@ -58,7 +58,7 @@ public class GetVenuesUseCase
                 IsOpen = v.IsOpen,
                 HasLighting = v.HasLighting,
                 IsFree = v.IsFree,
-                WorkingHours = v.WorkingHours,
+                WorkingHours = v.WorkingHours.Value,
                 Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building, v.Address.FullName),
                 Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude),
                 Video = new MediaDto()

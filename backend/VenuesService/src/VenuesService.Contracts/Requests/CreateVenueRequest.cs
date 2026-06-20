@@ -22,5 +22,5 @@ public record CreateVenueRequest
     
     public bool IsFree { get; init; }
     
-    public string? WorkingHours { get; init; }
+    public WorkingHoursDto WorkingHours { get; init; }
 }

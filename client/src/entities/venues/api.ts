@@ -1,7 +1,7 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { Envelope } from "@/shared/api/envelope";
 import { PaginationVenuesResponse } from "@/shared/api/types";
-import { AddressDto, CoordinatesDto, Venue } from "./types";
+import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -19,7 +19,7 @@ export type CreateVenueRequest = {
   isOpen: boolean;
   hasLighting: boolean;
   isFree: boolean;
-  workingHours?: string;
+  workingHours: WorkingHoursDto;
   images?: string[];
 };
 
