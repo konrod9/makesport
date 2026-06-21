@@ -98,7 +98,6 @@ export default function AddVenuePage() {
   const { createVenue, isPending, error, isError } = useCreateVenue();
 
   const onSubmit = (data: CreateVenueData) => {
-    //console.log(data);
     createVenue(data, {
       onSuccess: () => {
         setIsSuccess(true);

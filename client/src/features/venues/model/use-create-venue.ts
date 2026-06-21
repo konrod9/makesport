@@ -1,4 +1,5 @@
 import { venuesApi, venuesQueryOptions } from "@/entities/venues/api";
+import { EnvelopeError } from "@/shared/api/errors";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useCreateVenue() {
@@ -16,7 +17,7 @@ export function useCreateVenue() {
   return {
     createVenue: mutation.mutate,
     isError: mutation.isError,
-    error: mutation.error, // TODO: Добавить проверку instanceof EnvelopeError
+    error: mutation.error instanceof EnvelopeError ? mutation.error : undefined,
     isPending: mutation.isPending,
   };
 }
