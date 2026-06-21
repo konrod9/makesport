@@ -1,22 +1,25 @@
 "use client";
 
-import { venuesApi } from "@/entities/venues/api";
 import { FiltersSidebar } from "@/shared/components/filters-sidebar";
 import { VenueCard } from "@/shared/components/venue-card";
 import { VenueDetailsDialog } from "@/shared/components/venue-details-dialog";
-import { type Venue, venues } from "@/shared/lib/data";
-import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
+import { useVenuesList } from "./model/use-venues-list";
+import { Venue } from "@/entities/venues/types";
+import { Spinner } from "@/shared/components/ui/spinner";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 2;
 
 export function VenuesList() {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useQuery({
-    queryFn: () => venuesApi.getVenues({ page: page, pageSize: PAGE_SIZE }),
-    queryKey: ["venues", { page }],
-  });
+  // const { data, isLoading, error } = useQuery({
+  //   queryFn: () => venuesApi.getVenues({ page: page, pageSize: PAGE_SIZE }),
+  //   queryKey: ["venues", { page }],
+  // });
+
+  const { data, isPending, error, isError, isFetchingNextPage, cursorRef } =
+    useVenuesList(PAGE_SIZE);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
@@ -169,6 +172,10 @@ export function VenuesList() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+
+      <div ref={cursorRef} className="flex justify-center py-4">
+        {isFetchingNextPage && <Spinner />}
+      </div>
     </div>
   );
 }

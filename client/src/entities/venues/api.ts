@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/api/axios-instance";
 import { Envelope } from "@/shared/api/envelope";
 import { PaginationVenuesResponse } from "@/shared/api/types";
 import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
+import { infiniteQueryOptions } from "@tanstack/react-query";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -43,4 +44,25 @@ export const venuesApi = {
 
 export const venuesQueryOptions = {
   baseKey: "venues",
+
+  getVenuesInfiniteOptions: ({ pageSize }: { pageSize: number }) => {
+    return infiniteQueryOptions({
+      queryKey: [venuesQueryOptions.baseKey],
+      queryFn: ({ pageParam }) => {
+        return venuesApi.getVenues({ page: pageParam, pageSize });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (response) => {
+        if (!response || response.page >= response.totalPages) return undefined;
+        return response.page + 1;
+      },
+      select: (data): PaginationVenuesResponse<Venue> => ({
+        venues: data.pages.flatMap((page) => page?.venues ?? []),
+        totalCount: data.pages[0]?.totalCount ?? 0,
+        page: data.pages[0]?.page ?? 1,
+        pageSize: data.pages[0]?.pageSize ?? pageSize,
+        totalPages: data.pages[0]?.totalPages ?? 0,
+      }),
+    });
+  },
 };
