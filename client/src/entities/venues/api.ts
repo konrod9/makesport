@@ -45,11 +45,21 @@ export const venuesApi = {
 export const venuesQueryOptions = {
   baseKey: "venues",
 
-  getVenuesInfiniteOptions: ({ pageSize }: { pageSize: number }) => {
+  getVenuesInfiniteOptions: ({
+    pageSize,
+    searchQuery,
+  }: {
+    pageSize: number;
+    searchQuery?: string;
+  }) => {
     return infiniteQueryOptions({
-      queryKey: [venuesQueryOptions.baseKey],
+      queryKey: [venuesQueryOptions.baseKey, searchQuery],
       queryFn: ({ pageParam }) => {
-        return venuesApi.getVenues({ page: pageParam, pageSize });
+        return venuesApi.getVenues({
+          search: searchQuery,
+          page: pageParam,
+          pageSize,
+        });
       },
       initialPageParam: 1,
       getNextPageParam: (response) => {

@@ -2,8 +2,13 @@ import { venuesQueryOptions } from "@/entities/venues/api";
 import { EnvelopeError } from "@/shared/api/errors";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RefCallback, useCallback } from "react";
+import { useDebounce } from "use-debounce";
 
-export function useVenuesList(pageSize: number) {
+export const PAGE_SIZE = 2;
+
+export function useVenuesList(search?: string) {
+  const [debouncedSearch] = useDebounce(search, 300);
+
   const {
     data,
     isPending,
@@ -13,7 +18,10 @@ export function useVenuesList(pageSize: number) {
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    ...venuesQueryOptions.getVenuesInfiniteOptions({ pageSize: pageSize }),
+    ...venuesQueryOptions.getVenuesInfiniteOptions({
+      pageSize: PAGE_SIZE,
+      searchQuery: debouncedSearch,
+    }),
   });
 
   const cursorRef: RefCallback<HTMLDivElement> = useCallback(

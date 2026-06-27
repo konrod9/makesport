@@ -20,48 +20,30 @@ import {
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
 import { cities, sportTypes, surfaces } from "@/shared/lib/data";
+import {
+  setFilterCity,
+  setFilterHasLighting,
+  setFilterOnlyFree,
+  setFilterOnlyOpen,
+  setFilterSearch,
+  setFilterSportType,
+  setFilterSurface,
+  setInitialFilters,
+  useGetVenuesFilter,
+} from "@/features/venues/model/venues-filter-store";
 
 interface FiltersProps {
-  searchQuery: string;
-  setSearchQuery: (value: string) => void;
-  selectedCity: string;
-  setSelectedCity: (value: string) => void;
-  selectedSport: string;
-  setSelectedSport: (value: string) => void;
-  selectedSurface: string;
-  setSelectedSurface: (value: string) => void;
-  onlyFree: boolean;
-  setOnlyFree: (value: boolean) => void;
-  onlyOpen: boolean;
-  setOnlyOpen: (value: boolean) => void;
-  hasLighting: boolean;
-  setHasLighting: (value: boolean) => void;
-  onReset: () => void;
   variant?: "sidebar" | "compact" | "sheet";
 }
 
-export function FiltersContent({
-  selectedCity,
-  setSelectedCity,
-  selectedSport,
-  setSelectedSport,
-  selectedSurface,
-  setSelectedSurface,
-  onlyFree,
-  setOnlyFree,
-  onlyOpen,
-  setOnlyOpen,
-  hasLighting,
-  setHasLighting,
-  onReset,
-  hideTitle = false,
-}: Omit<FiltersProps, "searchQuery" | "setSearchQuery"> & {
-  hideTitle?: boolean;
-}) {
+export function FiltersContent({ hideTitle = false }: { hideTitle?: boolean }) {
+  const { city, sportType, surface, onlyFree, onlyOpen, hasLighting } =
+    useGetVenuesFilter();
+
   const hasActiveFilters =
-    selectedCity !== "all" ||
-    selectedSport !== "all" ||
-    selectedSurface !== "all" ||
+    city !== undefined ||
+    sportType !== undefined ||
+    surface !== undefined ||
     onlyFree ||
     onlyOpen ||
     hasLighting;
@@ -76,7 +58,7 @@ export function FiltersContent({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onReset}
+            onClick={setInitialFilters}
             className="text-muted-foreground hover:text-foreground ml-auto"
           >
             <X className="h-4 w-4 mr-1" />
@@ -90,7 +72,7 @@ export function FiltersContent({
           <Label htmlFor="city" className="text-sm text-muted-foreground">
             Город
           </Label>
-          <Select value={selectedCity} onValueChange={setSelectedCity}>
+          <Select value={city} onValueChange={setFilterCity}>
             <SelectTrigger id="city" className="bg-input border-border">
               <SelectValue placeholder="Выберите город" />
             </SelectTrigger>
@@ -109,7 +91,7 @@ export function FiltersContent({
           <Label htmlFor="sport" className="text-sm text-muted-foreground">
             Вид спорта
           </Label>
-          <Select value={selectedSport} onValueChange={setSelectedSport}>
+          <Select value={sportType} onValueChange={setFilterSportType}>
             <SelectTrigger id="sport" className="bg-input border-border">
               <SelectValue placeholder="Выберите вид спорта" />
             </SelectTrigger>
@@ -128,7 +110,7 @@ export function FiltersContent({
           <Label htmlFor="surface" className="text-sm text-muted-foreground">
             Покрытие
           </Label>
-          <Select value={selectedSurface} onValueChange={setSelectedSurface}>
+          <Select value={surface} onValueChange={setFilterSurface}>
             <SelectTrigger id="surface" className="bg-input border-border">
               <SelectValue placeholder="Выберите покрытие" />
             </SelectTrigger>
@@ -149,7 +131,7 @@ export function FiltersContent({
           <Checkbox
             id="free"
             checked={onlyFree}
-            onCheckedChange={(checked) => setOnlyFree(checked as boolean)}
+            onCheckedChange={(checked) => setFilterOnlyFree(checked as boolean)}
           />
           <Label
             htmlFor="free"
@@ -162,7 +144,7 @@ export function FiltersContent({
           <Checkbox
             id="open"
             checked={onlyOpen}
-            onCheckedChange={(checked) => setOnlyOpen(checked as boolean)}
+            onCheckedChange={(checked) => setFilterOnlyOpen(checked as boolean)}
           />
           <Label
             htmlFor="open"
@@ -175,7 +157,9 @@ export function FiltersContent({
           <Checkbox
             id="lighting"
             checked={hasLighting}
-            onCheckedChange={(checked) => setHasLighting(checked as boolean)}
+            onCheckedChange={(checked) =>
+              setFilterHasLighting(checked as boolean)
+            }
           />
           <Label
             htmlFor="lighting"
@@ -190,12 +174,15 @@ export function FiltersContent({
 }
 
 export function FiltersSidebar(props: FiltersProps) {
-  const {
-    searchQuery,
-    setSearchQuery,
-    variant = "sidebar",
-    ...filterProps
-  } = props;
+  const { variant = "sidebar" } = props;
+  const { search } = useGetVenuesFilter();
+
+  // const [localSearch, setLocalSearch] = useState(search ?? "");
+  // const [debouncedSearch] = useDebounce(localSearch, 300);
+
+  // useEffect(() => {
+  //   setFilterSearch(debouncedSearch);
+  // }, [debouncedSearch]);
 
   if (variant === "compact") {
     return (
@@ -204,13 +191,13 @@ export function FiltersSidebar(props: FiltersProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Поиск площадок..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={search ?? ""}
+            onChange={(e) => setFilterSearch(e.target.value)}
             className="pl-9 bg-input border-border"
           />
         </div>
         <div className="p-4 rounded-lg border border-border bg-card">
-          <FiltersContent {...filterProps} />
+          <FiltersContent />
         </div>
       </div>
     );
@@ -225,13 +212,13 @@ export function FiltersSidebar(props: FiltersProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Поиск площадок..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={search}
+              onChange={(e) => setFilterSearch(e.target.value)}
               className="pl-9 bg-input border-border"
             />
           </div>
           <div className="p-4 rounded-lg border border-border bg-card">
-            <FiltersContent {...filterProps} />
+            <FiltersContent />
           </div>
         </div>
       </aside>
@@ -242,8 +229,8 @@ export function FiltersSidebar(props: FiltersProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Поиск площадок..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={search}
+            onChange={(e) => setFilterSearch(e.target.value)}
             className="pl-9 bg-input border-border"
           />
         </div>
@@ -258,7 +245,7 @@ export function FiltersSidebar(props: FiltersProps) {
               <SheetTitle>Фильтры</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
-              <FiltersContent {...filterProps} />
+              {/* <FiltersContent onReset={resetFilters} /> */}
             </div>
           </SheetContent>
         </Sheet>

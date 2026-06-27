@@ -7,27 +7,19 @@ import { useState, useMemo } from "react";
 import { useVenuesList } from "./model/use-venues-list";
 import { Venue } from "@/entities/venues/types";
 import { Spinner } from "@/shared/components/ui/spinner";
-
-const PAGE_SIZE = 2;
+import { useDebounce } from "use-debounce";
+import { VenuesFilters } from "./venues-filters";
+import {
+  setInitialFilters,
+  useGetVenuesFilter,
+} from "./model/venues-filter-store";
 
 export function VenuesList() {
-  const [page, setPage] = useState(1);
-
-  // const { data, isLoading, error } = useQuery({
-  //   queryFn: () => venuesApi.getVenues({ page: page, pageSize: PAGE_SIZE }),
-  //   queryKey: ["venues", { page }],
-  // });
+  const { search, pageSize } = useGetVenuesFilter();
 
   const { data, isPending, error, isError, isFetchingNextPage, cursorRef } =
-    useVenuesList(PAGE_SIZE);
+    useVenuesList(search === "" ? undefined : search);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("all");
-  const [selectedSport, setSelectedSport] = useState("all");
-  const [selectedSurface, setSelectedSurface] = useState("all");
-  const [onlyFree, setOnlyFree] = useState(false);
-  const [onlyOpen, setOnlyOpen] = useState(false);
-  const [hasLighting, setHasLighting] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -36,56 +28,46 @@ export function VenuesList() {
     setDialogOpen(true);
   };
 
-  const filteredVenues = useMemo(() => {
-    const venuesList = data?.venues ?? [];
-    return venuesList.filter((venue) => {
-      const matchesSearch =
-        venue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venue.description
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()); /*||
-        venue.address.toLowerCase().includes(searchQuery.toLowerCase())*/
+  // const filteredVenues = useMemo(() => {
+  //   const venuesList = data?.venues ?? [];
+  //   return venuesList.filter((venue) => {
+  //     const matchesSearch =
+  //       venue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       venue.description
+  //         .toLowerCase()
+  //         .includes(searchQuery.toLowerCase()); /*||
+  //       venue.address.toLowerCase().includes(searchQuery.toLowerCase())*/
 
-      const matchesCity =
-        selectedCity === "all" || venue.address.city === selectedCity;
-      const matchesSport =
-        selectedSport === "all" || venue.sportType === selectedSport;
-      const matchesSurface =
-        selectedSurface === "all" || venue.surface === selectedSurface;
-      const matchesFree = !onlyFree || venue.isFree;
-      const matchesOpen = !onlyOpen || venue.isOpen;
-      const matchesLighting = !hasLighting || venue.hasLighting;
+  //     const matchesCity =
+  //       selectedCity === "all" || venue.address.city === selectedCity;
+  //     const matchesSport =
+  //       selectedSport === "all" || venue.sportType === selectedSport;
+  //     const matchesSurface =
+  //       selectedSurface === "all" || venue.surface === selectedSurface;
+  //     const matchesFree = !onlyFree || venue.isFree;
+  //     const matchesOpen = !onlyOpen || venue.isOpen;
+  //     const matchesLighting = !hasLighting || venue.hasLighting;
 
-      return (
-        matchesSearch &&
-        matchesCity &&
-        matchesSport &&
-        matchesSurface &&
-        matchesFree &&
-        matchesOpen &&
-        matchesLighting
-      );
-    });
-  }, [
-    searchQuery,
-    selectedCity,
-    selectedSport,
-    selectedSurface,
-    onlyFree,
-    onlyOpen,
-    hasLighting,
-    data,
-  ]);
-
-  const resetFilters = () => {
-    setSearchQuery("");
-    setSelectedCity("all");
-    setSelectedSport("all");
-    setSelectedSurface("all");
-    setOnlyFree(false);
-    setOnlyOpen(false);
-    setHasLighting(false);
-  };
+  //     return (
+  //       matchesSearch &&
+  //       matchesCity &&
+  //       matchesSport &&
+  //       matchesSurface &&
+  //       matchesFree &&
+  //       matchesOpen &&
+  //       matchesLighting
+  //     );
+  //   });
+  // }, [
+  //   searchQuery,
+  //   selectedCity,
+  //   selectedSport,
+  //   selectedSurface,
+  //   onlyFree,
+  //   onlyOpen,
+  //   hasLighting,
+  //   data,
+  // ]);
 
   if (error) {
     return <div>Ошибка: {error.message}</div>;
@@ -105,38 +87,24 @@ export function VenuesList() {
         </div>
 
         <div className="lg:flex gap-8">
-          <FiltersSidebar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedCity={selectedCity}
-            setSelectedCity={setSelectedCity}
-            selectedSport={selectedSport}
-            setSelectedSport={setSelectedSport}
-            selectedSurface={selectedSurface}
-            setSelectedSurface={setSelectedSurface}
-            onlyFree={onlyFree}
-            setOnlyFree={setOnlyFree}
-            onlyOpen={onlyOpen}
-            setOnlyOpen={setOnlyOpen}
-            hasLighting={hasLighting}
-            setHasLighting={setHasLighting}
-            onReset={resetFilters}
-          />
+          <FiltersSidebar />
+
+          {/* <VenuesFilters /> */}
 
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-muted-foreground">
                 Найдено:{" "}
                 <span className="text-foreground font-medium">
-                  {filteredVenues?.length}
+                  {data?.venues.length}
                 </span>{" "}
                 площадок
               </p>
             </div>
 
-            {filteredVenues.length > 0 ? (
+            {data?.venues.length != undefined && data?.venues.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                {filteredVenues.map((venue) => (
+                {data?.venues.map((venue) => (
                   <VenueCard
                     key={venue.id}
                     venue={venue}
@@ -156,7 +124,7 @@ export function VenuesList() {
                   Попробуйте изменить параметры поиска
                 </p>
                 <button
-                  onClick={resetFilters}
+                  onClick={setInitialFilters}
                   className="text-chart-3 hover:text-chart-3/80 font-medium transition-colors"
                 >
                   Сбросить фильтры

@@ -1,12 +1,10 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
-using FileService.Contracts.Dtos;
 using FluentValidation;
 using VenuesService.Application.Validation;
 using VenuesService.Contracts.Dtos;
 using VenuesService.Contracts.Requests;
 using VenuesService.Contracts.Responses;
-using VenuesService.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Error = VenuesService.Domain.Shared.Error;
 
@@ -39,7 +37,7 @@ public class GetVenuesUseCase
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(v => v.Title.Contains(request.Search));
+            query = query.Where(v => EF.Functions.Like(v.Title.ToLower(), $"%{request.Search.ToLower()}%"));
         }
 
         var venuesCount = await query.CountAsync(cancellationToken);
