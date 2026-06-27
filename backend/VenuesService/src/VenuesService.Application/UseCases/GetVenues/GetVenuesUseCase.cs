@@ -40,6 +40,11 @@ public class GetVenuesUseCase
             query = query.Where(v => EF.Functions.Like(v.Title.ToLower(), $"%{request.Search.ToLower()}%"));
         }
 
+        if (request.HasLighting.HasValue && request.HasLighting.Value)
+        {
+            query = query.Where(v => v.HasLighting);
+        }
+
         var venuesCount = await query.CountAsync(cancellationToken);
 
         List<VenueDto> venues = await query

@@ -3,10 +3,19 @@ import { EnvelopeError } from "@/shared/api/errors";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RefCallback, useCallback } from "react";
 import { useDebounce } from "use-debounce";
+import { VenuesFilterState } from "./venues-filter-store";
 
 export const PAGE_SIZE = 2;
 
-export function useVenuesList(search?: string) {
+type UseVenuesListParams = VenuesFilterState & {
+  pageSize: number;
+};
+
+export function useVenuesList({
+  search,
+  pageSize,
+  hasLighting,
+}: UseVenuesListParams) {
   const [debouncedSearch] = useDebounce(search, 300);
 
   const {
@@ -20,7 +29,8 @@ export function useVenuesList(search?: string) {
   } = useInfiniteQuery({
     ...venuesQueryOptions.getVenuesInfiniteOptions({
       pageSize: PAGE_SIZE,
-      searchQuery: debouncedSearch,
+      search: debouncedSearch,
+      hasLighting: hasLighting ? hasLighting : undefined,
     }),
   });
 

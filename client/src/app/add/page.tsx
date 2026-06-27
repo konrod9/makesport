@@ -98,6 +98,7 @@ export default function AddVenuePage() {
   const { createVenue, isPending, error, isError } = useCreateVenue();
 
   const onSubmit = (data: CreateVenueData) => {
+    console.log(data);
     createVenue(data, {
       onSuccess: () => {
         setIsSuccess(true);
@@ -389,7 +390,17 @@ export default function AddVenuePage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="hasLighting" {...register("hasLighting")} />
+                  <Controller<CreateVenueData>
+                    name="hasLighting"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        checked={Boolean(field.value)}
+                        onCheckedChange={field.onChange}
+                        id="hasLighting"
+                      />
+                    )}
+                  />
                   <Label htmlFor="hasLighting" className="cursor-pointer">
                     Есть освещение
                   </Label>

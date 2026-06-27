@@ -55,7 +55,7 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
       setOnlyOpen: (input: VenuesFilterState["onlyOpen"]) =>
         set(() => ({ onlyOpen: input || undefined })),
       setHasLighting: (input: VenuesFilterState["hasLighting"]) =>
-        set(() => ({ hasLighting: input || undefined })),
+        set(() => ({ hasLighting: input || false })),
     }),
     { name: "venues-filter", storage: createJSONStorage(() => localStorage) },
   ),

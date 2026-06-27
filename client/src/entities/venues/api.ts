@@ -3,11 +3,13 @@ import { Envelope } from "@/shared/api/envelope";
 import { PaginationVenuesResponse } from "@/shared/api/types";
 import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
 import { infiniteQueryOptions } from "@tanstack/react-query";
+import { VenuesFilterState } from "@/features/venues/model/venues-filter-store";
 
 export type GetVenuesRequest = {
   search?: string;
   page: number;
   pageSize: number;
+  hasLighting?: boolean;
 };
 
 export type CreateVenueRequest = {
@@ -38,6 +40,7 @@ export const venuesApi = {
   createVenue: async (request: CreateVenueRequest) => {
     const response = await apiClient.post<Envelope<string>>("/venues", request);
 
+    console.log(request);
     return response.data;
   },
 };
@@ -45,21 +48,11 @@ export const venuesApi = {
 export const venuesQueryOptions = {
   baseKey: "venues",
 
-  getVenuesInfiniteOptions: ({
-    pageSize,
-    searchQuery,
-  }: {
-    pageSize: number;
-    searchQuery?: string;
-  }) => {
+  getVenuesInfiniteOptions: (filter: VenuesFilterState) => {
     return infiniteQueryOptions({
-      queryKey: [venuesQueryOptions.baseKey, searchQuery],
+      queryKey: [venuesQueryOptions.baseKey, filter],
       queryFn: ({ pageParam }) => {
-        return venuesApi.getVenues({
-          search: searchQuery,
-          page: pageParam,
-          pageSize,
-        });
+        return venuesApi.getVenues({ ...filter, page: pageParam });
       },
       initialPageParam: 1,
       getNextPageParam: (response) => {
@@ -70,7 +63,7 @@ export const venuesQueryOptions = {
         venues: data.pages.flatMap((page) => page?.venues ?? []),
         totalCount: data.pages[0]?.totalCount ?? 0,
         page: data.pages[0]?.page ?? 1,
-        pageSize: data.pages[0]?.pageSize ?? pageSize,
+        pageSize: data.pages[0]?.pageSize ?? filter.pageSize,
         totalPages: data.pages[0]?.totalPages ?? 0,
       }),
     });

@@ -15,10 +15,14 @@ import {
 } from "./model/venues-filter-store";
 
 export function VenuesList() {
-  const { search, pageSize } = useGetVenuesFilter();
+  const { search, pageSize, hasLighting } = useGetVenuesFilter();
 
   const { data, isPending, error, isError, isFetchingNextPage, cursorRef } =
-    useVenuesList(search === "" ? undefined : search);
+    useVenuesList({
+      search: search === "" ? undefined : search,
+      pageSize: pageSize,
+      hasLighting: hasLighting,
+    });
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
