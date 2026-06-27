@@ -61,9 +61,9 @@ export default function Home() {
 
   const resetFilters = () => {
     setSearchQuery("");
-    setSelectedCity("all");
-    setSelectedSport("all");
-    setSelectedSurface("all");
+    setSelectedCity("");
+    setSelectedSport("");
+    setSelectedSurface("");
     setOnlyFree(false);
     setOnlyOpen(false);
     setHasLighting(false);

@@ -45,15 +45,15 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
       setSearchQuery: (input: VenuesFilterState["search"]) =>
         set(() => ({ search: input?.trim() || "" })),
       setCity: (input: VenuesFilterState["city"]) =>
-        set(() => ({ city: input?.trim() || undefined })),
+        set(() => ({ city: input?.trim() || "" })),
       setSportType: (input: VenuesFilterState["sportType"]) =>
-        set(() => ({ sportType: input?.trim() || undefined })),
+        set(() => ({ sportType: input?.trim() || "" })),
       setSurface: (input: VenuesFilterState["surface"]) =>
-        set(() => ({ surface: input?.trim() || undefined })),
+        set(() => ({ surface: input?.trim() || "" })),
       setOnlyFree: (input: VenuesFilterState["onlyFree"]) =>
-        set(() => ({ onlyFree: input || undefined })),
+        set(() => ({ onlyFree: input || false })),
       setOnlyOpen: (input: VenuesFilterState["onlyOpen"]) =>
-        set(() => ({ onlyOpen: input || undefined })),
+        set(() => ({ onlyOpen: input || false })),
       setHasLighting: (input: VenuesFilterState["hasLighting"]) =>
         set(() => ({ hasLighting: input || false })),
     }),
@@ -78,18 +78,35 @@ export const useGetVenuesFilter = () => {
 
 // TODO: export const useGetVenuesSorting
 
-export const setFilterSearch = (input: VenuesFilterState["search"]) => {
+export const setFilterSearch = (input: VenuesFilterState["search"]) =>
   useVenuesFilterStore.getState().setSearchQuery(input);
+
+export const setFilterCity = (input: VenuesFilterState["city"]) => {
+  const { setCity } = useVenuesFilterStore.getState();
+  if (input === "all") {
+    setCity("");
+  } else {
+    setCity(input);
+  }
 };
 
-export const setFilterCity = (input: VenuesFilterState["city"]) =>
-  useVenuesFilterStore.getState().setCity(input);
+export const setFilterSportType = (input: VenuesFilterState["sportType"]) => {
+  const { setSportType } = useVenuesFilterStore.getState();
+  if (input === "all") {
+    setSportType("");
+  } else {
+    setSportType(input);
+  }
+};
 
-export const setFilterSportType = (input: VenuesFilterState["sportType"]) =>
-  useVenuesFilterStore.getState().setSportType(input);
-
-export const setFilterSurface = (input: VenuesFilterState["surface"]) =>
-  useVenuesFilterStore.getState().setSurface(input);
+export const setFilterSurface = (input: VenuesFilterState["surface"]) => {
+  const { setSurface } = useVenuesFilterStore.getState();
+  if (input === "all") {
+    setSurface("");
+  } else {
+    setSurface(input);
+  }
+};
 
 export const setFilterOnlyOpen = (input: VenuesFilterState["onlyOpen"]) =>
   useVenuesFilterStore.getState().setOnlyOpen(input);

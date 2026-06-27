@@ -10,6 +10,7 @@ export type GetVenuesRequest = {
   page: number;
   pageSize: number;
   hasLighting?: boolean;
+  onlyFree?: boolean;
 };
 
 export type CreateVenueRequest = {

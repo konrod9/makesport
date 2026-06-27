@@ -15,6 +15,11 @@ export function useVenuesList({
   search,
   pageSize,
   hasLighting,
+  onlyFree,
+  onlyOpen,
+  city,
+  sportType,
+  surface,
 }: UseVenuesListParams) {
   const [debouncedSearch] = useDebounce(search, 300);
 
@@ -31,6 +36,11 @@ export function useVenuesList({
       pageSize: PAGE_SIZE,
       search: debouncedSearch,
       hasLighting: hasLighting ? hasLighting : undefined,
+      onlyFree: onlyFree ? onlyFree : undefined,
+      onlyOpen: onlyOpen ? onlyOpen : undefined,
+      city: city === "" ? undefined : city,
+      sportType: sportType === "" ? undefined : sportType,
+      surface: surface === "" ? undefined : surface,
     }),
   });
 

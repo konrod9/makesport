@@ -406,7 +406,17 @@ export default function AddVenuePage() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="isFree" {...register("isFree")} />
+                  <Controller<CreateVenueData>
+                    name="isFree"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        checked={Boolean(field.value)}
+                        onCheckedChange={field.onChange}
+                        id="isFree"
+                      />
+                    )}
+                  />
                   <Label htmlFor="isFree" className="cursor-pointer">
                     Бесплатная
                   </Label>

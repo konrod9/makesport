@@ -15,13 +15,27 @@ import {
 } from "./model/venues-filter-store";
 
 export function VenuesList() {
-  const { search, pageSize, hasLighting } = useGetVenuesFilter();
+  const {
+    search,
+    pageSize,
+    hasLighting,
+    onlyFree,
+    onlyOpen,
+    city,
+    sportType,
+    surface,
+  } = useGetVenuesFilter();
 
   const { data, isPending, error, isError, isFetchingNextPage, cursorRef } =
     useVenuesList({
       search: search === "" ? undefined : search,
       pageSize: pageSize,
       hasLighting: hasLighting,
+      onlyFree: onlyFree,
+      onlyOpen: onlyOpen,
+      city: city,
+      sportType: sportType,
+      surface: surface,
     });
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
@@ -31,47 +45,6 @@ export function VenuesList() {
     setSelectedVenue(venue);
     setDialogOpen(true);
   };
-
-  // const filteredVenues = useMemo(() => {
-  //   const venuesList = data?.venues ?? [];
-  //   return venuesList.filter((venue) => {
-  //     const matchesSearch =
-  //       venue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       venue.description
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase()); /*||
-  //       venue.address.toLowerCase().includes(searchQuery.toLowerCase())*/
-
-  //     const matchesCity =
-  //       selectedCity === "all" || venue.address.city === selectedCity;
-  //     const matchesSport =
-  //       selectedSport === "all" || venue.sportType === selectedSport;
-  //     const matchesSurface =
-  //       selectedSurface === "all" || venue.surface === selectedSurface;
-  //     const matchesFree = !onlyFree || venue.isFree;
-  //     const matchesOpen = !onlyOpen || venue.isOpen;
-  //     const matchesLighting = !hasLighting || venue.hasLighting;
-
-  //     return (
-  //       matchesSearch &&
-  //       matchesCity &&
-  //       matchesSport &&
-  //       matchesSurface &&
-  //       matchesFree &&
-  //       matchesOpen &&
-  //       matchesLighting
-  //     );
-  //   });
-  // }, [
-  //   searchQuery,
-  //   selectedCity,
-  //   selectedSport,
-  //   selectedSurface,
-  //   onlyFree,
-  //   onlyOpen,
-  //   hasLighting,
-  //   data,
-  // ]);
 
   if (error) {
     return <div>Ошибка: {error.message}</div>;
@@ -92,9 +65,6 @@ export function VenuesList() {
 
         <div className="lg:flex gap-8">
           <FiltersSidebar />
-
-          {/* <VenuesFilters /> */}
-
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-muted-foreground">
