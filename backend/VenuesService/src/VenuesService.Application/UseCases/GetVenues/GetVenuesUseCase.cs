@@ -40,6 +40,31 @@ public class GetVenuesUseCase
             query = query.Where(v => EF.Functions.Like(v.Title.ToLower(), $"%{request.Search.ToLower()}%"));
         }
 
+        if (!string.IsNullOrWhiteSpace(request.City))
+        {
+            query = query.Where(v => v.Address.City == request.City);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.SportType))
+        {
+            query = query.Where(v => v.SportType == request.SportType);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(request.Surface))
+        {
+            query = query.Where(v => v.Surface == request.Surface);
+        }
+        
+        if (request.OnlyFree.HasValue && request.OnlyFree.Value)
+        {
+            query = query.Where(v => v.IsFree);
+        }
+        
+        if (request.OnlyOpen.HasValue && request.OnlyOpen.Value)
+        {
+            query = query.Where(v => v.IsOpen);
+        }
+
         if (request.HasLighting.HasValue && request.HasLighting.Value)
         {
             query = query.Where(v => v.HasLighting);
