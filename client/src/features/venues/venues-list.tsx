@@ -7,8 +7,6 @@ import { useState, useMemo } from "react";
 import { useVenuesList } from "./model/use-venues-list";
 import { Venue } from "@/entities/venues/types";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { useDebounce } from "use-debounce";
-import { VenuesFilters } from "./venues-filters";
 import {
   setInitialFilters,
   useGetVenuesFilter,

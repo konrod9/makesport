@@ -33,7 +33,7 @@ export function useVenuesList({
     hasNextPage,
   } = useInfiniteQuery({
     ...venuesQueryOptions.getVenuesInfiniteOptions({
-      pageSize: PAGE_SIZE,
+      pageSize: pageSize,
       search: debouncedSearch,
       hasLighting: hasLighting ? hasLighting : undefined,
       onlyFree: onlyFree ? onlyFree : undefined,

@@ -5,12 +5,12 @@ export type ErrorMessage = {
 };
 
 export type ErrorType =
-  | "validation"
-  | "not_found"
-  | "failure"
-  | "conflict"
-  | "authentication"
-  | "authorization";
+  | "Validation"
+  | "Not_found"
+  | "Failure"
+  | "Conflict"
+  | "Authentication"
+  | "Authorization";
 
 export type ApiError = {
   messages: ErrorMessage[];
@@ -22,9 +22,13 @@ export class EnvelopeError extends Error {
   public readonly type: ErrorType;
 
   constructor(apiError: ApiError) {
-    const firstMessage = apiError.messages[0].message ?? "Неизвестная ошибка";
+    const firstMessage = apiError.messages[0]?.message ?? "Неизвестная ошибка";
+    const message =
+      apiError.type === "Failure" ? "Внутренняя ошибка сервера" : firstMessage;
 
-    super(firstMessage);
+    console.log(apiError.type);
+
+    super(message);
 
     this.name = "EnvelopeError";
     this.apiError = apiError;
@@ -38,11 +42,15 @@ export class EnvelopeError extends Error {
   }
 
   get firstMessage(): string {
-    return this.apiError.messages[0].message ?? "Неизвестная ошибка";
+    return this.apiError.type === "Failure"
+      ? "Внутренняя ошибка сервера"
+      : (this.apiError.messages[0]?.message ?? "Неизвестная ошибка");
   }
 
   getAllMessages(): string {
-    return this.apiError.messages.map((msg) => msg.message).join(", ");
+    return this.apiError.type === "Failure"
+      ? "Внутренняя ошибка сервера"
+      : this.apiError.messages.map((msg) => msg.message).join(", ");
   }
 }
 
