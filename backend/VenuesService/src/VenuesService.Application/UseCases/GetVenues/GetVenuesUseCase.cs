@@ -1,12 +1,10 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
-using FileService.Contracts.Dtos;
 using FluentValidation;
 using VenuesService.Application.Validation;
 using VenuesService.Contracts.Dtos;
 using VenuesService.Contracts.Requests;
 using VenuesService.Contracts.Responses;
-using VenuesService.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Error = VenuesService.Domain.Shared.Error;
 
@@ -39,7 +37,37 @@ public class GetVenuesUseCase
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(v => v.Title.Contains(request.Search));
+            query = query.Where(v => EF.Functions.Like(v.Title.ToLower(), $"%{request.Search.ToLower()}%"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.City))
+        {
+            query = query.Where(v => v.Address.City == request.City);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.SportType))
+        {
+            query = query.Where(v => v.SportType == request.SportType);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(request.Surface))
+        {
+            query = query.Where(v => v.Surface == request.Surface);
+        }
+        
+        if (request.OnlyFree.HasValue && request.OnlyFree.Value)
+        {
+            query = query.Where(v => v.IsFree);
+        }
+        
+        if (request.OnlyOpen.HasValue && request.OnlyOpen.Value)
+        {
+            query = query.Where(v => v.IsOpen);
+        }
+
+        if (request.HasLighting.HasValue && request.HasLighting.Value)
+        {
+            query = query.Where(v => v.HasLighting);
         }
 
         var venuesCount = await query.CountAsync(cancellationToken);
@@ -51,7 +79,15 @@ public class GetVenuesUseCase
                 Id = v.Id,
                 Title = v.Title,
                 Description = v.Description,
-                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building),
+                SportType = v.SportType,
+                Surface = v.Surface,
+                Rating = v.Rating,
+                ReviewCount = v.ReviewCount,
+                IsOpen = v.IsOpen,
+                HasLighting = v.HasLighting,
+                IsFree = v.IsFree,
+                WorkingHours = v.WorkingHours.Value,
+                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building, v.Address.FullName),
                 Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude),
                 Video = new MediaDto()
                 {
@@ -63,8 +99,10 @@ public class GetVenuesUseCase
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
+        
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
 
-        IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
+        /*IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
 
         var mediaAssets = await _fileCommunicationService
             .GetMediaAssets(new GetMediaAssetsRequest(mediaAssetIds), cancellationToken);
@@ -84,6 +122,6 @@ public class GetVenuesUseCase
             }
         }
 
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);*/
     }
 }

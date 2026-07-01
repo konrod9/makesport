@@ -12,18 +12,21 @@ public record Address
         Street = street;
         Building = building;
     }
-    
+
     public string City { get; }
-    
+
     public string Street { get; }
-    
+
     public string? Building { get; }
-    
+
+    public string FullName =>
+        $"{City}, {Street}{(string.IsNullOrWhiteSpace(Building) ? string.Empty : ", " + Building)}";
+
     public static Result<Address, Error> Create(string city, string street, string? building)
     {
         if (string.IsNullOrWhiteSpace(street))
             return GeneralErrors.ValueIsRequired(nameof(street));
-        
+
         if (string.IsNullOrWhiteSpace(city))
             return GeneralErrors.ValueIsRequired(nameof(city));
 

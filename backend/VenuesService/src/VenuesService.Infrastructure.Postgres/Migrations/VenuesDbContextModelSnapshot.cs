@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -13,15 +12,13 @@ using VenuesService.Infrastructure.Postgres.Database;
 namespace VenuesService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(VenuesDbContext))]
-    [Migration("20260505150322_Initial")]
-    partial class Initial
+    partial class VenuesDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.15")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
@@ -42,11 +39,44 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
+                    b.Property<bool>("HasLighting")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_lighting");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_free");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_open");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision")
+                        .HasColumnName("rating");
+
+                    b.Property<int>("ReviewCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("review_count");
+
+                    b.Property<string>("SportType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("sport_type");
+
+                    b.Property<string>("Surface")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("surface");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
+
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id")
                         .HasName("pk_venues");
@@ -85,7 +115,33 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                                 .HasForeignKey("VenueId");
                         });
 
+                    b.OwnsOne("VenuesService.Domain.Venues.ValueObjects.WorkingHours", "WorkingHours", b1 =>
+                        {
+                            b1.Property<Guid>("VenueId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("WorkingEnd")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("working_end");
+
+                            b1.Property<string>("WorkingStart")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("working_start");
+
+                            b1.HasKey("VenueId");
+
+                            b1.ToTable("venues");
+
+                            b1.WithOwner()
+                                .HasForeignKey("VenueId");
+                        });
+
                     b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("WorkingHours")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
