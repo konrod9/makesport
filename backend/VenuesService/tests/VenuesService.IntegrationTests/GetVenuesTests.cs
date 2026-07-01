@@ -24,7 +24,7 @@ public class GetVenuesTests : VenuesTestsBase
         // Arrange
         CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-        var getVenuesRequest = new GetVenuesRequest(null, 1, 3);
+        var getVenuesRequest = new GetVenuesRequest(null, null, null, null, null, null, null, 1, 3);
 
         var queryParams = new Dictionary<string, string>()
         {
