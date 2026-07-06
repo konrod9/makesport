@@ -22,6 +22,25 @@ services:
     env_file:
       - .env
 
+  venues-migrations:
+    container_name: venues-migrations
+    build:
+      context: ./backend
+      dockerfile: VenuesService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      - ConnectionStrings__Database=${DATABASE_VENUES_CONNECTION}
+    env_file:
+      - .env
+    entrypoint:
+      ["/bin/sh", "-c", './efbundle --connection "$DATABASE_VENUES_CONNECTION"']
+
   file-service:
     container_name: makesport-file-service
     build:
@@ -49,6 +68,11 @@ services:
       POSTGRES_DB: makesport-db
     volumes:
       - makesport-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U makesport-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: always
 
   seq:
@@ -90,3 +114,14 @@ services:
     depends_on:
       - venues-service
       - file-service
+
+  frontend:
+    container_name: makesport-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    restart: always
