@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileService.API.Controllers;
 
 [ApiController]
-[Route("api/files")]
+[Route("files")]
 public class FilesController : ControllerBase
 {
     [HttpPost("/multipart-upload")]

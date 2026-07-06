@@ -9,7 +9,7 @@ using VenuesService.API.Configuration;
 namespace VenuesService.API.Controllers;
 
 [ApiController]
-[Route("api/venues")]
+[Route("venues")]
 public class VenuesController : ControllerBase
 {
     [HttpPost]

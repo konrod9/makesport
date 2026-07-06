@@ -2,8 +2,7 @@ import axios from "axios";
 import { Envelope } from "./envelope";
 import { EnvelopeError } from "./errors";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5163/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost/api";
 
 console.log("API Base URL: ", BASE_URL);
 
