@@ -83,7 +83,7 @@ export default function Home() {
         </div>
 
         <div className="lg:flex gap-8">
-          <FiltersSidebar
+          {/* <FiltersSidebar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             selectedCity={selectedCity}
@@ -99,7 +99,7 @@ export default function Home() {
             hasLighting={hasLighting}
             setHasLighting={setHasLighting}
             onReset={resetFilters}
-          />
+          /> */}
 
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
@@ -114,13 +114,13 @@ export default function Home() {
 
             {filteredVenues.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                {filteredVenues.map((venue) => (
+                {/* {filteredVenues.map((venue) => (
                   <VenueCard
                     key={venue.id}
                     venue={venue}
                     onClick={handleVenueClick}
                   />
-                ))}
+                ))} */}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -145,11 +145,11 @@ export default function Home() {
         </div>
       </main>
 
-      <VenueDetailsDialog
+      {/* <VenueDetailsDialog
         venue={selectedVenue}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-      />
+      /> */}
     </div>
   );
 }

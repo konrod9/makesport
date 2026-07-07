@@ -33,7 +33,7 @@ public class GetVenuesTests : VenuesTestsBase
             },
             {
                 "pageSize", getVenuesRequest.PageSize.ToString()
-            }
+            }  
         };
         
         var url = QueryHelpers.AddQueryString("/api/venues", queryParams!);

@@ -130,7 +130,7 @@ export function VenueDetailsDialog({
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Время работы</p>
                 <p className="text-sm font-medium text-foreground truncate">
-                  {venue.workingHours}
+                  {`${venue.workingHours.workingStart} - ${venue.workingHours.workingEnd}"`}
                 </p>
               </div>
             </div>

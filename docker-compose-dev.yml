@@ -6,19 +6,75 @@ volumes:
   makesport-pg-data:
 
 services:
+  venues-service:
+    container_name: makesport-venues-service
+    build:
+      context: ./backend
+      dockerfile: VenuesService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    ports:
+      - "5163:5163"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5163
+    env_file:
+      - .env
+
+  venues-migrations:
+    container_name: venues-migrations
+    build:
+      context: ./backend
+      dockerfile: VenuesService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      - ConnectionStrings__Database=${DATABASE_VENUES_CONNECTION}
+    env_file:
+      - .env
+    entrypoint:
+      ["/bin/sh", "-c", './efbundle --connection "$DATABASE_VENUES_CONNECTION"']
+
+  file-service:
+    container_name: makesport-file-service
+    build:
+      context: ./backend
+      dockerfile: FileService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    ports:
+      - "8002:8002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8002
+    env_file:
+      - .env
+
   postgres:
     container_name: makesport-pg
     image: postgis/postgis:17-3.5
     ports:
-        - "5433:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: makesport-db
     volumes:
       - makesport-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U makesport-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: always
-        
+
   seq:
     container_name: makesport-seq
     image: datalust/seq:latest
@@ -34,8 +90,8 @@ services:
     container_name: makesport-minio
     image: minio/minio:latest
     ports:
-    - "9000:9000"
-    - "9001:9001"
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -47,3 +103,25 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+
+  nginx:
+    container_name: makesport-nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - venues-service
+      - file-service
+
+  frontend:
+    container_name: makesport-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    restart: always
