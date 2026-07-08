@@ -92,7 +92,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Clock className="h-3.5 w-3.5 text-chart-3" />
-              <span>{`${venue.workingHours.workingStart} - ${venue.workingHours.workingEnd}"`}</span>
+              <span>{venue.workingHours}</span>
             </div>
             {venue.hasLighting && (
               <div className="flex items-center gap-1">
