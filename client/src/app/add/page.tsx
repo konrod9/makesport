@@ -84,6 +84,7 @@ export default function AddVenuePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
 
   const {
     register,
@@ -438,6 +439,20 @@ export default function AddVenuePage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {images.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsFileUploadDialogOpen(true)}
+                    className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-chart-3/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Upload className="h-6 w-6" />
+                    <span className="text-xs">Загрузить</span>
+                  </button>
+                )}
+              </div>
+            </CardContent>
+            {/* <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                 {images.map((image, index) => (
                   <div
                     key={index}
@@ -468,7 +483,7 @@ export default function AddVenuePage() {
                   </button>
                 )}
               </div>
-            </CardContent>
+            </CardContent> */}
           </Card>
 
           {error && (
