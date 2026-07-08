@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/shared/components/header";
 import { Input } from "@/shared/components/ui/input";
@@ -41,6 +41,13 @@ import {
 } from "@/entities/venues/types";
 import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 import { FormError } from "@/shared/components/ui/form-error";
+import { FileUploadDialog } from "@/entities/file/ui/file-upload-dialog";
+
+type SelectedFile = {
+  id: string;
+  file: File;
+  previewUrl: string;
+};
 
 type CreateVenueData = {
   title: string;
@@ -83,7 +90,7 @@ export default function AddVenuePage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
 
   const {
@@ -119,21 +126,42 @@ export default function AddVenuePage() {
     return "";
   };
 
-  const handleImageUpload = () => {
-    // Simulate image upload with placeholder
-    const placeholders = [
-      "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
-      "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400",
-    ];
-    if (images.length < 5) {
-      setImages([...images, placeholders[images.length % placeholders.length]]);
-    }
-  };
+  const selectedFilesRef = useRef<SelectedFile[]>([]);
 
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
+  useEffect(() => {
+    selectedFilesRef.current = selectedFiles;
+  }, [selectedFiles]);
+
+  useEffect(() => {
+    return () => {
+      selectedFilesRef.current.forEach((f) =>
+        URL.revokeObjectURL(f.previewUrl),
+      );
+    };
+  }, []);
+
+  const handleFilesSelected = useCallback((files: File[]) => {
+    setSelectedFiles((prev) => {
+      const remaining = 5 - prev.length;
+      if (remaining <= 0) return prev;
+
+      const newFiles = files.slice(0, remaining).map((file) => ({
+        id: crypto.randomUUID(),
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      return [...prev, ...newFiles];
+    });
+  }, []);
+
+  const removeFile = useCallback((id: string) => {
+    setSelectedFiles((prev) => {
+      const file = prev.find((f) => f.id === id);
+      if (file) URL.revokeObjectURL(file.previewUrl);
+      return prev.filter((f) => f.id !== id);
+    });
+  }, []);
 
   if (isSuccess) {
     return (
@@ -439,7 +467,26 @@ export default function AddVenuePage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {images.length < 5 && (
+                {selectedFiles.map((file) => (
+                  <div
+                    key={file.id}
+                    className="relative aspect-square rounded-lg overflow-hidden group"
+                  >
+                    <img
+                      src={file.previewUrl}
+                      alt={`Фото`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFile(file.id)}
+                      className="absolute top-1 right-1 p-1 rounded-full bg-background/80 text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                {selectedFiles.length < 5 && (
                   <button
                     type="button"
                     onClick={() => setIsFileUploadDialogOpen(true)}
@@ -451,39 +498,6 @@ export default function AddVenuePage() {
                 )}
               </div>
             </CardContent>
-            {/* <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {images.map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-square rounded-lg overflow-hidden group"
-                  >
-                    <img
-                      src={image}
-                      alt={`Фото ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 p-1 rounded-full bg-background/80 text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-                {images.length < 5 && (
-                  <button
-                    type="button"
-                    onClick={handleImageUpload}
-                    className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-chart-3/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Upload className="h-6 w-6" />
-                    <span className="text-xs">Загрузить</span>
-                  </button>
-                )}
-              </div>
-            </CardContent> */}
           </Card>
 
           {error && (
@@ -510,6 +524,12 @@ export default function AddVenuePage() {
             </Button>
           </div>
         </form>
+
+        <FileUploadDialog
+          open={isFileUploadDialogOpen}
+          onOpenChange={setIsFileUploadDialogOpen}
+          onFilesSelected={handleFilesSelected}
+        />
       </main>
     </div>
   );
