@@ -42,6 +42,7 @@ import {
 import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 import { FormError } from "@/shared/components/ui/form-error";
 import { FileUploadDialog } from "@/entities/file/ui/file-upload-dialog";
+import { useFileUpload } from "@/entities/file/model/use-file-upload";
 
 type SelectedFile = {
   id: string;
@@ -104,16 +105,27 @@ export default function AddVenuePage() {
   });
 
   const { createVenue, isPending, error, isError } = useCreateVenue();
+  const { upload, uploadState } = useFileUpload({ ownerType: "venue" });
 
   const onSubmit = (data: CreateVenueData) => {
-    console.log(data);
     createVenue(data, {
-      onSuccess: () => {
-        setIsSuccess(true);
-        reset(initialData);
-        setTimeout(() => {
-          router.push("/venues");
-        }, 2000);
+      onSuccess: async (result) => {
+        const venueId = result.result;
+
+        for (const { file } of selectedFiles) {
+          await upload(file, venueId!);
+          if (uploadState.status === "error") break;
+        }
+
+        if (uploadState.status != "error") {
+          setIsSuccess(true);
+          reset(initialData);
+          setTimeout(() => {
+            router.push("/venues");
+          }, 2000);
+        } else {
+          console.log("Ошибка загрузки файла");
+        }
       },
     });
   };

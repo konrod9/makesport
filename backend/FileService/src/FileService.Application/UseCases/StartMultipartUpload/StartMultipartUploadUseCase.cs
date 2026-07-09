@@ -47,9 +47,10 @@ public class StartMultipartUploadUseCase
             chunkCalculationResult.Value.TotalChunks
         );
 
-        var mediaAssetResult = MediaAsset.CreateForUpload(mediaDataResult.Value, request.AssetType.ToAssetType());
+        var mediaAssetResult = MediaAsset.CreateForUpload(mediaDataResult.Value, request.AssetType.ToAssetType(),
+            request.OwnerId, request.OwnerType);
 
-        await _mediaAssetsRepository.AddAsync(mediaAssetResult.Value, cancellationToken);
+        //await _mediaAssetsRepository.AddAsync(mediaAssetResult.Value, cancellationToken);
 
         var startUploadResult = await _fileStorageProvider.StartMultipartUploadAsync(
             mediaAssetResult.Value.Key,
@@ -69,7 +70,7 @@ public class StartMultipartUploadUseCase
         _logger.LogInformation("Media Asset started uploading with id {MediaAssetId}, key: {StorageKey}",
             mediaAssetResult.Value.Id,
             mediaAssetResult.Value.Key);
-        
+
         return new StartMultipartUploadResponse(
             mediaAssetResult.Value.Id,
             startUploadResult.Value,

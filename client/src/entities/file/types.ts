@@ -1,7 +1,7 @@
 /**
  * Owner types - entities that can own files
  */
-export type OwnerType = "venues" | "profile";
+export type OwnerType = "venue" | "profile";
 
 /**
  * Asset types supported by FileService

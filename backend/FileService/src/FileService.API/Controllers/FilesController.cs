@@ -13,19 +13,19 @@ namespace FileService.API.Controllers;
 [Route("files")]
 public class FilesController : ControllerBase
 {
-    [HttpPost("/multipart-upload")]
+    [HttpPost("multipart-upload")]
     public async Task<EndpointResult<StartMultipartUploadResponse>> StartMultipartUpload(
         [FromBody] StartMultipartUploadRequest request,
         [FromServices] StartMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
 
-    [HttpPost("/complete-upload")]
+    [HttpPost("complete-upload")]
     public async Task<EndpointResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request,
         [FromServices] CompleteMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
 
-    [HttpPost("/batch")]
+    [HttpPost("batch")]
     public async Task<EndpointResult<GetMediaAssetsResponse>> GetMediaAssets(
         [FromBody] GetMediaAssetsRequest request,
         [FromServices] GetMediaAssetsUseCase useCase,
