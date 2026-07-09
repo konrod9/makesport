@@ -117,6 +117,8 @@ export default function AddVenuePage() {
           if (uploadState.status === "error") break;
         }
 
+        // TODO: Не работает. Исправить!
+        // Площадка может загрузиться, а файлы не загрузятся. Но при этом площадка сохранится без фотографий + будет написано, что всё прошло успешно
         if (uploadState.status != "error") {
           setIsSuccess(true);
           reset(initialData);
