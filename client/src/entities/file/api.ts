@@ -58,14 +58,9 @@ export const fileApi = {
     chunk: Blob,
     signal?: AbortSignal,
   ): Promise<string> => {
-    const response = await axios.put(uploadUrl, chunk, {
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      signal,
-    });
+    const response = await axios.put(uploadUrl, chunk, { signal });
 
-    const eTag = response.headers.eTag?.replace(/"/g, "") || "";
+    const eTag = response.headers["etag"].replace(/"/g, "") || "";
     return eTag;
   },
 

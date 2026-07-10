@@ -20,7 +20,7 @@ internal sealed class FileHttpClient : IFileCommunicationService
     {
         try
         {
-            HttpResponseMessage response = await _httpClient.GetAsync("api/file/batch", cancellationToken);
+            HttpResponseMessage response = await _httpClient.GetAsync("files/batch", cancellationToken);
             return await response.HandleResponseAsync<GetMediaAssetsResponse>(cancellationToken);
         }
         catch (Exception ex)
