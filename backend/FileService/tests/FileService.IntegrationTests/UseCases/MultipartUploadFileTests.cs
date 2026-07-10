@@ -73,7 +73,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             "venue");
 
         var startMultipartResponse =
-            await AppHttpClient.PostAsJsonAsync("multipart-upload", request, cancellationToken);
+            await AppHttpClient.PostAsJsonAsync("/files/multipart-upload", request, cancellationToken);
 
         var startMultipartResult = await startMultipartResponse
             .HandleResponseAsync<StartMultipartUploadResponse>(cancellationToken: cancellationToken);
@@ -134,7 +134,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             partEtags.ToList());
 
         var completeResponse =
-            await AppHttpClient.PostAsJsonAsync("complete-upload", completeRequest, cancellationToken);
+            await AppHttpClient.PostAsJsonAsync("/files/complete-upload", completeRequest, cancellationToken);
 
         UnitResult<Contracts.Shared.Error> completeMultipartResult = await completeResponse
             .HandleResponseAsync(cancellationToken);

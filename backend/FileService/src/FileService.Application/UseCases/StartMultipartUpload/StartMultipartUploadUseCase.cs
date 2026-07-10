@@ -50,7 +50,7 @@ public class StartMultipartUploadUseCase
         var mediaAssetResult = MediaAsset.CreateForUpload(mediaDataResult.Value, request.AssetType.ToAssetType(),
             request.OwnerId, request.OwnerType);
 
-        //await _mediaAssetsRepository.AddAsync(mediaAssetResult.Value, cancellationToken);
+        await _mediaAssetsRepository.AddAsync(mediaAssetResult.Value, cancellationToken);
 
         var startUploadResult = await _fileStorageProvider.StartMultipartUploadAsync(
             mediaAssetResult.Value.Key,

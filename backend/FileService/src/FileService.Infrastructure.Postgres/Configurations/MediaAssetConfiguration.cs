@@ -14,7 +14,8 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
         builder.HasKey(x => x.Id);
 
         builder.HasDiscriminator<string>("asset_type")
-            .HasValue<VideoAsset>("video");
+            .HasValue<VideoAsset>("video")
+            .HasValue<ImageAsset>("image");
 
         builder.OwnsOne(m => m.MediaData, mb =>
         {

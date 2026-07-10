@@ -13,7 +13,8 @@ public static class AppExtensions
                     "http://localhost:3000",
                     "http://localhost:3001",
                     "http://localhost",
-                    "http://frontend:3000")
+                    "http://frontend:3000",
+                    "http://localhost/")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
