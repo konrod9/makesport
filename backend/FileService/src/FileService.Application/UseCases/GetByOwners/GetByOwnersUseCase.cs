@@ -7,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
-namespace FileService.Application.UseCases.GetMediaAssets;
+namespace FileService.Application.UseCases.GetByOwners;
 
-public class GetMediaAssetsUseCase
+public class GetByOwnersUseCase
 {
     private readonly IReadDbContext _readDbContext;
     private readonly IFileStorageProvider _fileStorageProvider;
     private readonly HybridCache _cache;
     private readonly FileStorageOptions _options;
 
-    public GetMediaAssetsUseCase(
-        IReadDbContext readDbContext,
-        IFileStorageProvider fileStorageProvider,
-        HybridCache cache, 
+    public GetByOwnersUseCase(
+        IReadDbContext readDbContext, 
+        IFileStorageProvider fileStorageProvider, 
+        HybridCache cache,
         IOptions<FileStorageOptions> options)
     {
         _readDbContext = readDbContext;
@@ -28,16 +28,20 @@ public class GetMediaAssetsUseCase
         _options = options.Value;
     }
 
-    public async Task<Result<GetMediaAssetsResponse, Error>> Handle(
-        GetMediaAssetsRequest request,
+    public async Task<Result<GetByOwnersResponse, Error>> Handle(
+        GetByOwnersRequest request,
         CancellationToken cancellationToken)
     {
-        if (request.MediaAssetIds.Count == 0)
-            return new GetMediaAssetsResponse([]);
+        if (request.OwnerIds.Count == 0)
+            return new GetByOwnersResponse([]);
+
+        var ownerIds = request.OwnerIds.ToHashSet();
 
         var mediaAssets = await _readDbContext.MediaAssetsQuery
-            .Where(m => request.MediaAssetIds.Contains(m.Id) && m.Status != MediaStatus.Deleted)
-            .ToListAsync(cancellationToken: cancellationToken);
+            .Where(m => ownerIds.Contains(m.OwnerId)
+                        && m.Status != MediaStatus.Deleted
+                        && m.OwnerType == request.OwnerType)
+            .ToListAsync(cancellationToken);
 
         var readyMediaAssets = mediaAssets.Where(m => m.Status == MediaStatus.Uploaded).ToList();
         var keys = readyMediaAssets.Select(m => m.Key).ToList();
@@ -71,7 +75,7 @@ public class GetMediaAssetsUseCase
             results.Add(mediaAssetDto);
         }
 
-        return new GetMediaAssetsResponse(results);
+        return new GetByOwnersResponse(results);
     }
 
     private async Task<Dictionary<StorageKey, string>> GetPresignedUrlsFromCache(
@@ -79,7 +83,7 @@ public class GetMediaAssetsUseCase
         CancellationToken cancellationToken)
     {
         var keys = storageKeys.ToList();
-        
+
         if (keys.Count == 0)
             return [];
 
@@ -94,15 +98,15 @@ public class GetMediaAssetsUseCase
                         .Subtract(TimeSpan.FromHours(1))
                 },
                 cancellationToken: cancellationToken);
-            
+
             return (key, url);
         });
-        
+
         var cachedUrls = await Task.WhenAll(cachedUrlsTasks);
-        
+
         var presignedUrls = new Dictionary<StorageKey, string>();
         var keysToGenerate = new List<StorageKey>();
-        
+
         foreach (var (key, url) in cachedUrls)
         {
             if (!string.IsNullOrWhiteSpace(url))
@@ -117,7 +121,7 @@ public class GetMediaAssetsUseCase
 
         if (keysToGenerate.Count == 0)
             return presignedUrls;
-        
+
         var mediaUrlsResult = await _fileStorageProvider.GenerateDownloadUrlsAsync(keysToGenerate, cancellationToken);
         if (mediaUrlsResult.IsFailure)
             return presignedUrls;
@@ -136,7 +140,7 @@ public class GetMediaAssetsUseCase
                 },
                 cancellationToken: cancellationToken);
         });
-        
+
         await Task.WhenAll(setTasks);
 
         return presignedUrls;

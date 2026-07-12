@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.Dtos;
 using FluentValidation;
 using VenuesService.Application.Validation;
 using VenuesService.Contracts.Dtos;
@@ -99,12 +100,10 @@ public class GetVenuesUseCase
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
-        
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
 
-        /*IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
+        IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
 
-        var mediaAssets = await _fileCommunicationService
+        Result<GetMediaAssetsResponse, FileService.Contracts.Shared.Error> mediaAssets = await _fileCommunicationService
             .GetMediaAssets(new GetMediaAssetsRequest(mediaAssetIds), cancellationToken);
         if (mediaAssets.IsFailure)
             return Error.Failure("file-service-error", "Error while getting videos from FileService");
@@ -122,6 +121,6 @@ public class GetVenuesUseCase
             }
         }
 
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);*/
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
     }
 }

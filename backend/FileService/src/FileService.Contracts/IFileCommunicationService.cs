@@ -7,4 +7,6 @@ namespace FileService.Contracts;
 public interface IFileCommunicationService
 {
     Task<Result<GetMediaAssetsResponse, Error>> GetMediaAssets(GetMediaAssetsRequest request, CancellationToken cancellationToken);
+    
+    
 }

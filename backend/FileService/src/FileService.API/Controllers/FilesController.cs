@@ -1,5 +1,6 @@
 ﻿using FileService.API.Configuration;
 using FileService.Application.UseCases.CompleteMultipartUpload;
+using FileService.Application.UseCases.GetByOwners;
 using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
@@ -36,4 +37,10 @@ public class FilesController : ControllerBase
         Guid mediaAssetId,
         [FromServices] GetMediaAssetInfoUseCase useCase,
         CancellationToken ct) => await useCase.Handle(mediaAssetId, ct);
+
+    [HttpPost("by-owners")]
+    public async Task<EndpointResult<GetByOwnersResponse>> GetMediaAssetsByOwners(
+        [FromBody] GetByOwnersRequest request,
+        [FromServices] GetByOwnersUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(request, ct); 
 }

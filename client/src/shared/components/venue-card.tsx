@@ -18,17 +18,15 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
       className="group overflow-hidden border-border bg-card hover:border-chart-3/50 transition-all duration-300 cursor-pointer"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary flex items-center justify-center">
-          <span className="text-4xl">
-            {venue.sportType === "Баскетбол" && "🏀"}
-            {venue.sportType === "Футбол" && "⚽"}
-            {venue.sportType === "Теннис" && "🎾"}
-            {venue.sportType === "Волейбол" && "🏐"}
-            {venue.sportType === "Воркаут" && "💪"}
-            {venue.sportType === "Скейтбординг" && "🛹"}
-            {venue.sportType === "Хоккей" && "🏒"}
-            {venue.sportType === "Бег" && "🏃"}
-          </span>
+        <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary">
+          <Image
+            src={`https://ia.cdnstroy.ru/ato3tw41e4z4d_i45yyr.jpeg`}
+            unoptimized // подумать
+            alt={venue.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 640px"
+          />
         </div>
         <div className="absolute top-3 left-3 flex gap-2">
           <Badge

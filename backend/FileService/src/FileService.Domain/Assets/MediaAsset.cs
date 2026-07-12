@@ -10,6 +10,10 @@ public abstract class MediaAsset
     public MediaData MediaData { get; protected set; }
 
     public AssetType AssetType { get; protected set; }
+    
+    public Guid OwnerId { get; protected set; }
+
+    public string OwnerType { get; protected set; } = string.Empty;
 
     public StorageKey Key { get; protected set; }
 
@@ -29,12 +33,16 @@ public abstract class MediaAsset
         MediaData mediaData,
         AssetType assetType,
         MediaStatus status,
+        Guid ownerId,
+        string ownerType,
         StorageKey key)
     {
         Id = id;
         MediaData = mediaData;
         AssetType = assetType;
         Status = status;
+        OwnerId = ownerId;
+        OwnerType = ownerType.Trim().ToLowerInvariant();
         Key = key;
     }
 
@@ -46,7 +54,7 @@ public abstract class MediaAsset
         switch (assetType)
         {
             case AssetType.Video:
-                var videoResult = VideoAsset.CreateForUpload(assetId, mediaData);
+                var videoResult = VideoAsset.CreateForUpload(assetId, mediaData, ownerId, ownerType);
                 return videoResult.IsFailure ? videoResult.Error : videoResult.Value;
             case AssetType.Image:
                 var imageResult = ImageAsset.CreateForUpload(assetId, mediaData, ownerId, ownerType);

@@ -22,7 +22,7 @@ public class ImageAsset : MediaAsset
         Guid ownerId,
         string ownerType,
         StorageKey key)
-        : base(id, mediaData, AssetType.Image, status, key)
+        : base(id, mediaData, AssetType.Image, status, ownerId, ownerType, key)
     {
     }
 
