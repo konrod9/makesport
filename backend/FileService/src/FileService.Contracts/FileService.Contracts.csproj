@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>MakeSport.FileService.Communication</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>MakeSport</Authors>
         <Company>MakeSport</Company>
         <PackageDescription>Communication FileService project</PackageDescription>

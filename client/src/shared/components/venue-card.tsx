@@ -20,7 +20,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
       <div className="relative aspect-[16/10] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary">
           <Image
-            src={`https://ia.cdnstroy.ru/ato3tw41e4z4d_i45yyr.jpeg`}
+            src={venue.images[0].url}
             unoptimized // подумать
             alt={venue.title}
             fill
