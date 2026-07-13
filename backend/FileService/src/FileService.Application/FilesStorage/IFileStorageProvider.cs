@@ -17,13 +17,17 @@ public interface IFileStorageProvider
         StorageKey storageKey,
         string uploadId,
         int totalChunks,
-        CancellationToken ct);
+        CancellationToken ct,
+        bool useExternalEndpoint = false);
 
-    Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
+    Task<Result<string, Error>> GenerateDownloadUrlAsync(
+        StorageKey storageKey,
+        bool useExternalEndpoint = false);
 
     Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
         IEnumerable<StorageKey> storageKeys,
-        CancellationToken ct = default);
+        CancellationToken ct = default,
+        bool useExternalEndpoint = false);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
         StorageKey storageKey,

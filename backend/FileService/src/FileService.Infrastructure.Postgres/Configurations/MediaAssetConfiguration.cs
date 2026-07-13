@@ -14,7 +14,8 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
         builder.HasKey(x => x.Id);
 
         builder.HasDiscriminator<string>("asset_type")
-            .HasValue<VideoAsset>("video");
+            .HasValue<VideoAsset>("video")
+            .HasValue<ImageAsset>("image");
 
         builder.OwnsOne(m => m.MediaData, mb =>
         {
@@ -51,7 +52,8 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
         builder.Property(x => x.Status).HasConversion<string>();
 
         builder.Property(x => x.AssetType).HasConversion<string>();
-
+        builder.Property(x => x.OwnerId).HasColumnName("owner_id");
+        builder.Property(x => x.OwnerType).HasColumnName("owner_type");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
 

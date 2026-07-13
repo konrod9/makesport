@@ -10,7 +10,7 @@ export type Venue = {
   isOpen: boolean;
   hasLighting: boolean;
   isFree: boolean;
-  workingHours: WorkingHoursDto;
+  workingHours: string;
   video?: MediaDto;
   address: AddressDto;
   coordinates: CoordinatesDto;

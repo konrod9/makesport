@@ -1,5 +1,6 @@
 ﻿using FileService.API.Configuration;
 using FileService.Application.UseCases.CompleteMultipartUpload;
+using FileService.Application.UseCases.GetByOwners;
 using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
@@ -13,19 +14,19 @@ namespace FileService.API.Controllers;
 [Route("files")]
 public class FilesController : ControllerBase
 {
-    [HttpPost("/multipart-upload")]
+    [HttpPost("multipart-upload")]
     public async Task<EndpointResult<StartMultipartUploadResponse>> StartMultipartUpload(
         [FromBody] StartMultipartUploadRequest request,
         [FromServices] StartMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
 
-    [HttpPost("/complete-upload")]
+    [HttpPost("complete-upload")]
     public async Task<EndpointResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request,
         [FromServices] CompleteMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
 
-    [HttpPost("/batch")]
+    [HttpPost("batch")]
     public async Task<EndpointResult<GetMediaAssetsResponse>> GetMediaAssets(
         [FromBody] GetMediaAssetsRequest request,
         [FromServices] GetMediaAssetsUseCase useCase,
@@ -36,4 +37,10 @@ public class FilesController : ControllerBase
         Guid mediaAssetId,
         [FromServices] GetMediaAssetInfoUseCase useCase,
         CancellationToken ct) => await useCase.Handle(mediaAssetId, ct);
+
+    [HttpPost("by-owners")]
+    public async Task<EndpointResult<GetByOwnersResponse>> GetMediaAssetsByOwners(
+        [FromBody] GetByOwnersRequest request,
+        [FromServices] GetByOwnersUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(request, ct); 
 }

@@ -1,4 +1,5 @@
 using FileService.Application.UseCases.CompleteMultipartUpload;
+using FileService.Application.UseCases.GetByOwners;
 using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<CompleteMultipartUploadUseCase>();
         services.AddScoped<GetMediaAssetsUseCase>();
         services.AddScoped<GetMediaAssetInfoUseCase>();
+        services.AddScoped<GetByOwnersUseCase>();
 
         services.AddStackExchangeRedisCache(setup =>
         {

@@ -4,6 +4,7 @@ import { PaginationVenuesResponse } from "@/shared/api/types";
 import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
 import { infiniteQueryOptions } from "@tanstack/react-query";
 import { VenuesFilterState } from "@/features/venues/model/venues-filter-store";
+import { useFileUpload } from "../file/model/use-file-upload";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -41,7 +42,6 @@ export const venuesApi = {
   createVenue: async (request: CreateVenueRequest) => {
     const response = await apiClient.post<Envelope<string>>("/venues", request);
 
-    console.log(request);
     return response.data;
   },
 };

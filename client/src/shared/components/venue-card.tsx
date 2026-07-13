@@ -18,17 +18,15 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
       className="group overflow-hidden border-border bg-card hover:border-chart-3/50 transition-all duration-300 cursor-pointer"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary flex items-center justify-center">
-          <span className="text-4xl">
-            {venue.sportType === "Баскетбол" && "🏀"}
-            {venue.sportType === "Футбол" && "⚽"}
-            {venue.sportType === "Теннис" && "🎾"}
-            {venue.sportType === "Волейбол" && "🏐"}
-            {venue.sportType === "Воркаут" && "💪"}
-            {venue.sportType === "Скейтбординг" && "🛹"}
-            {venue.sportType === "Хоккей" && "🏒"}
-            {venue.sportType === "Бег" && "🏃"}
-          </span>
+        <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary">
+          <Image
+            src={venue.images[0].url}
+            unoptimized // подумать
+            alt={venue.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 640px"
+          />
         </div>
         <div className="absolute top-3 left-3 flex gap-2">
           <Badge
@@ -92,7 +90,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Clock className="h-3.5 w-3.5 text-chart-3" />
-              <span>{`${venue.workingHours.workingStart} - ${venue.workingHours.workingEnd}"`}</span>
+              <span>{venue.workingHours}</span>
             </div>
             {venue.hasLighting && (
               <div className="flex items-center gap-1">

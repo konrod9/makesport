@@ -35,8 +35,9 @@ public class MultipartUploadFileTests : FileServiceTestsBase
 
         var partEtags = await UploadChunks(fileInfo, startMultipartUploadResponse, cancellationToken);
 
-        var completeMultipartResult = await CompleteMultipartUpload(startMultipartUploadResponse, partEtags, cancellationToken);
-        
+        var completeMultipartResult =
+            await CompleteMultipartUpload(startMultipartUploadResponse, partEtags, cancellationToken);
+
         // Assert
         Assert.True(completeMultipartResult.IsSuccess);
 
@@ -48,14 +49,14 @@ public class MultipartUploadFileTests : FileServiceTestsBase
 
             Assert.NotNull(mediaAsset);
             Assert.Equal(MediaStatus.Uploaded, mediaAsset.Status);
-            
+
             var amazonS3Client = _factory.Services.GetRequiredService<IAmazonS3>();
 
             var objectResponse = await amazonS3Client.GetObjectAsync(
                 mediaAsset.Key.Location,
                 mediaAsset.Key.Value,
                 cancellationToken);
-            
+
             Assert.Equal(objectResponse.ContentLength, fileInfo.Length);
         });
     }
@@ -68,11 +69,11 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             "video",
             "video/mp4",
             fileInfo.Length,
-            "venue",
-            Guid.NewGuid());
+            Guid.NewGuid(),
+            "venue");
 
         var startMultipartResponse =
-            await AppHttpClient.PostAsJsonAsync("multipart-upload", request, cancellationToken);
+            await AppHttpClient.PostAsJsonAsync("/files/multipart-upload", request, cancellationToken);
 
         var startMultipartResult = await startMultipartResponse
             .HandleResponseAsync<StartMultipartUploadResponse>(cancellationToken: cancellationToken);
@@ -105,7 +106,8 @@ public class MultipartUploadFileTests : FileServiceTestsBase
         foreach (var url in startMultipartUploadResponse.ChunkUploadUrls.OrderBy(c => c.PartNumber))
         {
             byte[] chunk = new byte[startMultipartUploadResponse.ChunkSize];
-            int bytesRead = await stream.ReadAsync(chunk.AsMemory(0, startMultipartUploadResponse.ChunkSize), cancellationToken);
+            int bytesRead = await stream.ReadAsync(chunk.AsMemory(0, startMultipartUploadResponse.ChunkSize),
+                cancellationToken);
             if (bytesRead == 0)
                 break;
 
@@ -132,7 +134,7 @@ public class MultipartUploadFileTests : FileServiceTestsBase
             partEtags.ToList());
 
         var completeResponse =
-            await AppHttpClient.PostAsJsonAsync("complete-upload", completeRequest, cancellationToken);
+            await AppHttpClient.PostAsJsonAsync("/files/complete-upload", completeRequest, cancellationToken);
 
         UnitResult<Contracts.Shared.Error> completeMultipartResult = await completeResponse
             .HandleResponseAsync(cancellationToken);

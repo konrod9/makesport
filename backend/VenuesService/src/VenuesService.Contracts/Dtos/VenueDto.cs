@@ -30,5 +30,5 @@ public record VenueDto
 
     public MediaDto? Video { get; set; }
 
-    public IReadOnlyList<MediaDto> Images { get; init; } = [];
+    public IReadOnlyList<MediaDto> Images { get; set; } = [];
 }

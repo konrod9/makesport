@@ -15,38 +15,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
+import { ImageGallery } from "@/shared/components/image-gallery";
 import { Venue } from "@/entities/venues/types";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface VenueDetailsDialogProps {
   venue: Venue | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const getSportEmoji = (sportType: string) => {
-  switch (sportType) {
-    case "Баскетбол":
-      return "🏀";
-    case "Футбол":
-      return "⚽";
-    case "Теннис":
-      return "🎾";
-    case "Волейбол":
-      return "🏐";
-    case "Воркаут":
-      return "💪";
-    case "Скейтбординг":
-      return "🛹";
-    case "Хоккей":
-      return "🏒";
-    case "Бег":
-      return "🏃";
-    default:
-      return "📍";
-  }
-};
 
 export function VenueDetailsDialog({
   venue,
@@ -58,30 +36,13 @@ export function VenueDetailsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg p-0 overflow-hidden gap-0 border-border bg-card max-h-[90vh] overflow-y-auto">
-        {/* Hero image */}
-        <div className="relative aspect-[16/9] bg-gradient-to-br from-muted to-secondary flex items-center justify-center">
-          <span className="text-6xl">{getSportEmoji(venue.sportType)}</span>
-          <div className="absolute top-3 left-3 flex gap-2">
-            <Badge
-              variant={venue.isOpen ? "default" : "secondary"}
-              className={
-                venue.isOpen
-                  ? "bg-green-600 hover:bg-green-600 text-foreground"
-                  : ""
-              }
-            >
-              {venue.isOpen ? "Открыто" : "Закрыто"}
-            </Badge>
-            {venue.isFree && (
-              <Badge
-                variant="secondary"
-                className="bg-primary/20 text-primary border-0"
-              >
-                Бесплатно
-              </Badge>
-            )}
-          </div>
-        </div>
+        <ImageGallery
+          images={venue.images}
+          title={venue.title}
+          sportType={venue.sportType}
+          isOpen={venue.isOpen}
+          isFree={venue.isFree}
+        />
 
         <div className="p-6 space-y-5">
           <DialogHeader className="space-y-2">
@@ -130,7 +91,7 @@ export function VenueDetailsDialog({
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Время работы</p>
                 <p className="text-sm font-medium text-foreground truncate">
-                  {`${venue.workingHours.workingStart} - ${venue.workingHours.workingEnd}"`}
+                  {venue.workingHours}
                 </p>
               </div>
             </div>
@@ -178,6 +139,7 @@ export function VenueDetailsDialog({
             Построить маршрут
           </Button>
         </div>
+        <DialogDescription />
       </DialogContent>
     </Dialog>
   );

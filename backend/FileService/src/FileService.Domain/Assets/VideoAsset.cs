@@ -21,7 +21,9 @@ public class VideoAsset : MediaAsset
         Guid id,
         MediaData mediaData,
         MediaStatus status,
-        StorageKey key) : base(id, mediaData, AssetType.Video, status, key)
+        Guid ownerId,
+        string ownerType,
+        StorageKey key) : base(id, mediaData, AssetType.Video, status, ownerId, ownerType, key)
     {
     }
 
@@ -41,7 +43,8 @@ public class VideoAsset : MediaAsset
         return UnitResult.Success<Error>();
     }
 
-    public static Result<VideoAsset, Error> CreateForUpload(Guid id, MediaData mediaData)
+    public static Result<VideoAsset, Error> CreateForUpload(Guid id, MediaData mediaData, Guid ownerId,
+        string ownerType)
     {
         var validationResult = Validate(mediaData);
         if (validationResult.IsFailure)
@@ -55,6 +58,8 @@ public class VideoAsset : MediaAsset
             id,
             mediaData,
             MediaStatus.Uploading,
+            ownerId,
+            ownerType,
             key.Value
         );
     }

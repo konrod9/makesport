@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts;
+using FileService.Contracts.Dtos;
 using FluentValidation;
 using VenuesService.Application.Validation;
 using VenuesService.Contracts.Dtos;
@@ -100,11 +101,34 @@ public class GetVenuesUseCase
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
         
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
+        var venueIds = venues.Select(v => v.Id).ToList();
+
+        Result<GetByOwnersResponse, FileService.Contracts.Shared.Error> mediaAssets = await _fileCommunicationService.GetByOwners(
+            new GetByOwnersRequest(venueIds, "venue"), 
+            cancellationToken);
+        if (mediaAssets.IsFailure)
+            return Error.Failure("file-service-error", "Error while getting files from FileService");
+        
+        var imagesByVenue = mediaAssets.Value.MediaAssets
+            .GroupBy(m => m.OwnerId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var venue in venues)
+        {
+            if (imagesByVenue.TryGetValue(venue.Id, out var images))
+            {
+                venue.Images = images.Select(i => new MediaDto()
+                {
+                    Id = i.Id,
+                    Status = i.Status,
+                    Url = i.Url
+                }).ToList();
+            }
+        }
 
         /*IReadOnlyList<Guid> mediaAssetIds = venues.Where(v => v.Video != null).Select(v => v.Video!.Id).ToList();
 
-        var mediaAssets = await _fileCommunicationService
+        Result<GetMediaAssetsResponse, FileService.Contracts.Shared.Error> mediaAssets = await _fileCommunicationService
             .GetMediaAssets(new GetMediaAssetsRequest(mediaAssetIds), cancellationToken);
         if (mediaAssets.IsFailure)
             return Error.Failure("file-service-error", "Error while getting videos from FileService");
@@ -120,8 +144,8 @@ public class GetVenuesUseCase
                     Id = mediaAsset.Id, Status = mediaAsset.Status, Url = mediaAsset.Url,
                 };
             }
-        }
+        }*/
 
-        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);*/
+        return new PaginationVenuesResponse(venues, venuesCount, request.Page, request.PageSize, totalPages);
     }
 }

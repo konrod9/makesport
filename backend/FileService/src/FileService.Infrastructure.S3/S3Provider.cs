@@ -58,7 +58,8 @@ public class S3Provider : IDisposable, IFileStorageProvider
         StorageKey storageKey,
         string uploadId,
         int totalChunks,
-        CancellationToken ct)
+        CancellationToken ct,
+        bool useExternalEndpoint = false)
     {
         try
         {
@@ -82,6 +83,9 @@ public class S3Provider : IDisposable, IFileStorageProvider
 
                         var url = await _s3Client.GetPreSignedURLAsync(request);
 
+                        if (useExternalEndpoint)
+                            url = ReplaceEndpoint(url);
+
                         return new ChunkUploadUrl(partNumber, url);
                     }
                     finally
@@ -103,7 +107,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
         }
     }
 
-    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey)
+    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey, bool useExternalEndpoint = false)
     {
         try
         {
@@ -117,6 +121,9 @@ public class S3Provider : IDisposable, IFileStorageProvider
             };
 
             var response = await _s3Client.GetPreSignedURLAsync(request);
+            
+            if (useExternalEndpoint)
+                response = ReplaceEndpoint(response);
 
             return response;
         }
@@ -130,7 +137,8 @@ public class S3Provider : IDisposable, IFileStorageProvider
 
     public async Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
         IEnumerable<StorageKey> storageKeys,
-        CancellationToken ct)
+        CancellationToken ct,
+        bool useExternalEndpoint = false)
     {
         try
         {
@@ -150,6 +158,9 @@ public class S3Provider : IDisposable, IFileStorageProvider
                     };
 
                     var url = await _s3Client.GetPreSignedURLAsync(request);
+                    
+                    if (useExternalEndpoint)
+                        url = ReplaceEndpoint(url);
 
                     return new MediaUrl(storageKey, url);
                 }
@@ -158,7 +169,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
                     _requestsSemaphore.Release();
                 }
             });
-            
+
             return await Task.WhenAll(tasks);
         }
         catch (Exception ex)
@@ -206,4 +217,7 @@ public class S3Provider : IDisposable, IFileStorageProvider
         _requestsSemaphore.Release();
         _requestsSemaphore.Dispose();
     }
+
+    private string ReplaceEndpoint(string presignedUrl) =>
+        presignedUrl.Replace(_fileStorageOptions.ServiceUrl, _fileStorageOptions.ExternalEndpoint, StringComparison.OrdinalIgnoreCase);
 }
