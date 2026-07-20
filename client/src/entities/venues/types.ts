@@ -36,7 +36,7 @@ export type AddressDto = {
 
 export type CoordinatesDto = {
   latitude: number;
-  longitue: number;
+  longitude: number;
 };
 
 export type MediaStatus =
