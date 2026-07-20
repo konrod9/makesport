@@ -4,14 +4,14 @@ using FileService.Application.UseCases.GetMediaAssetInfo;
 using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
 using FluentValidation;
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FileService.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
@@ -21,20 +21,6 @@ public static class DependencyInjection
         services.AddScoped<GetMediaAssetInfoUseCase>();
         services.AddScoped<GetByOwnersUseCase>();
 
-        services.AddStackExchangeRedisCache(setup =>
-        {
-            setup.Configuration = "localhost:6379";
-        });
-        
-        services.AddHybridCache(options =>
-        {
-            options.DefaultEntryOptions = new HybridCacheEntryOptions()
-            {
-                LocalCacheExpiration = TimeSpan.FromMinutes(5),
-                Expiration = TimeSpan.FromMinutes(30)
-            };
-        });
-        
         return services;
     }
 }
