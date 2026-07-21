@@ -296,7 +296,11 @@ export default function AddVenuePage() {
                 <MapPin className="h-5 w-5 text-chart-3" />
                 Местоположение
               </CardTitle>
-              <CardDescription>Где находится площадка</CardDescription>
+              <CardDescription>
+                Выберите точку на карте. Вы также можете редактировать значение
+                адреса, однако корректность совпадения строкового адреса с
+                меткой на карте будет проверена модератором при рассмотрении
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

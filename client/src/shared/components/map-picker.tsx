@@ -54,8 +54,6 @@ function MapInner({ onCoordinatesChange, onAddressChange }: MapPickerProps) {
         latitude: newCoords[0],
         longitude: newCoords[1],
       });
-      console.log(`lat: ${newCoords[0]}`);
-      console.log(`lon: ${newCoords[1]}`);
 
       if (!ymaps) return;
 
