@@ -1,7 +1,7 @@
 "use client";
 
+import { Venue } from "@/entities/venues/types";
 import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
-import { Venue } from "../lib/data";
 
 interface VenueMapProps {
   venues: Venue[];
@@ -12,7 +12,6 @@ interface VenueMapProps {
 
 export function VenuesMap({
   venues,
-  selectedVenue,
   onSelectVenue,
   onShowDetails,
 }: VenueMapProps) {
@@ -29,10 +28,10 @@ export function VenuesMap({
         {venues.map((venue) => (
           <Placemark
             key={venue.id}
-            geometry={[venue.coordinates.lat, venue.coordinates.lng]}
+            geometry={[venue.coordinates.latitude, venue.coordinates.longitude]}
             properties={{
-              hintContent: venue.name,
-              balloonContentBody: venue.name,
+              hintContent: venue.title,
+              balloonContentBody: venue.title,
             }}
             options={{
               preset: "islands#blueDotIcon",

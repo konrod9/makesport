@@ -2,9 +2,8 @@ import { apiClient } from "@/shared/api/axios-instance";
 import { Envelope } from "@/shared/api/envelope";
 import { PaginationVenuesResponse } from "@/shared/api/types";
 import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
-import { infiniteQueryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { VenuesFilterState } from "@/features/venues/model/venues-filter-store";
-import { useFileUpload } from "../file/model/use-file-upload";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -12,6 +11,10 @@ export type GetVenuesRequest = {
   pageSize: number;
   hasLighting?: boolean;
   onlyFree?: boolean;
+  onlyOpen?: boolean;
+  city?: string;
+  sportType?: string;
+  surface?: string;
 };
 
 export type CreateVenueRequest = {
@@ -67,6 +70,13 @@ export const venuesQueryOptions = {
         pageSize: data.pages[0]?.pageSize ?? filter.pageSize,
         totalPages: data.pages[0]?.totalPages ?? 0,
       }),
+    });
+  },
+
+  getVenuesQueryOptions: (filter: VenuesFilterState) => {
+    return queryOptions({
+      queryKey: [venuesQueryOptions.baseKey, filter],
+      queryFn: () => venuesApi.getVenues({ ...filter, page: 1 }),
     });
   },
 };
