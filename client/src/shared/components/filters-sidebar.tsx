@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
-import { cities, sportTypes, surfaces } from "@/shared/lib/data";
+import { sportTypes, surfaces } from "@/shared/lib/data";
 import {
   setFilterCity,
   setFilterHasLighting,
@@ -31,6 +31,7 @@ import {
   setInitialFilters,
   useGetVenuesFilter,
 } from "@/features/venues/model/venues-filter-store";
+import { useCities } from "@/features/venues/model/use-cities";
 
 interface FiltersProps {
   variant?: "sidebar" | "compact" | "sheet";
@@ -39,6 +40,8 @@ interface FiltersProps {
 export function FiltersContent({ hideTitle = false }: { hideTitle?: boolean }) {
   const { city, sportType, surface, onlyFree, onlyOpen, hasLighting } =
     useGetVenuesFilter();
+
+  const { data } = useCities();
 
   const hasActiveFilters =
     city !== undefined ||
@@ -78,9 +81,9 @@ export function FiltersContent({ hideTitle = false }: { hideTitle?: boolean }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Все города</SelectItem>
-              {cities.map((city) => (
-                <SelectItem key={city} value={city}>
-                  {city}
+              {data?.result?.map((city) => (
+                <SelectItem key={city.name} value={city.name}>
+                  {city.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -177,13 +180,6 @@ export function FiltersSidebar(props: FiltersProps) {
   const { variant = "sidebar" } = props;
   const { search } = useGetVenuesFilter();
 
-  // const [localSearch, setLocalSearch] = useState(search ?? "");
-  // const [debouncedSearch] = useDebounce(localSearch, 300);
-
-  // useEffect(() => {
-  //   setFilterSearch(debouncedSearch);
-  // }, [debouncedSearch]);
-
   if (variant === "compact") {
     return (
       <div className="space-y-4">
@@ -244,8 +240,8 @@ export function FiltersSidebar(props: FiltersProps) {
             <SheetHeader>
               <SheetTitle>Фильтры</SheetTitle>
             </SheetHeader>
-            <div className="mt-6">
-              {/* <FiltersContent onReset={resetFilters} /> */}
+            <div className="ml-6">
+              <FiltersContent />
             </div>
           </SheetContent>
         </Sheet>

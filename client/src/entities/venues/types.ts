@@ -39,6 +39,10 @@ export type CoordinatesDto = {
   longitude: number;
 };
 
+export type CityDto = {
+  name: string;
+} & CoordinatesDto;
+
 export type MediaStatus =
   | "uploading"
   | "uploaded"

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { FiltersSidebar } from "@/shared/components/filters-sidebar";
 import { VenueDetailsDialog } from "@/shared/components/venue-details-dialog";
 import { useGetVenuesFilter } from "@/features/venues/model/venues-filter-store";
 import { Venue } from "@/entities/venues/types";
 import { useVenuesListQuery } from "@/features/venues/model/use-venues-list-query";
+import { useCities } from "@/features/venues/model/use-cities";
 
 const VenueMap = dynamic(
   () => import("@/shared/components/map-page").then((mod) => mod.VenuesMap),
@@ -23,6 +24,15 @@ const VenueMap = dynamic(
 export default function MapPage() {
   const { search, hasLighting, onlyFree, onlyOpen, city, sportType, surface } =
     useGetVenuesFilter();
+
+  const { data: cities } = useCities();
+
+  const center = useMemo(() => {
+    const found = (cities?.result ?? []).find((c) => c.name === city);
+    return found
+      ? ([found.latitude, found.longitude] as [number, number])
+      : undefined;
+  }, [cities, city]);
 
   const { data, isPending, error, isError } = useVenuesListQuery({
     search: search === "" ? undefined : search,
@@ -65,6 +75,7 @@ export default function MapPage() {
             <VenueMap
               venues={data?.venues ?? []}
               selectedVenue={selectedVenue}
+              center={center}
               onSelectVenue={setSelectedVenue}
               onShowDetails={handleShowDetails}
             />

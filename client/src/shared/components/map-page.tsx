@@ -6,12 +6,14 @@ import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 interface VenueMapProps {
   venues: Venue[];
   selectedVenue: Venue | null;
+  center: [number, number];
   onSelectVenue: (venue: Venue | null) => void;
   onShowDetails?: (venue: Venue) => void;
 }
 
 export function VenuesMap({
   venues,
+  center,
   onSelectVenue,
   onShowDetails,
 }: VenueMapProps) {
@@ -22,7 +24,7 @@ export function VenuesMap({
       }}
     >
       <Map
-        defaultState={{ center: [55.75, 37.57], zoom: 9 }}
+        state={{ center: center ?? [55.75, 37.57], zoom: 9 }}
         className="w-full h-full"
       >
         {venues.map((venue) => (

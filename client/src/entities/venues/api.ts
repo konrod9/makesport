@@ -1,7 +1,13 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { Envelope } from "@/shared/api/envelope";
 import { PaginationVenuesResponse } from "@/shared/api/types";
-import { AddressDto, CoordinatesDto, Venue, WorkingHoursDto } from "./types";
+import {
+  AddressDto,
+  CityDto,
+  CoordinatesDto,
+  Venue,
+  WorkingHoursDto,
+} from "./types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { VenuesFilterState } from "@/features/venues/model/venues-filter-store";
 
@@ -47,6 +53,12 @@ export const venuesApi = {
 
     return response.data;
   },
+
+  getCities: async () => {
+    const response = await apiClient.get<Envelope<CityDto[]>>("/venues/cities");
+
+    return response.data;
+  },
 };
 
 export const venuesQueryOptions = {
@@ -79,4 +91,11 @@ export const venuesQueryOptions = {
       queryFn: () => venuesApi.getVenues({ ...filter, page: 1 }),
     });
   },
+
+  getCitiesQueryOptions: () =>
+    queryOptions({
+      queryKey: ["cities"],
+      queryFn: () => venuesApi.getCities(),
+      staleTime: 5 * 60 * 1000,
+    }),
 };
