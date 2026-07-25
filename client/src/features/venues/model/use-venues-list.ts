@@ -7,7 +7,7 @@ import { VenuesFilterState } from "./venues-filter-store";
 
 export const PAGE_SIZE = 2;
 
-type UseVenuesListParams = VenuesFilterState & {
+export type UseVenuesListParams = VenuesFilterState & {
   pageSize: number;
 };
 

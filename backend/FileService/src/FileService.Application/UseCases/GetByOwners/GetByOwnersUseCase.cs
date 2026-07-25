@@ -46,20 +46,14 @@ public class GetByOwnersUseCase
         var readyMediaAssets = mediaAssets.Where(m => m.Status == MediaStatus.Uploaded).ToList();
         var keys = readyMediaAssets.Select(m => m.Key).ToList();
 
-        var presignedUrl = await GetPresignedUrlsFromCache(keys, cancellationToken);
-
-        var (_, isFailure, urls, error) = await _fileStorageProvider.GenerateDownloadUrlsAsync(keys, cancellationToken);
-        if (isFailure)
-            return error;
-
-        var urlsDict = urls.ToDictionary(u => u.StorageKey, u => u.PresignedUrl);
+        var urls = await GetPresignedUrlsFromCache(keys, cancellationToken);
 
         var results = new List<GetMediaAssetDto>();
         foreach (var mediaAsset in mediaAssets)
         {
             string? downloadUrl = null;
-
-            if (urlsDict.TryGetValue(mediaAsset.Key, out var url))
+    
+            if (urls.TryGetValue(mediaAsset.Key, out var url))
             {
                 downloadUrl = url;
             }
@@ -122,7 +116,7 @@ public class GetByOwnersUseCase
         if (keysToGenerate.Count == 0)
             return presignedUrls;
 
-        var mediaUrlsResult = await _fileStorageProvider.GenerateDownloadUrlsAsync(keysToGenerate, cancellationToken);
+        var mediaUrlsResult = await _fileStorageProvider.GenerateDownloadUrlsAsync(keysToGenerate, cancellationToken, true);
         if (mediaUrlsResult.IsFailure)
             return presignedUrls;
 

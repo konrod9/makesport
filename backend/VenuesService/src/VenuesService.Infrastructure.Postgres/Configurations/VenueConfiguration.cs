@@ -61,8 +61,8 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.Property(v => v.Coordinates)
             .HasConversion(
-                c => new Point(c.Latitude, c.Longitude),
-                p => Coordinates.Create(p.X, p.Y).Value)
+                c => new Point(c.Longitude, c.Latitude),
+                p => Coordinates.Create(p.Y, p.X).Value)
             .HasColumnType("geography (Point,4326)")
             .HasColumnName("coordinates");
     }

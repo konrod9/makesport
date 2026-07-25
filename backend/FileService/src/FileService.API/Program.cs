@@ -2,6 +2,7 @@ using System.Globalization;
 using FileService.API.Configuration;
 using FileService.Application;
 using FileService.Infrastructure.Postgres;
+using FileService.Infrastructure.Redis;
 using FileService.Infrastructure.S3;
 using Serilog;
 
@@ -24,9 +25,10 @@ try
     
     builder.Services.AddCors();
 
-    builder.Services.AddApplication();
+    builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructurePostgres(builder.Configuration);
     builder.Services.AddS3(builder.Configuration);
+    builder.Services.AddRedisCache(builder.Configuration);
 
     var app = builder.Build();
 

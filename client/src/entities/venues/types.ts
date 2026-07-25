@@ -36,8 +36,12 @@ export type AddressDto = {
 
 export type CoordinatesDto = {
   latitude: number;
-  longitue: number;
+  longitude: number;
 };
+
+export type CityDto = {
+  name: string;
+} & CoordinatesDto;
 
 export type MediaStatus =
   | "uploading"

@@ -44,7 +44,7 @@ public class GetMediaAssetsUseCase
 
         var presignedUrl = await GetPresignedUrlsFromCache(keys, cancellationToken);
 
-        var (_, isFailure, urls, error) = await _fileStorageProvider.GenerateDownloadUrlsAsync(keys, cancellationToken);
+        var (_, isFailure, urls, error) = await _fileStorageProvider.GenerateDownloadUrlsAsync(keys, cancellationToken, true);
         if (isFailure)
             return error;
 

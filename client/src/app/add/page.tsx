@@ -43,6 +43,7 @@ import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 import { FormError } from "@/shared/components/ui/form-error";
 import { FileUploadDialog } from "@/entities/file/ui/file-upload-dialog";
 import { useFileUpload } from "@/entities/file/model/use-file-upload";
+import dynamic from "next/dynamic";
 
 type SelectedFile = {
   id: string;
@@ -63,6 +64,18 @@ type CreateVenueData = {
   isOpen: boolean;
 };
 
+const MapPicker = dynamic(
+  () => import("@/shared/components/map-picker").then((m) => m.MapPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full flex items-center justify-center bg-card text-muted-foreground">
+        Загрузка карты...
+      </div>
+    ),
+  },
+);
+
 export default function AddVenuePage() {
   const initialData: CreateVenueData = {
     title: "",
@@ -75,7 +88,7 @@ export default function AddVenuePage() {
     },
     coordinates: {
       latitude: 0,
-      longitue: 0,
+      longitude: 0,
     },
     sportType: "",
     surface: "",
@@ -100,6 +113,7 @@ export default function AddVenuePage() {
     formState: { errors },
     reset,
     control,
+    setValue,
   } = useForm<CreateVenueData>({
     defaultValues: initialData,
   });
@@ -176,6 +190,24 @@ export default function AddVenuePage() {
       return prev.filter((f) => f.id !== id);
     });
   }, []);
+
+  const handleCoordsChange = useCallback(
+    (coords: CoordinatesDto) => {
+      setValue("coordinates.latitude", coords.latitude);
+      setValue("coordinates.longitude", coords.longitude);
+    },
+    [setValue],
+  );
+
+  const handleAddressChange = useCallback(
+    (address: AddressDto) => {
+      setValue("address.city", address.city);
+      setValue("address.street", address.street);
+      setValue("address.building", address.building ?? "");
+      setValue("address.fullName", address.fullName);
+    },
+    [setValue],
+  );
 
   if (isSuccess) {
     return (
@@ -264,40 +296,27 @@ export default function AddVenuePage() {
                 <MapPin className="h-5 w-5 text-chart-3" />
                 Местоположение
               </CardTitle>
-              <CardDescription>Где находится площадка</CardDescription>
+              <CardDescription>
+                Выберите точку на карте. Вы также можете редактировать значение
+                адреса, однако корректность совпадения строкового адреса с
+                меткой на карте будет проверена модератором при рассмотрении
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="address.city">Город *</Label>
-                  <Controller<CreateVenueData>
-                    name="address.city"
-                    control={control}
-                    rules={{ required: "Город обязателен" }}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value?.toString()}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger
-                          id="city"
-                          className={`bg-input border-border ${
-                            errors.address?.city
-                              ? "border-destructive focus-visible:ring-destructive"
-                              : ""
-                          }`}
-                        >
-                          <SelectValue placeholder="Выберите город" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cities.map((city) => (
-                            <SelectItem key={city} value={city}>
-                              {city}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
+                  <Input
+                    id="city"
+                    placeholder="Москва"
+                    className={`bg-input border-border ${
+                      errors.address?.city
+                        ? "border-destructive focus-visible:ring-destructive"
+                        : ""
+                    }`}
+                    {...register("address.city", {
+                      required: "Город",
+                    })}
                   />
                   <FormError message={errors.address?.city?.message} />
                 </div>
@@ -305,7 +324,7 @@ export default function AddVenuePage() {
                   <Label htmlFor="address">Адрес *</Label>
                   <Input
                     id="address"
-                    placeholder="ул. Примерная, 123"
+                    placeholder="ул. Ленина, 123"
                     className={`bg-input border-border ${
                       errors.address?.street
                         ? "border-destructive focus-visible:ring-destructive"
@@ -317,6 +336,12 @@ export default function AddVenuePage() {
                   />
                   <FormError message={errors.address?.street?.message} />
                 </div>
+              </div>
+              <div className="mt-4 h-[400px] rounded-lg overflow-hidden border border-border">
+                <MapPicker
+                  onCoordinatesChange={handleCoordsChange}
+                  onAddressChange={handleAddressChange}
+                />
               </div>
             </CardContent>
           </Card>
