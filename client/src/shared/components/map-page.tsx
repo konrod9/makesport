@@ -36,7 +36,7 @@ export function VenuesMap({
               balloonContentBody: venue.title,
             }}
             options={{
-              preset: "islands#blueDotIcon",
+              preset: "islands#redCircleDotIcon",
             }}
             onClick={() => {
               onSelectVenue(venue);

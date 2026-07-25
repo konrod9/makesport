@@ -127,7 +127,7 @@ export function VenueDetailsDialog({
             <MapPin className="h-4 w-4 text-chart-3 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-foreground">
-                {venue.address.fullName}
+                {venue.address.street}
               </p>
               <p className="text-sm text-muted-foreground">
                 {venue.address.city}
