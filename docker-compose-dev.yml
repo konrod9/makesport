@@ -99,16 +99,16 @@ services:
       retries: 5
     restart: always
 
-  seq:
-    container_name: makesport-seq
-    image: datalust/seq:latest
-    environment:
-      ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
-    ports:
-      - "8081:80"
-      - "5341:5341"
-    restart: always
+  # seq:
+  #   container_name: makesport-seq
+  #   image: datalust/seq:latest
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+  #   ports:
+  #     - "8081:80"
+  #     - "5341:5341"
+  #   restart: always
 
   minio:
     container_name: makesport-minio
@@ -140,13 +140,13 @@ services:
       - file-service
       #- minio
 
-  # frontend:
-  #   container_name: makesport-frontend
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   env_file:
-  #     - ./client/.env
-  #   restart: always
+  frontend:
+    container_name: makesport-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    restart: always
