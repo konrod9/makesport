@@ -103,27 +103,27 @@ services:
     restart: always
 
   file-service-migrations:
-  container_name: file-service-migrations
-  build:
-    context: ./backend
-    dockerfile: FileService/Dockerfile
-    args:
-      NUGET_USERNAME: ${NUGET_USERNAME}
-      NUGET_PASSWORD: ${NUGET_PASSWORD}
-  depends_on:
-    postgres:
-      condition: service_healthy
-  restart: "no"
-  environment:
-    - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
-  env_file:
-    - .env
-  entrypoint:
-    [
-      "/bin/sh",
-      "-c",
-      './efbundle --connection "$DATABASE_FILE_SERVICE_CONNECTION"',
-    ]
+    container_name: file-service-migrations
+    build:
+      context: ./backend
+      dockerfile: FileService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
+    env_file:
+      - .env
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        './efbundle --connection "$DATABASE_FILE_SERVICE_CONNECTION"',
+      ]
 
   frontend:
     container_name: makesport-frontend
