@@ -6,7 +6,7 @@ import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 interface VenueMapProps {
   venues: Venue[];
   selectedVenue: Venue | null;
-  center: [number, number];
+  center?: [number, number];
   onSelectVenue: (venue: Venue | null) => void;
   onShowDetails?: (venue: Venue) => void;
 }

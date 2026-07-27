@@ -30,7 +30,7 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
-import { cities, sportTypes, surfaces } from "@/shared/lib/data";
+import { sportTypes, surfaces } from "@/shared/lib/data";
 import Link from "next/link";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Button } from "@/shared/components/ui/button";
