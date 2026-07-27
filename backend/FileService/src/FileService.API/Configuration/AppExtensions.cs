@@ -14,7 +14,9 @@ public static class AppExtensions
                     "http://localhost:3001",
                     "http://localhost",
                     "http://frontend:3000",
-                    "http://localhost/")
+                    "http://localhost/",
+                    "https://make-sport.ru",
+                    "https://www.make-sport.ru")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();

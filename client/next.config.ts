@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "make-sport.ru",
+        pathname: "/storage/**",
+      },
     ],
   },
 };

@@ -1,0 +1,130 @@
+networks:
+  default:
+    name: "makesport"
+
+volumes:
+  makesport-pg-data:
+  makesport-minio-data:
+  caddy-data:
+  caddy-config:
+
+services:
+  postgres:
+    container_name: makesport-pg
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: makesport-db
+    volumes:
+      - makesport-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d makesport-db -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  minio:
+    container_name: makesport-minio
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server --console-address ":9001" /data
+    volumes:
+      - makesport-minio-data:/data
+    restart: always
+
+  redis:
+    container_name: makesport-redis
+    image: redis:alpine
+    restart: always
+
+  venues-service:
+    container_name: makesport-venues-service
+    build:
+      context: ./backend
+      dockerfile: VenuesService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5163
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+
+  venues-migrations:
+    profiles: ["migrations"]
+    container_name: venues-migrations
+    build:
+      context: ./backend
+      dockerfile: VenuesService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      - ConnectionStrings__Database=${DATABASE_VENUES_CONNECTION}
+    env_file:
+      - .env.production
+    entrypoint:
+      ["/bin/sh", "-c", './efbundle --connection "$DATABASE_VENUES_CONNECTION"']
+
+  file-service:
+    container_name: makesport-file-service
+    build:
+      context: ./backend
+      dockerfile: FileService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8002
+      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+    restart: always
+
+  frontend:
+    container_name: makesport-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=https://make-sport.ru/api
+      - NEXT_PUBLIC_YMAPS_API_KEY=${NEXT_PUBLIC_YMAPS_API_KEY}
+    restart: always
+
+  caddy:
+    container_name: makesport-caddy
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - venues-service
+      - file-service
+      - frontend
+      - minio
+    restart: always

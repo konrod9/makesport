@@ -1,0 +1,30 @@
+make-sport.ru {
+    @api_venues {
+        path /api/venues /api/venues/*
+    }
+    handle @api_venues {
+        uri strip_prefix /api
+        reverse_proxy venues-service:5163
+    }
+
+    @api_files {
+        path /api/files /api/files/*
+    }
+    handle @api_files {
+        uri strip_prefix /api
+        reverse_proxy file-service:8002
+    }
+
+    # Static storage (MinIO через presigned URLs)
+    @storage {
+        path /storage/*
+    }
+    handle @storage {
+        uri strip_prefix /storage
+        reverse_proxy minio:9000
+    }
+
+    handle {
+        reverse_proxy frontend:3000
+    }
+}
