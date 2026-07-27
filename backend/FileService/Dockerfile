@@ -19,7 +19,21 @@ COPY ["FileService/", "FileService/"]
 
 RUN dotnet restore "FileService/src/FileService.API/FileService.API.csproj"
 
+RUN dotnet tool install --global dotnet-ef --version 9.0.0
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
 WORKDIR "/src/FileService/src/FileService.API"
+
+RUN dotnet ef migrations bundle \
+    --project "../VenuesService.Infrastructure.Postgres/VenuesService.Infrastructure.Postgres.csproj" \
+    --startup-project "VenuesService.API.csproj" \
+    --output /app/efbundle \
+    --configuration Release \
+    --verbose \
+    -- --configfile /src/nuget.config
+
+RUN chmod +x /app/efbundle
+
 RUN dotnet build "FileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
@@ -29,4 +43,5 @@ RUN dotnet publish "FileService.API.csproj" -c $BUILD_CONFIGURATION -o /app/publ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=build /app/efbundle .
 ENTRYPOINT ["dotnet", "FileService.API.dll"]
