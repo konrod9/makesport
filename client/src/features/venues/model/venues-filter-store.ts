@@ -33,7 +33,7 @@ const initialState: VenuesFilterState = {
   onlyFree: false,
   onlyOpen: false,
   hasLighting: false,
-  city: "Москва",
+  city: "",
   sportType: "",
   surface: "",
 };
@@ -119,7 +119,7 @@ export const setFilterHasLighting = (input: VenuesFilterState["hasLighting"]) =>
 
 export const setInitialFilters = () => {
   setFilterSearch("");
-  setFilterCity("Москва");
+  setFilterCity("");
   setFilterSportType("");
   setFilterSurface("");
   setFilterOnlyFree(false);

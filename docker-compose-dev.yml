@@ -19,6 +19,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:5163
+      - ConnectionStrings__Postgres=${DATABASE_VENUES_CONNECTION}
     env_file:
       - .env
 
@@ -34,8 +35,6 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
-    environment:
-      - ConnectionStrings__Database=${DATABASE_VENUES_CONNECTION}
     env_file:
       - .env
     entrypoint:
@@ -54,7 +53,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8002
-      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
+      - ConnectionStrings__Postgres=${DATABASE_FILE_SERVICE_CONNECTION}
     env_file:
       - .env
 
@@ -70,8 +69,6 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
-    environment:
-      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
     env_file:
       - .env
     entrypoint:
