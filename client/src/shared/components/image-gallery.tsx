@@ -46,13 +46,21 @@ export function ImageGallery({
   isFree,
 }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [prevImages, setPrevImages] = useState(images);
   const [imageError, setImageError] = useState(false);
+
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   const hasImages = images.length > 0;
   const hasMultiple = images.length > 1;
   const currentImage = images[currentIndex];
+
+  if (prevImages !== images) {
+    setPrevImages(images);
+    setCurrentIndex(0);
+    setImageError(false);
+  }
 
   const goTo = useCallback((index: number) => {
     setCurrentIndex(index);
@@ -86,11 +94,6 @@ export function ImageGallery({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hasMultiple, goNext, goPrev]);
-
-  useEffect(() => {
-    setCurrentIndex(0);
-    setImageError(false);
-  }, [images]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
