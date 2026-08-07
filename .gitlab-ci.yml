@@ -5,6 +5,7 @@ default:
 stages:
   - lint
   - test
+  - cleanup
   - deploy
 
 client-lint:
@@ -39,6 +40,7 @@ backend-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:10.0
   variables:
+    TESTCONTAINERS_RYUK_DISABLED: "true"
     NUGET_USERNAME: gitlab-ci-token
     NUGET_PASSWORD: "$CI_JOB_TOKEN"
     NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget
@@ -51,6 +53,13 @@ backend-tests:
     - dotnet nuget update source gitlab --username "$NUGET_USERNAME" --password "$NUGET_PASSWORD" --store-password-in-clear-text --configfile nuget.config
     - dotnet test VenuesService/VenuesService.sln
     - dotnet test FileService/FileService.sln
+
+cleanup-testcontainers:
+  stage: cleanup
+  image: docker:latest
+  when: always
+  script:
+    - docker ps -aq --filter "label=org.testcontainers=true" | xargs -r docker rm -f
 
 deploy:
   stage: deploy
