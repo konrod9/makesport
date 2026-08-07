@@ -140,7 +140,7 @@ export function MapPicker(props: MapPickerProps) {
   return (
     <YMaps
       query={{
-        apikey: process.env.NEXT_PUBLIC_YMAPS_API_KEY ?? "",
+        apikey: process.env.NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY ?? "",
       }}
     >
       <MapInner {...props} />

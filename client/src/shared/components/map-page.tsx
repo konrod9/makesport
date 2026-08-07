@@ -17,12 +17,10 @@ export function VenuesMap({
   onSelectVenue,
   onShowDetails,
 }: VenueMapProps) {
-  console.log(process.env.NEXT_PUBLIC_YMAPS_JS_API_KEY);
-  console.log(process.env.NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY);
   return (
     <YMaps
       query={{
-        apikey: process.env.NEXT_PUBLIC_YMAPS_API_KEY ?? "",
+        apikey: process.env.NEXT_PUBLIC_YMAPS_JS_API_KEY ?? "",
       }}
     >
       <Map
