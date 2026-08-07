@@ -1,3 +1,7 @@
+default:
+  tags:
+    - selfhosted
+
 stages:
   - lint
   - test
@@ -34,12 +38,7 @@ client-build:
 backend-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:10.0
-  services:
-    - name: docker:dind
-      alias: docker
   variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
     NUGET_USERNAME: gitlab-ci-token
     NUGET_PASSWORD: "$CI_JOB_TOKEN"
     NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget
@@ -55,22 +54,14 @@ backend-tests:
 
 deploy:
   stage: deploy
-  image: alpine:latest
+  image: docker/compose:alpine
   only:
     - main
+  when: manual
   variables:
-    VPS_HOST: "$VPS_HOST"
-    VPS_USER: "$VPS_USER"
-    VPS_DIR: "$VPS_DIR"
-  before_script:
-    - apk add --no-cache openssh-client
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
-    - chmod 600 ~/.ssh/id_ed25519
-    - ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+    DOCKER_HOST: "unix:///var/run/docker.sock"
   script:
-    - ssh "$VPS_USER@$VPS_HOST" "cd $VPS_DIR && git pull origin main &&
-      docker compose -f docker-compose-prod.yml build &&
-      docker compose -f docker-compose-prod.yml up -d postgres minio redis &&
-      docker compose -f docker-compose-prod.yml --profile migrations up venues-migrations file-service-migrations &&
-      docker compose -f docker-compose-prod.yml up -d"
+    - docker compose -f docker-compose-prod.yml build
+    - docker compose -f docker-compose-prod.yml up -d postgres minio redis
+    - docker compose -f docker-compose-prod.yml --profile migrations up venues-migrations file-service-migrations
+    - docker compose -f docker-compose-prod.yml up -d
