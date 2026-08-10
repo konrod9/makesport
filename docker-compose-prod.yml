@@ -52,6 +52,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:5163
+      - ConnectionStrings__Postgres=${DATABASE_VENUES_CONNECTION}
     env_file:
       - .env
     depends_on:
@@ -72,8 +73,6 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
-    environment:
-      - ConnectionStrings__Database=${DATABASE_VENUES_CONNECTION}
     env_file:
       - .env
     entrypoint:
@@ -90,7 +89,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8002
-      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
+      - ConnectionStrings__Postgres=${DATABASE_FILE_SERVICE_CONNECTION}
     env_file:
       - .env
     depends_on:
@@ -114,8 +113,6 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
-    environment:
-      - ConnectionStrings__Database=${DATABASE_FILE_SERVICE_CONNECTION}
     env_file:
       - .env
     entrypoint:
@@ -130,9 +127,10 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    environment:
-      - NEXT_PUBLIC_API_BASE_URL=https://make-sport.ru/api
-      - NEXT_PUBLIC_YMAPS_API_KEY=${NEXT_PUBLIC_YMAPS_API_KEY}
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_YMAPS_JS_API_KEY: ${NEXT_PUBLIC_YMAPS_JS_API_KEY}
+        NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY: ${NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY}
     restart: always
 
   caddy:

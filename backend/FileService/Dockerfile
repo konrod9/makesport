@@ -25,8 +25,8 @@ ENV PATH="/root/.dotnet/tools:${PATH}"
 WORKDIR "/src/FileService/src/FileService.API"
 
 RUN dotnet ef migrations bundle \
-    --project "../VenuesService.Infrastructure.Postgres/VenuesService.Infrastructure.Postgres.csproj" \
-    --startup-project "VenuesService.API.csproj" \
+    --project "../FileService.Infrastructure.Postgres/FileService.Infrastructure.Postgres.csproj" \
+    --startup-project "FileService.API.csproj" \
     --output /app/efbundle \
     --configuration Release \
     --verbose \

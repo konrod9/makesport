@@ -20,7 +20,7 @@ export function VenuesMap({
   return (
     <YMaps
       query={{
-        apikey: process.env.NEXT_PUBLIC_YMAPS_API_KEY ?? "",
+        apikey: process.env.NEXT_PUBLIC_YMAPS_JS_API_KEY ?? "",
       }}
     >
       <Map

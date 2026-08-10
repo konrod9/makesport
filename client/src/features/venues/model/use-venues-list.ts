@@ -5,7 +5,7 @@ import { RefCallback, useCallback } from "react";
 import { useDebounce } from "use-debounce";
 import { VenuesFilterState } from "./venues-filter-store";
 
-export const PAGE_SIZE = 2;
+export const PAGE_SIZE = 10;
 
 export type UseVenuesListParams = VenuesFilterState & {
   pageSize: number;

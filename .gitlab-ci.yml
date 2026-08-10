@@ -1,0 +1,76 @@
+default:
+  tags:
+    - selfhosted
+
+stages:
+  - lint
+  - test
+  - cleanup
+  - deploy
+
+client-lint:
+  stage: lint
+  image: node:25-alpine
+  cache:
+    key: $CI_COMMIT_REF_SLUG-client
+    paths:
+      - client/node_modules/
+  script:
+    - cd client
+    - npm ci --legacy-peer-deps
+    - npm run lint
+
+client-build:
+  stage: test
+  image: node:25-alpine
+  cache:
+    key: $CI_COMMIT_REF_SLUG-client
+    paths:
+      - client/node_modules/
+  variables:
+    NEXT_PUBLIC_API_BASE_URL: "https://make-sport.ru/api"
+    NEXT_PUBLIC_YMAPS_JS_API_KEY: "$NEXT_PUBLIC_YMAPS_JS_API_KEY"
+    NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY: "$NEXT_PUBLIC_YMAPS_GEOCODER_API_KEY"
+  script:
+    - cd client
+    - npm ci --legacy-peer-deps
+    - npm run build
+
+backend-tests:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  variables:
+    TESTCONTAINERS_RYUK_DISABLED: "true"
+    NUGET_USERNAME: gitlab-ci-token
+    NUGET_PASSWORD: "$CI_JOB_TOKEN"
+    NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget
+  cache:
+    key: $CI_COMMIT_REF_SLUG-nuget
+    paths:
+      - .nuget/
+  script:
+    - cd backend
+    - dotnet nuget update source gitlab --username "$NUGET_USERNAME" --password "$NUGET_PASSWORD" --store-password-in-clear-text --configfile nuget.config
+    - dotnet test VenuesService/VenuesService.sln
+    - dotnet test FileService/FileService.sln
+
+cleanup-testcontainers:
+  stage: cleanup
+  image: docker:latest
+  when: always
+  script:
+    - docker ps -aq --filter "label=org.testcontainers=true" | xargs -r docker rm -f
+
+deploy:
+  stage: deploy
+  image: docker/compose:alpine
+  only:
+    - main
+  when: manual
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+  script:
+    - docker compose -f docker-compose-prod.yml build
+    - docker compose -f docker-compose-prod.yml up -d postgres minio redis
+    - docker compose -f docker-compose-prod.yml --profile migrations up venues-migrations file-service-migrations
+    - docker compose -f docker-compose-prod.yml up -d
