@@ -39,6 +39,9 @@ client-build:
 backend-tests:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:10.0
+  services:
+    - name: docker:dind
+      alias: docker
   variables:
     TESTCONTAINERS_RYUK_DISABLED: "true"
     NUGET_USERNAME: gitlab-ci-token
