@@ -13,4 +13,6 @@ public interface IUsersRepository
     Task<Result<AppUser, Error>> UpdateRoleAsync(AppUser user, UserRole newRole);
     
     Task<IReadOnlyList<AppUser>> GetAllAsync(CancellationToken cancellationToken);
+
+    Task<Result<AppUser, Error>> CreateAsync(AppUser user, string password);
 }

@@ -45,4 +45,19 @@ public class UsersRepository : IUsersRepository
     {
         return await _userManager.Users.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
     }
+
+    public async Task<Result<AppUser, Error>> CreateAsync(AppUser user, string password)
+    {
+        IdentityResult result = await _userManager.CreateAsync(user, password);
+        if (result.Succeeded) 
+            return user;
+
+        ErrorMessage[] errorMessages = result.Errors
+            .Select(e => new ErrorMessage(e.Code, e.Description))
+            .ToArray();
+
+        return result.Errors.Any(e => e.Code is "DuplicateUserName" or "DuplicateEmail") 
+            ? Error.Conflict(errorMessages) 
+            : Error.Failure(errorMessages);
+    }
 }

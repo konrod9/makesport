@@ -18,4 +18,7 @@ public static class AuthServiceErrors
     
     public static Error OperationCancelled() =>
         Error.Failure("auth-service.cancelled", "Operation was cancelled");
+    
+    public static Error EmailAlreadyExist() =>
+        Error.Conflict("email.already_exist", "Email already exist");
 }
