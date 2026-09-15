@@ -25,7 +25,7 @@ public class RegisterUseCase
         _refreshTokensRepository = refreshTokensRepository;
     }
 
-    public async Task<Result<RegisterResult, Error>> Handle(RegisterRequest request, CancellationToken cancellationToken)
+    public async Task<Result<RegisterResponse, Error>> Handle(RegisterRequest request, CancellationToken cancellationToken)
     {
         //TODO: Валидация входных данных RegisterRequest
 
@@ -38,7 +38,8 @@ public class RegisterUseCase
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            UserName = request.FirstName + request.LastName
+            UserName = request.FirstName + request.LastName,
+            CreatedAt = DateTime.UtcNow
         };
         
         Result<AppUser, Error> result = await _usersRepository.CreateAsync(user, request.Password);
@@ -56,7 +57,7 @@ public class RegisterUseCase
 
         await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
 
-        return new RegisterResult(
+        return new RegisterResponse(
             new AuthUserDto(user.Id, user.Email, user.FirstName, user.LastName, user.Role.ToString(), user.UserName),
             refreshToken.Token,
             accessToken);

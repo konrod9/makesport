@@ -2,6 +2,7 @@
 using AuthService.Application.Interfaces;
 using AuthService.Infrastructure.Authentication;
 using AuthService.Infrastructure.Persistence.Database;
+using AuthService.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,9 @@ public static class DependencyInjection
     {
         services.AddDbContext<AuthDbContext>(
             options => options.UseNpgsql(configuration.GetConnectionString("Postgres")));
+
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
 
         services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)))
             .AddScoped<IJwtService, JwtService>();

@@ -1,5 +1,6 @@
 using System.Globalization;
 using AuthService.API.Configuration;
+using AuthService.Application;
 using AuthService.Domain.Users;
 using AuthService.Infrastructure;
 using AuthService.Infrastructure.Persistence.Database;
@@ -25,7 +26,8 @@ try
     builder.Services.AddAuthStorage(builder.Configuration);
     builder.Services.AddIdentityCore<AppUser>()
         .AddEntityFrameworkStores<AuthDbContext>();
-    
+
+    builder.Services.AddApplication();
 
     var app = builder.Build();
 
