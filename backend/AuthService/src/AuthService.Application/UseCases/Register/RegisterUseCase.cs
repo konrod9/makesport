@@ -44,8 +44,7 @@ public class RegisterUseCase
         Result<AppUser, Error> result = await _usersRepository.CreateAsync(user, request.Password);
         if (result.IsFailure)
             return result.Error;
-
-
+        
         (var isSuccess, var isFailure, var accessToken, Error? error) = _jwtService.GenerateAccessToken(user);
         if (isFailure)
             return error;
