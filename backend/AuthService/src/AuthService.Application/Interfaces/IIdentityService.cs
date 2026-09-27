@@ -4,7 +4,7 @@ using FileService.Contracts.Shared;
 
 namespace AuthService.Application.Interfaces;
 
-public interface IUsersRepository
+public interface IIdentityService
 {
     Task<AppUser?> GetByIdAsync(Guid userId);
 
@@ -15,4 +15,10 @@ public interface IUsersRepository
     Task<IReadOnlyList<AppUser>> GetAllAsync(CancellationToken cancellationToken);
 
     Task<Result<AppUser, Error>> CreateAsync(AppUser user, string password);
+
+    Task<bool> IsLockedOutAsync(AppUser user);
+
+    Task<DateTimeOffset?> GetLockoutEndDateAsync(AppUser user);
+
+    Task<bool> CheckPasswordAsync(AppUser user, string password);
 }

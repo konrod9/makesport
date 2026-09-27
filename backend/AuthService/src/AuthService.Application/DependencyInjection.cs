@@ -1,4 +1,5 @@
-﻿using AuthService.Application.UseCases.Register;
+﻿using AuthService.Application.UseCases.Login;
+using AuthService.Application.UseCases.Register;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthService.Application;
@@ -10,6 +11,7 @@ public static class DependencyInjection
         //TODO: services.AddValidatorsFromAssembly()
 
         services.AddScoped<RegisterUseCase>();
+        services.AddScoped<LoginUseCase>();
 
         return services;
     }

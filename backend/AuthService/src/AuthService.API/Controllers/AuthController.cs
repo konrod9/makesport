@@ -1,6 +1,8 @@
 ﻿using AuthService.API.Configuration;
+using AuthService.Application.UseCases.Login;
 using AuthService.Application.UseCases.Register;
 using Microsoft.AspNetCore.Mvc;
+using RegisterRequest = AuthService.Application.UseCases.Register.RegisterRequest;
 
 namespace AuthService.API.Controllers;
 
@@ -12,6 +14,15 @@ public class AuthController
     public async Task<EndpointResult<RegisterResponse>> Register(
         [FromBody] RegisterRequest request,
         [FromServices] RegisterUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        return await useCase.Handle(request, cancellationToken);
+    }
+
+    [HttpPost("login")]
+    public async Task<EndpointResult<LoginResponse>> Login(
+        [FromBody] LoginRequest request,
+        [FromServices] LoginUseCase useCase,
         CancellationToken cancellationToken)
     {
         return await useCase.Handle(request, cancellationToken);

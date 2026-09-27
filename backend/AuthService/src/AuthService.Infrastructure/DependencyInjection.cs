@@ -16,7 +16,7 @@ public static class DependencyInjection
         services.AddDbContext<AuthDbContext>(
             options => options.UseNpgsql(configuration.GetConnectionString("Postgres")));
 
-        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
 
         services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)))

@@ -5,13 +5,13 @@ using FileService.Contracts.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthService.Infrastructure.Persistence.Repositories;
+namespace AuthService.Infrastructure.Authentication;
 
-public class UsersRepository : IUsersRepository
+public class IdentityService : IIdentityService
 {
     private readonly UserManager<AppUser> _userManager;
 
-    public UsersRepository(UserManager<AppUser> userManager)
+    public IdentityService(UserManager<AppUser> userManager)
     {
         _userManager = userManager;
     }
@@ -60,4 +60,13 @@ public class UsersRepository : IUsersRepository
             ? Error.Conflict(errorMessages) 
             : Error.Failure(errorMessages);
     }
+
+    public async Task<bool> IsLockedOutAsync(AppUser user) =>
+        await _userManager.IsLockedOutAsync(user);
+
+    public async Task<DateTimeOffset?> GetLockoutEndDateAsync(AppUser user) =>
+        await _userManager.GetLockoutEndDateAsync(user);
+
+    public async Task<bool> CheckPasswordAsync(AppUser user, string password) =>
+        await _userManager.CheckPasswordAsync(user, password);
 }

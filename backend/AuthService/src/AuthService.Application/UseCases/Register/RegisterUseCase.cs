@@ -10,18 +10,18 @@ public class RegisterUseCase
 {
     private readonly ILogger<RegisterUseCase> _logger;
     private readonly IJwtService _jwtService;
-    private readonly IUsersRepository _usersRepository;
-    private IRefreshTokensRepository _refreshTokensRepository;
+    private readonly IIdentityService _identityService;
+    private readonly IRefreshTokensRepository _refreshTokensRepository;
 
     public RegisterUseCase(
         ILogger<RegisterUseCase> logger, 
         IJwtService jwtService, 
-        IUsersRepository usersRepository, 
+        IIdentityService identityService, 
         IRefreshTokensRepository refreshTokensRepository)
     {
         _logger = logger;
         _jwtService = jwtService;
-        _usersRepository = usersRepository;
+        _identityService = identityService;
         _refreshTokensRepository = refreshTokensRepository;
     }
 
@@ -29,7 +29,7 @@ public class RegisterUseCase
     {
         //TODO: Валидация входных данных RegisterRequest
 
-        AppUser? user = await _usersRepository.GetByEmailAsync(request.Email);
+        AppUser? user = await _identityService.GetByEmailAsync(request.Email);
         if (user != null)
             return AuthServiceErrors.EmailAlreadyExist();
 
@@ -42,7 +42,7 @@ public class RegisterUseCase
             CreatedAt = DateTime.UtcNow
         };
         
-        Result<AppUser, Error> result = await _usersRepository.CreateAsync(user, request.Password);
+        Result<AppUser, Error> result = await _identityService.CreateAsync(user, request.Password);
         if (result.IsFailure)
             return result.Error;
         
