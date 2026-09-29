@@ -1,7 +1,9 @@
 ﻿using AuthService.Application.Interfaces;
+using AuthService.Application.Validation;
 using AuthService.Domain.Users;
 using CSharpFunctionalExtensions;
 using FileService.Contracts.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AuthService.Application.UseCases.Login;
@@ -12,22 +14,27 @@ public class LoginUseCase
     private readonly IJwtService _jwtService;
     private readonly IRefreshTokensRepository _refreshTokensRepository;
     private readonly ILogger<LoginUseCase> _logger;
+    private readonly IValidator<LoginRequest> _validator;
 
     public LoginUseCase(
         IIdentityService identityService,
         IJwtService jwtService,
         IRefreshTokensRepository refreshTokensRepository, 
-        ILogger<LoginUseCase> logger)
+        ILogger<LoginUseCase> logger,
+        IValidator<LoginRequest> validator)
     {
         _identityService = identityService;
         _jwtService = jwtService;
         _refreshTokensRepository = refreshTokensRepository;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<Result<LoginResponse, Error>> Handle(LoginRequest request, CancellationToken cancellationToken)
     {
-        // TODO: Валидация входных данных LoginRequest
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return validationResult.ToError();
         
         AppUser? user = await _identityService.GetByEmailAsync(request.Email);
         if (user == null)

@@ -26,7 +26,7 @@ try
     builder.Services.AddAuthStorage(builder.Configuration);
     builder.Services.AddIdentityCore<AppUser>(options =>
         {
-            options.Password.RequiredLength = 8;
+            options.Password.RequiredLength = UserConstraints.PasswordMinLength;
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
