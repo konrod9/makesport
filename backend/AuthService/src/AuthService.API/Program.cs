@@ -24,7 +24,15 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddAuthStorage(builder.Configuration);
-    builder.Services.AddIdentityCore<AppUser>()
+    builder.Services.AddIdentityCore<AppUser>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredUniqueChars = 1;
+        })
         .AddEntityFrameworkStores<AuthDbContext>();
 
     builder.Services.AddApplication();
