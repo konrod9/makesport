@@ -51,7 +51,7 @@ public class JwtService : IJwtService
         return _tokenHandler.WriteToken(token);
     }
 
-    public Result<RefreshToken, Error> GenerateRefreshToken(Guid userId)
+    public RefreshToken GenerateRefreshToken(Guid userId)
     {
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64))
             .TrimEnd('=')

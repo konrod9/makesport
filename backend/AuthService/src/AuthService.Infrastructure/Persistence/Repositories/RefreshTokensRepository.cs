@@ -27,6 +27,7 @@ public class RefreshTokensRepository : IRefreshTokensRepository
 
         try
         {
+            // TODO: Убрать SaveChangesAsync()
             await _dbContext.SaveChangesAsync(cancellationToken);
             return refreshToken.Id;
         }
@@ -59,9 +60,4 @@ public class RefreshTokensRepository : IRefreshTokensRepository
 
     public async Task<int> SaveAsync(CancellationToken cancellationToken = default) =>
         await _dbContext.SaveChangesAsync(cancellationToken);
-
-    public async Task<Result<Guid, Error>> RevokeAsync(string token, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 }

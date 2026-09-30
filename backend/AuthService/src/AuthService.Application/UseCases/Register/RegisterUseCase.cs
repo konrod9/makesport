@@ -59,10 +59,7 @@ public class RegisterUseCase
         if (isFailure)
             return error;
 
-        (_, var isRefreshFailure, RefreshToken? refreshToken, Error? refreshTokenError) =
-            _jwtService.GenerateRefreshToken(user.Id);
-        if (isRefreshFailure)
-            return refreshTokenError;
+        var refreshToken = _jwtService.GenerateRefreshToken(user.Id);
 
         await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
 

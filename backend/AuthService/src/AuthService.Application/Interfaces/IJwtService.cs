@@ -8,7 +8,7 @@ public interface IJwtService
 {
     Result<string, Error> GenerateAccessToken(AppUser user);
     
-    Result<RefreshToken, Error> GenerateRefreshToken(Guid userId);
+    RefreshToken GenerateRefreshToken(Guid userId);
     
     Result<bool, Error> ValidateAccessToken(string accessToken);
 }

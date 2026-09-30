@@ -13,6 +13,4 @@ public interface IRefreshTokensRepository
         CancellationToken cancellationToken = default);
     
     Task<int> SaveAsync(CancellationToken cancellationToken = default);
-    
-    Task<Result<Guid, Error>> RevokeAsync(string token, CancellationToken cancellationToken);
 }

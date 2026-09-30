@@ -53,17 +53,15 @@ public class LoginUseCase
         if (accessTokenResult.IsFailure)
             return accessTokenResult.Error;
         
-        var refreshTokenResult = _jwtService.GenerateRefreshToken(user.Id);
-        if (refreshTokenResult.IsFailure)
-            return refreshTokenResult.Error;
+        var refreshToken = _jwtService.GenerateRefreshToken(user.Id);
         
-        var result = await _refreshTokensRepository.AddAsync(refreshTokenResult.Value, cancellationToken);
+        var result = await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
         if (result.IsFailure)
             return result.Error;
         
         _logger.LogInformation("User {UserId} logged in.", user.Id);
         
-        return new LoginResponse(accessTokenResult.Value, refreshTokenResult.Value.Token,
+        return new LoginResponse(accessTokenResult.Value, refreshToken.Token,
             new AuthUserDto(user.Id, user.Email ?? string.Empty, user.FirstName, user.LastName, user.Role.ToString(), user.UserName ?? string.Empty));
     }
 }
