@@ -1,5 +1,4 @@
-﻿using AuthService.Application;
-using AuthService.Application.Interfaces;
+﻿using AuthService.Application.Interfaces;
 using AuthService.Infrastructure.Authentication;
 using AuthService.Infrastructure.Persistence.Database;
 using AuthService.Infrastructure.Persistence.Repositories;
@@ -17,6 +16,9 @@ public static class DependencyInjection
             options => options.UseNpgsql(configuration.GetConnectionString("Postgres")));
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        
         services.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
 
         services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)))
