@@ -1,5 +1,6 @@
 ﻿using AuthService.API.Configuration;
 using AuthService.Application.UseCases.Login;
+using AuthService.Application.UseCases.Logout;
 using AuthService.Application.UseCases.Refresh;
 using AuthService.Application.UseCases.Register;
 using Microsoft.AspNetCore.Mvc;
@@ -27,5 +28,11 @@ public class AuthController
     public async Task<EndpointResult<RefreshResponse>> Refresh(
         [FromBody] RefreshRequest request,
         [FromServices] RefreshUseCase useCase,
+        CancellationToken cancellationToken) => await useCase.Handle(request, cancellationToken);
+    
+    [HttpPost("logout")]
+    public async Task<EndpointResult> Logout(
+        [FromBody] LogoutRequest request,
+        [FromServices] LogoutUseCase useCase,
         CancellationToken cancellationToken) => await useCase.Handle(request, cancellationToken);
 }

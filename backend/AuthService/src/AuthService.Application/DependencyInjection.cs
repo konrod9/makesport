@@ -1,4 +1,5 @@
 ﻿using AuthService.Application.UseCases.Login;
+using AuthService.Application.UseCases.Logout;
 using AuthService.Application.UseCases.Refresh;
 using AuthService.Application.UseCases.Register;
 using FluentValidation;
@@ -15,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<RegisterUseCase>();
         services.AddScoped<LoginUseCase>();
         services.AddScoped<RefreshUseCase>();
+        services.AddScoped<LogoutUseCase>();
 
         return services;
     }
