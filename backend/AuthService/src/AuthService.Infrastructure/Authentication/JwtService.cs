@@ -30,12 +30,12 @@ public class JwtService : IJwtService
 
         var claims = new Claim[]
         {
-            new Claim(JwtRegisteredClaimNames.Name, user.UserName ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim(JwtRegisteredClaimNames.EmailVerified, user.EmailConfirmed.ToString()),
+            new(JwtRegisteredClaimNames.Name, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.Role, user.Role.ToString()),
+            new(JwtRegisteredClaimNames.EmailVerified, user.EmailConfirmed.ToString()),
         };
         
         var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
