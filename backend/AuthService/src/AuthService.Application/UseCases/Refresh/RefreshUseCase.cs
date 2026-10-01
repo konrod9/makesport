@@ -35,11 +35,7 @@ public class RefreshUseCase
         if (!validationResult.IsValid)
             return validationResult.ToError();
         
-        var refreshTokenResult = await _tokensRepository.GetByAsync(t => t.Token == request.RefreshToken, cancellationToken);
-        if (refreshTokenResult.IsFailure)
-            return refreshTokenResult.Error;
-
-        var refreshToken = refreshTokenResult.Value;
+        var refreshToken = await _tokensRepository.GetByAsync(t => t.Token == request.RefreshToken, cancellationToken);
         if (refreshToken == null || refreshToken.IsExpired || refreshToken.IsRevoked)
             return AuthServiceErrors.InvalidToken();
         

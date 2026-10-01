@@ -28,7 +28,7 @@ public class RefreshTokensRepository : IRefreshTokensRepository
         return refreshToken.Id;
     }
 
-    public async Task<Result<RefreshToken?, Error>> GetByAsync(Expression<Func<RefreshToken, bool>> predicate,
+    public async Task<RefreshToken?> GetByAsync(Expression<Func<RefreshToken, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         RefreshToken? refreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(predicate, cancellationToken);

@@ -30,12 +30,11 @@ public class LogoutUseCase
         if (!validationResult.IsValid)
             return validationResult.ToError();
         
-        var refreshTokenResult = await _refreshTokensRepository.GetByAsync(t =>
+        var refreshToken = await _refreshTokensRepository.GetByAsync(t =>
             t.Token == logoutRequest.RefreshToken, cancellationToken);
-        if (refreshTokenResult.Value == null)
+        if (refreshToken == null)
             return UnitResult.Success<Error>();
         
-        var refreshToken = refreshTokenResult.Value;
         refreshToken.Revoke();
         
         var result = await _refreshTokensRepository.SaveAsync(cancellationToken);
