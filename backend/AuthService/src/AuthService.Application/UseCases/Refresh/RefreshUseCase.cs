@@ -56,7 +56,9 @@ public class RefreshUseCase
         var newRefreshToken = _jwtService.GenerateRefreshToken(user.Id);
         
         await _tokensRepository.AddAsync(newRefreshToken, cancellationToken);
-        await _tokensRepository.SaveAsync(cancellationToken);
+        var result = await _tokensRepository.SaveAsync(cancellationToken);
+        if (result.IsFailure)
+            return result.Error;
 
         _logger.LogInformation("Refresh access token saved to database for user with ID: {UserId}", user.Id);
         

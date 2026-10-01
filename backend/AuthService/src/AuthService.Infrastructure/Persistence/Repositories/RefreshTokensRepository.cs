@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using AuthService.Application;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Users;
 using AuthService.Infrastructure.Persistence.Database;
@@ -21,31 +22,10 @@ public class RefreshTokensRepository : IRefreshTokensRepository
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> AddAsync(RefreshToken refreshToken, CancellationToken cancellationToken)
+    public async Task<Guid> AddAsync(RefreshToken refreshToken, CancellationToken cancellationToken)
     {
         await _dbContext.AddAsync(refreshToken, cancellationToken);
-
-        try
-        {
-            // TODO: Убрать SaveChangesAsync()
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            return refreshToken.Id;
-        }
-        catch (DbUpdateException ex) when(ex.InnerException is PostgresException)
-        {
-            _logger.LogError(ex, "Database update error while adding refreshToken with id {RefreshTokenId}", refreshToken.Id);
-            return FileServiceErrors.DatabaseError();
-        }
-        catch (OperationCanceledException ex)
-        {
-            _logger.LogError(ex, "Operation was cancelled while adding refreshToken with id {RefreshTokenId}", refreshToken.Id);
-            return FileServiceErrors.OperationCancelled();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error while adding refreshToken with id {RefreshTokenId}", refreshToken.Id);
-            return FileServiceErrors.DatabaseError();
-        }
+        return refreshToken.Id;
     }
 
     public async Task<Result<RefreshToken, Error>> GetByAsync(Expression<Func<RefreshToken, bool>> predicate,
@@ -58,6 +38,27 @@ public class RefreshTokensRepository : IRefreshTokensRepository
         return refreshToken;
     }
 
-    public async Task<int> SaveAsync(CancellationToken cancellationToken = default) =>
-        await _dbContext.SaveChangesAsync(cancellationToken);
+    public async Task<Result<int, Error>> SaveAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _dbContext.SaveChangesAsync(cancellationToken);
+            return result;
+        }
+        catch (DbUpdateException ex) when(ex.InnerException is PostgresException)
+        {
+            _logger.LogError(ex, "Database update error while saving");
+            return AuthServiceErrors.DatabaseError();
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex, "Operation was cancelled while saving");
+            return AuthServiceErrors.OperationCancelled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while saving");
+            return AuthServiceErrors.DatabaseError();
+        }
+    }
 }

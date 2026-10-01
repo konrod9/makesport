@@ -62,6 +62,9 @@ public class RegisterUseCase
         var refreshToken = _jwtService.GenerateRefreshToken(user.Id);
 
         await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
+        var savingResult = await _refreshTokensRepository.SaveAsync(cancellationToken);
+        if (savingResult.IsFailure)
+            return savingResult.Error;
 
         _logger.LogInformation("User with id: {UserId} was registered", user.Id);
 
