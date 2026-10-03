@@ -1,19 +1,28 @@
 ﻿using System.Security.Claims;
 using System.Text;
-using AuthService.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthService.API.Configuration;
+namespace MakeSport.Auth.JwtValidation;
 
-public static class AuthExtensions
+public static class JwtAuthenticationExtensions
 {
-    public static IServiceCollection AddJwtBearer(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services,
+        IConfiguration configuration)
     {
         IConfigurationSection jwtSection = configuration.GetSection("Jwt");
-        JwtOptions jwt = jwtSection.Get<JwtOptions>() ?? new JwtOptions();
-        var keyBytes = Encoding.UTF8.GetBytes(jwt.Secret);
+        var jwt = jwtSection.Get<JwtValidationOptions>() ?? new JwtValidationOptions();
+        
+        if (string.IsNullOrEmpty(jwt.Secret))
+            throw new ApplicationException("Secret is empty or less than 256");
 
+        var keyBytes = Encoding.UTF8.GetBytes(jwt.Secret);
+        var key = new SymmetricSecurityKey(keyBytes);
+        if (key.KeySize < 256)
+            throw new ApplicationException("Secret is empty or less than 256");
+        
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -32,8 +41,12 @@ public static class AuthExtensions
                 };
             });
 
-        services.AddAuthorization();
-        
+        services.AddAuthorization(o =>
+        {
+            o.AddPolicy(AuthPolicies.ModeratorOrAbove, p => p.RequireRole(AuthRoles.Moderator, AuthRoles.Admin));
+            o.AddPolicy(AuthPolicies.AdminOnly, p => p.RequireRole(AuthRoles.Admin));
+        });
+
         return services;
     }
 }
