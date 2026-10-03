@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using AuthService.API.Middlewares;
+using Serilog;
 
 namespace AuthService.API.Configuration;
 
@@ -20,10 +21,8 @@ public static class AppExtensions
                 .AllowAnyMethod();
         });
         
-        // TODO: Реализовать недостающие middlewares
-        //app.UseExceptionMiddleware();
-
-        //app.UseRequestCorrelationId();
+        app.UseExceptionMiddleware();
+        app.UseRequestCorrelationId();
         app.UseSerilogRequestLogging();
         
         app.UseSwagger();
