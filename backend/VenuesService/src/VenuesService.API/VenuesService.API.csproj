@@ -27,6 +27,7 @@
       <ProjectReference Include="..\VenuesService.Application\VenuesService.Application.csproj" />
       <ProjectReference Include="..\VenuesService.Contracts\VenuesService.Contracts.csproj" />
       <ProjectReference Include="..\VenuesService.Infrastructure.Postgres\VenuesService.Infrastructure.Postgres.csproj" />
+        <ProjectReference Include="..\..\..\Shared\MakeSport.Auth.JwtValidation\MakeSport.Auth.JwtValidation.csproj" />
     </ItemGroup>
 
     <ItemGroup>

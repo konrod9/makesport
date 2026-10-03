@@ -1,4 +1,6 @@
 using System.Globalization;
+using MakeSport.Auth.JwtValidation;
+using Microsoft.OpenApi;
 using VenuesService.API.Configuration;
 using VenuesService.Application;
 using VenuesService.Infrastructure.Postgres;
@@ -19,8 +21,26 @@ try
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Вставить access token из /auth/login (без префикса)",
+        });
+        options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", doc)] = []
+        });
+    });
 
+    builder.Services.AddJwtAuthentication(builder.Configuration);
+    
     builder.Services.AddVenuesServices(builder.Configuration);
     builder.Services.AddVenueStorage(builder.Configuration.GetConnectionString("Postgres"));
 
