@@ -1,5 +1,6 @@
 ﻿using AuthService.API.Configuration;
 using AuthService.Application;
+using AuthService.Application.UseCases.ChangeUserRole;
 using AuthService.Application.UseCases.GetCurrentUser;
 using AuthService.Application.UseCases.Login;
 using AuthService.Application.UseCases.Logout;
@@ -44,4 +45,12 @@ public class AuthController
     public async Task<EndpointResult<AuthUserDto>> Me(
         [FromServices] GetCurrentUserUseCase useCase,
         CancellationToken ct) => await useCase.Handle(ct);
+    
+    [Authorize(Roles = "Admin")]
+    [HttpPatch("users/{id:guid}/role")]
+    public async Task<EndpointResult<AuthUserDto>> ChangeUserRole(
+        [FromRoute] Guid id,
+        [FromBody] ChangeUserRoleRequestBody body,
+        [FromServices] ChangeUserRoleUseCase useCase,
+        CancellationToken cancellationToken) => await useCase.Handle(new ChangeUserRoleRequest(id, body.Role), cancellationToken);
 }

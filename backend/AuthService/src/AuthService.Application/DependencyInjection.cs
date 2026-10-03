@@ -1,4 +1,5 @@
-﻿using AuthService.Application.UseCases.GetCurrentUser;
+﻿using AuthService.Application.UseCases.ChangeUserRole;
+using AuthService.Application.UseCases.GetCurrentUser;
 using AuthService.Application.UseCases.Login;
 using AuthService.Application.UseCases.Logout;
 using AuthService.Application.UseCases.Refresh;
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<RefreshUseCase>();
         services.AddScoped<LogoutUseCase>();
         services.AddScoped<GetCurrentUserUseCase>();
+        services.AddScoped<ChangeUserRoleUseCase>();
 
         return services;
     }

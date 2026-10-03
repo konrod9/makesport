@@ -38,7 +38,6 @@ public class IdentityService : IIdentityService
             .ToArray();
 
         return Error.Failure(errorMessages);
-
     }
 
     public async Task<IReadOnlyList<AppUser>> GetAllAsync(CancellationToken cancellationToken)

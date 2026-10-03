@@ -27,4 +27,16 @@ public static class AuthServiceErrors
             endDate != null 
             ? $"Ошибка доступа. Попробуйте снова после {endDate}" 
             : "Ошибка доступа. Попробуйте позже");
+
+    public static Error UserNotFound() =>
+        Error.Authentication("auth.user.not-found", "Пользователь не найден");
+
+    public static Error TargetUserNotFound() =>
+        Error.NotFound("auth.user.not-found", "Целевой пользователь не найден");
+    
+    public static Error CannotDemoteSelf() =>
+        Error.Authorization("auth.role.cannot-demote-self", "Нельзя понизить собственную роль администратора");
+
+    public static Error Unauthorized() =>
+        Error.Authentication("auth.unauthorized", "Пользователь не авторизован");
 }
