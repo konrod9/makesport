@@ -5,7 +5,7 @@ namespace FileService.Domain;
 
 public sealed record MediaOwner
 {
-    private static readonly HashSet<string> AllowedContexts = ["User", "Venue"];
+    private static readonly HashSet<string> AllowedContexts = ["user", "venue"];
 
     public string Context { get; }
 
