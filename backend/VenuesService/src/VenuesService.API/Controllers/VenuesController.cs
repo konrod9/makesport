@@ -44,15 +44,4 @@ public class VenuesController : ControllerBase
     {
         return await useCase.Handle(cancellationToken);
     }
-    
-    [HttpGet("debug/whoami")]
-    public IActionResult WhoAmI()
-    {
-        var u = HttpContext.User;
-        return Ok(new {
-            isAuthenticated = u.Identity?.IsAuthenticated ?? false,
-            name = u.Identity?.Name,
-            claims = u.Claims.Select(c => new { c.Type, c.Value })
-        });
-    }
 }
