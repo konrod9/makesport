@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Authorization;
 using VenuesService.Application.UseCases.CreateVenue;
 using VenuesService.Application.UseCases.GetVenues;
 using VenuesService.Contracts.Requests;
@@ -18,6 +19,7 @@ public class VenuesController : ControllerBase
     [ProducesResponseType(201, Type = typeof(CreateVenueRequest))]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
+    [Authorize]
     public async Task<EndpointResult<Guid>> CreateVenue(
         [FromBody] CreateVenueRequest request,
         [FromServices] CreateVenueUseCase useCase,

@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using FluentValidation;
+using MakeSport.Auth.JwtValidation.Abstractions;
 using VenuesService.Application.Validation;
 using VenuesService.Contracts.Requests;
 using VenuesService.Domain.Shared;
@@ -14,13 +15,15 @@ public class CreateVenueUseCase
     private readonly IValidator<CreateVenueRequest> _validator;
     private readonly IVenuesRepository _repository;
     private readonly ILogger<CreateVenueUseCase> _logger;
+    private readonly ICurrentUserService _currentUserService;
 
     public CreateVenueUseCase(IValidator<CreateVenueRequest> validator, IVenuesRepository repository,
-        ILogger<CreateVenueUseCase> logger)
+        ILogger<CreateVenueUseCase> logger, ICurrentUserService currentUserService)
     {
         _validator = validator;
         _repository = repository;
         _logger = logger;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Result<Guid, Error>> Handle(CreateVenueRequest request, CancellationToken cancellationToken)
@@ -32,7 +35,9 @@ public class CreateVenueUseCase
         var venueId = VenueId.NewId();
         var address = Address.Create(request.Address.City, request.Address.Street, request.Address.Building).Value;
         var coordinates = Coordinates.Create(request.Coordinates.Latitude, request.Coordinates.Longitude).Value;
-        var workingHours = WorkingHours.Create(request.WorkingHours.WorkingStart, request.WorkingHours.WorkingEnd).Value;        
+        var workingHours = WorkingHours.Create(request.WorkingHours.WorkingStart, request.WorkingHours.WorkingEnd).Value;
+        
+        var userId = _currentUserService.UserId;
         
         var venue = Venue.Create(
             venueId, 
@@ -45,7 +50,8 @@ public class CreateVenueUseCase
             request.IsFree, 
             workingHours, 
             request.Surface, 
-            request.SportType);
+            request.SportType, 
+            userId);
 
         var result = await _repository.AddAsync(venue, cancellationToken);
         if (result.IsFailure)

@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="12.1.1" />
-      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-      <PackageReference Include="MakeSport.FileService.Communication" Version="0.0.2" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+        <PackageReference Include="FluentValidation" Version="12.1.1"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
+        <PackageReference Include="MakeSport.FileService.Communication" Version="0.0.2"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -18,8 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\VenuesService.Contracts\VenuesService.Contracts.csproj" />
-      <ProjectReference Include="..\VenuesService.Domain\VenuesService.Domain.csproj" />
+        <ProjectReference Include="..\VenuesService.Contracts\VenuesService.Contracts.csproj"/>
+        <ProjectReference Include="..\VenuesService.Domain\VenuesService.Domain.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\MakeSport.Auth.JwtValidation\MakeSport.Auth.JwtValidation.csproj"/>
     </ItemGroup>
 
 </Project>

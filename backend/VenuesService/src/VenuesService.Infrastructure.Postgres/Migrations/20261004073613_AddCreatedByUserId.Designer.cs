@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using VenuesService.Infrastructure.Postgres.Database;
 namespace VenuesService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(VenuesDbContext))]
-    partial class VenuesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261004073613_AddCreatedByUserId")]
+    partial class AddCreatedByUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using MakeSport.Auth.JwtValidation.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,9 @@ public static class JwtAuthenticationExtensions
             o.AddPolicy(AuthPolicies.AdminOnly, p => p.RequireRole(AuthRoles.Admin));
         });
 
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        
         return services;
     }
 }

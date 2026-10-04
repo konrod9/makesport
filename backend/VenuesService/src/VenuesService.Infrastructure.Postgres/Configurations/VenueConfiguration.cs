@@ -65,5 +65,7 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 p => Coordinates.Create(p.Y, p.X).Value)
             .HasColumnType("geography (Point,4326)")
             .HasColumnName("coordinates");
+
+        builder.Property(v => v.CreatedByUserId).HasColumnName("created_by_user_id").IsRequired(false);
     }
 }
