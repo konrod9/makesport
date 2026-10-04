@@ -7,25 +7,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FileService.Application\FileService.Application.csproj" />
-      <ProjectReference Include="..\FileService.Infrastructure.Postgres\FileService.Infrastructure.Postgres.csproj" />
-      <ProjectReference Include="..\FileService.Infrastructure.Redis\FileService.Infrastructure.Redis.csproj" />
-      <ProjectReference Include="..\FileService.Infrastructure.S3\FileService.Infrastructure.S3.csproj" />
+        <ProjectReference Include="..\FileService.Application\FileService.Application.csproj"/>
+        <ProjectReference Include="..\FileService.Infrastructure.Postgres\FileService.Infrastructure.Postgres.csproj"/>
+        <ProjectReference Include="..\FileService.Infrastructure.Redis\FileService.Infrastructure.Redis.csproj"/>
+        <ProjectReference Include="..\FileService.Infrastructure.S3\FileService.Infrastructure.S3.csproj"/>
+        <ProjectReference Include="..\..\..\Shared\MakeSport.Auth.JwtValidation\MakeSport.Auth.JwtValidation.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Serilog" Version="4.3.1" />
-      <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-      <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
-      <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.7" />
+        <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Serilog" Version="4.3.1"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0"/>
+        <PackageReference Include="Serilog.Exceptions" Version="8.4.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.7"/>
     </ItemGroup>
 
 </Project>

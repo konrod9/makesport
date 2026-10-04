@@ -15,6 +15,7 @@ COPY ["nuget.config", "."]
 RUN dotnet nuget update source gitlab --username $NUGET_USERNAME --password $NUGET_PASSWORD --store-password-in-clear-text \
     --configfile nuget.config
 
+COPY ["Shared/", "Shared/"]
 COPY ["FileService/", "FileService/"]
 
 RUN dotnet restore "FileService/src/FileService.API/FileService.API.csproj"
