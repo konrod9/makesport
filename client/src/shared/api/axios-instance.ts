@@ -26,5 +26,7 @@ apiClient.interceptors.response.use(
         throw new EnvelopeError(envelope.error);
       }
     }
+
+    return Promise.reject(error);
   },
 );
