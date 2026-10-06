@@ -79,6 +79,40 @@ services:
         './efbundle --connection "$DATABASE_FILE_SERVICE_CONNECTION"',
       ]
 
+  auth-service:
+    container_name: makesport-auth-service
+    build:
+      context: ./backend
+      dockerfile: AuthService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    ports:
+      - "8003:8003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:8003
+      - ConnectionStrings__Postgres=${DATABASE_AUTH_CONNECTION}
+    env_file:
+      - .env
+
+  auth-migrations:
+    container_name: auth-migrations
+    build:
+      context: ./backend
+      dockerfile: AuthService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    env_file:
+      - .env
+    entrypoint:
+      ["/bin/sh", "-c", './efbundle --connection "$DATABASE_AUTH_CONNECTION"']
+
   postgres:
     container_name: makesport-pg
     image: postgis/postgis:17-3.5
@@ -136,6 +170,7 @@ services:
     depends_on:
       - venues-service
       - file-service
+      - auth-service
       #- minio
 
   frontend:

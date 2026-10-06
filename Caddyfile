@@ -15,6 +15,14 @@ make-sport.ru {
         reverse_proxy file-service:8002
     }
 
+    @api_auth {
+        path /api/auth /api/auth/*
+    }
+    handle @api_auth {
+        uri strip_prefix /api
+        reverse_proxy auth-service:8003
+    }
+
     # Static storage (MinIO через presigned URLs)
     @storage {
         path /storage/*
