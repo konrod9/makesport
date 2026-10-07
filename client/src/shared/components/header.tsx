@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
 import { useState } from "react";
 import { routes } from "@/shared/routes";
+import { useAuthSession } from "@/features/auth/model/auth-store";
+import { useLogout } from "@/features/auth/model/use-logout";
 
 function IconMapPin({ className }: { className?: string }) {
   return (
@@ -81,6 +83,12 @@ function IconX({ className }: { className?: string }) {
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const { isAuthenticated, user } = useAuthSession();
+  const { logout, isPending: isLoggingOut } = useLogout();
+  const initials = user
+    ? `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase()
+    : "";
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -115,11 +123,36 @@ export function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              Войти
-            </Button>
-            <Button size="sm">
-              <Link href="/add" className="flex items-center">
+            {isAuthenticated && user ? (
+              <>
+                <Link
+                  href={routes.profile}
+                  className="flex items-center gap-2 text-sm font-medium"
+                  title="Профиль"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-chart-3 text-xs font-bold text-primary-foreground">
+                    {initials}
+                  </span>
+                  <span className="max-w-32 truncate">
+                    {user.firstName} {user.lastName}
+                  </span>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => logout()}
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? "Выходим..." : "Выйти"}
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={routes.authLogin}>Войти</Link>
+              </Button>
+            )}
+            <Button size="sm" asChild>
+              <Link href={routes.add} className="flex items-center">
                 <IconPlus className="mr-1.5 h-4 w-4" />
                 Добавить
               </Link>
@@ -165,13 +198,51 @@ export function Header() {
                 Добавить площадку
               </Link>
               <div className="flex flex-col gap-2 pt-2">
-                <Button variant="outline" size="sm" className="w-full">
-                  Войти
-                </Button>{" "}
-                <Button size="sm" className="w-full">
+                {isAuthenticated && user ? (
+                  <>
+                    <Link
+                      href={routes.profile}
+                      className="flex items-center gap-2 px-2 py-2 text-sm font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-chart-3 text-xs font-bold text-primary-foreground">
+                        {initials}
+                      </span>
+                      {user.firstName} {user.lastName}
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        logout();
+                      }}
+                      disabled={isLoggingOut}
+                    >
+                      {isLoggingOut ? "Выходим..." : "Выйти"}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    asChild
+                  >
+                    <Link
+                      href={routes.authLogin}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Войти
+                    </Link>
+                  </Button>
+                )}
+                <Button size="sm" className="w-full" asChild>
                   <Link
-                    href="/add"
+                    href={routes.add}
                     className="flex items-center justify-center"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     <IconPlus className="mr-1.5 h-4 w-4" />
                     Добавить
