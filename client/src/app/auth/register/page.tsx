@@ -41,7 +41,7 @@ function RegisterForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "", password: "", firstName: "", lastName: "" },
   });
 
   const onSubmit = (data: RegisterFormData) => {
@@ -102,8 +102,8 @@ function RegisterForm() {
               <Label htmlFor="firstName">Имя</Label>
               <Input
                 id="firstName"
-                type="firstName"
-                autoComplete="current-firstName"
+                type="text"
+                autoComplete="given-name"
                 {...rhfRegister("firstName", {
                   required: "Имя обязательно",
                   minLength: { value: 1, message: "Введите корректное имя" },
@@ -113,11 +113,11 @@ function RegisterForm() {
               <FormError message={errors.firstName?.message} />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="lastName">Имя</Label>
+              <Label htmlFor="lastName">Фамилия</Label>
               <Input
                 id="lastName"
-                type="lastName"
-                autoComplete="current-lastName"
+                type="text"
+                autoComplete="family-name"
                 {...rhfRegister("lastName", {
                   required: "Фамилия обязательна",
                   minLength: {
