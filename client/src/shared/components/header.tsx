@@ -6,6 +6,7 @@ import { useState } from "react";
 import { routes } from "@/shared/routes";
 import { useAuthSession } from "@/features/auth/model/auth-store";
 import { useLogout } from "@/features/auth/model/use-logout";
+import { IconPlus } from "./ui/iconPlus";
 
 function IconMapPin({ className }: { className?: string }) {
   return (
@@ -21,24 +22,6 @@ function IconMapPin({ className }: { className?: string }) {
     >
       <path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 1 1 16 0Z" />
       <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
-function IconPlus({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M12 5v14" />
-      <path d="M5 12h14" />
     </svg>
   );
 }

@@ -108,15 +108,15 @@ export default function AddVenuePage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
-  const { isAuthenticated } = useAuthSession();
+  const { isAuthenticated, isHydrated } = useAuthSession();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isHydrated && !isAuthenticated) {
       router.replace(
         `${routes.authLogin}?returnUrl=${encodeURIComponent(routes.add)}`,
       );
     }
-  }, [isAuthenticated, router]);
+  }, [isHydrated, isAuthenticated, router]);
 
   const {
     register,

@@ -7,6 +7,7 @@ export type AuthState = {
   accessToken: string | null;
   refreshToken: string | null;
   user: AuthUser | null;
+  hasHydrated: boolean | null;
 };
 
 type AuthActions = {
@@ -17,6 +18,7 @@ type AuthActions = {
   ) => void;
   clearSession: () => void;
   setUser: (user: AuthUser) => void;
+  setHasHydrated: () => void;
 };
 
 type AuthStore = AuthState & AuthActions;
@@ -25,6 +27,7 @@ const initialState: AuthState = {
   accessToken: null,
   refreshToken: null,
   user: null,
+  hasHydrated: null,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -35,6 +38,7 @@ export const useAuthStore = create<AuthStore>()(
         set(() => ({ accessToken, refreshToken, user })),
       clearSession: () => set(() => ({ ...initialState })),
       setUser: (user) => set(() => ({ user })),
+      setHasHydrated: () => set(() => ({ hasHydrated: true })),
     }),
     {
       name: "auth-session",
@@ -44,6 +48,9 @@ export const useAuthStore = create<AuthStore>()(
         refreshToken: s.refreshToken,
         user: s.user,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated();
+      },
     },
   ),
 );
@@ -54,6 +61,7 @@ export const useAuthSession = () =>
       accessToken: s.accessToken,
       user: s.user,
       isAuthenticated: !!s.accessToken && !!s.user,
+      isHydrated: s.hasHydrated,
     })),
   );
 

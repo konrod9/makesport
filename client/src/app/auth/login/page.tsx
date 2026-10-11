@@ -27,12 +27,12 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") ?? "/";
-  const { isAuthenticated } = useAuthSession();
+  const { isAuthenticated, isHydrated } = useAuthSession();
   const { login, isPending, error } = useLogin();
 
   useEffect(() => {
-    if (isAuthenticated) router.replace(returnUrl);
-  }, [isAuthenticated, returnUrl, router]);
+    if (isHydrated && isAuthenticated) router.replace(returnUrl);
+  }, [isHydrated, isAuthenticated, returnUrl, router]);
 
   const {
     register,
