@@ -44,6 +44,8 @@ import { FormError } from "@/shared/components/ui/form-error";
 import { FileUploadDialog } from "@/entities/file/ui/file-upload-dialog";
 import { useFileUpload } from "@/entities/file/model/use-file-upload";
 import dynamic from "next/dynamic";
+import { useAuthSession } from "@/features/auth/model/auth-store";
+import { routes } from "@/shared/routes";
 
 type SelectedFile = {
   id: string;
@@ -106,6 +108,15 @@ export default function AddVenuePage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
+  const { isAuthenticated } = useAuthSession();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace(
+        `${routes.authLogin}?returnUrl=${encodeURIComponent(routes.add)}`,
+      );
+    }
+  }, [isAuthenticated, router]);
 
   const {
     register,
@@ -233,6 +244,8 @@ export default function AddVenuePage() {
       </div>
     );
   }
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen">
