@@ -72,5 +72,5 @@ deploy:
   script:
     - docker compose -f docker-compose-prod.yml build
     - docker compose -f docker-compose-prod.yml up -d postgres minio redis
-    - docker compose -f docker-compose-prod.yml --profile migrations up venues-migrations file-service-migrations
+    - docker compose -f docker-compose-prod.yml --profile migrations up venues-migrations file-service-migrations auth-migrations
     - docker compose -f docker-compose-prod.yml up -d

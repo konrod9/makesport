@@ -34,6 +34,10 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasColumnType("geography (Point,4326)")
                         .HasColumnName("coordinates");
 
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_user_id");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")

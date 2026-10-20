@@ -22,7 +22,8 @@ public class Venue
         double rating, 
         int reviewCount,
         string surface, 
-        string sportType)
+        string sportType,
+        Guid? createdByUserId)
     {
         Id = id;
         Title = title;
@@ -37,6 +38,7 @@ public class Venue
         ReviewCount = reviewCount;
         Surface = surface;
         SportType = sportType;
+        CreatedByUserId = createdByUserId;
     }
 
     public VenueId Id { get; private set; }
@@ -63,6 +65,8 @@ public class Venue
     public Coordinates Coordinates { get; private set; }
 
     public Guid VideoId { get; private set; }
+    
+    public Guid? CreatedByUserId { get; private set; }
 
     public static Venue Create(
         VenueId id, 
@@ -75,7 +79,8 @@ public class Venue
         bool isFree, 
         WorkingHours workingHours, 
         string surface, 
-        string sportType)
+        string sportType,
+        Guid? userId)
     {
         var rating = 0;
         var reviewCount = 0;
@@ -92,6 +97,7 @@ public class Venue
             rating,
             reviewCount,
             surface,
-            sportType);
+            sportType,
+            userId);
     }
 }

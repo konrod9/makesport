@@ -6,6 +6,7 @@ using FileService.Application.UseCases.GetMediaAssets;
 using FileService.Application.UseCases.StartMultipartUpload;
 using FileService.Contracts;
 using FileService.Contracts.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileService.API.Controllers;
@@ -14,12 +15,14 @@ namespace FileService.API.Controllers;
 [Route("files")]
 public class FilesController : ControllerBase
 {
+    [Authorize]
     [HttpPost("multipart-upload")]
     public async Task<EndpointResult<StartMultipartUploadResponse>> StartMultipartUpload(
         [FromBody] StartMultipartUploadRequest request,
         [FromServices] StartMultipartUploadUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, ct);
 
+    [Authorize]
     [HttpPost("complete-upload")]
     public async Task<EndpointResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request,
@@ -42,5 +45,5 @@ public class FilesController : ControllerBase
     public async Task<EndpointResult<GetByOwnersResponse>> GetMediaAssetsByOwners(
         [FromBody] GetByOwnersRequest request,
         [FromServices] GetByOwnersUseCase useCase,
-        CancellationToken ct) => await useCase.Handle(request, ct); 
+        CancellationToken ct) => await useCase.Handle(request, ct);
 }

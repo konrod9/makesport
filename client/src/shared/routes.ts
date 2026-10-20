@@ -1,6 +1,8 @@
 export const routes = {
   home: "/",
   map: "/map",
+  add: "/add",
   profile: "/profile",
-  addVenue: "/add-venue",
-};
+  authLogin: "/auth/login",
+  authRegister: "/auth/register",
+} as const;

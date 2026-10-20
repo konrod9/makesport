@@ -11,6 +11,7 @@ ARG NUGET_PASSWORD
 WORKDIR /src
 
 COPY ["nuget.config", "."]
+COPY ["Shared/", "Shared/"]
     
 RUN dotnet nuget update source gitlab --username $NUGET_USERNAME --password $NUGET_PASSWORD --store-password-in-clear-text \
     --configfile nuget.config
