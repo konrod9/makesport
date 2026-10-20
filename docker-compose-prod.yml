@@ -102,6 +102,7 @@ services:
     restart: always
 
   file-service-migrations:
+    profiles: ["migrations"]
     container_name: file-service-migrations
     build:
       context: ./backend
@@ -144,6 +145,7 @@ services:
     restart: always
 
   auth-migrations:
+    profiles: ["migrations"]
     container_name: auth-migrations
     build:
       context: ./backend
