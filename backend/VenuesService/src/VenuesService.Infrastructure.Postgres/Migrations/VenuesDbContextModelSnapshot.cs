@@ -34,6 +34,11 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasColumnType("geography (Point,4326)")
                         .HasColumnName("coordinates");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid")
                         .HasColumnName("created_by_user_id");

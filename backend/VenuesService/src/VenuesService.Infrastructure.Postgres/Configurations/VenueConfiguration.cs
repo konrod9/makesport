@@ -67,5 +67,11 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
             .HasColumnName("coordinates");
 
         builder.Property(v => v.CreatedByUserId).HasColumnName("created_by_user_id").IsRequired(false);
+        
+        builder.Property(v => v.CreatedAt)
+            .HasColumnType("created_at")
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("now()")
+            .IsRequired();
     }
 }

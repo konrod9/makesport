@@ -23,7 +23,8 @@ public class Venue
         int reviewCount,
         string surface, 
         string sportType,
-        Guid? createdByUserId)
+        Guid? createdByUserId,
+        DateTimeOffset createdAt)
     {
         Id = id;
         Title = title;
@@ -39,6 +40,7 @@ public class Venue
         Surface = surface;
         SportType = sportType;
         CreatedByUserId = createdByUserId;
+        CreatedAt = createdAt;
     }
 
     public VenueId Id { get; private set; }
@@ -67,6 +69,8 @@ public class Venue
     public Guid VideoId { get; private set; }
     
     public Guid? CreatedByUserId { get; private set; }
+    
+    public DateTimeOffset CreatedAt { get; private set; }
 
     public static Venue Create(
         VenueId id, 
@@ -98,6 +102,7 @@ public class Venue
             reviewCount,
             surface,
             sportType,
-            userId);
+            userId,
+            DateTimeOffset.UtcNow);
     }
 }
