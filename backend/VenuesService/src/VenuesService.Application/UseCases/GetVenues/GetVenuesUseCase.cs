@@ -7,6 +7,7 @@ using VenuesService.Contracts.Dtos;
 using VenuesService.Contracts.Requests;
 using VenuesService.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Error = VenuesService.Domain.Shared.Error;
 
 namespace VenuesService.Application.UseCases.GetVenues;
@@ -82,7 +83,42 @@ public class GetVenuesUseCase
             request.Latitude,
             request.Longitude);
 
-        List<VenueDto> venues = await query
+        var hasOrigin = request is { Latitude: not null, Longitude: not null };
+        var origin = hasOrigin
+            ? new Point(request.Longitude!.Value, request.Latitude!.Value) { SRID = 4326 }
+            : new Point(0, 0) { SRID = 4326 };
+
+        var rows = await query
+            .Select(v => new
+            {
+                v.Id,
+                v.Title,
+                v.Description,
+                v.SportType,
+                v.Surface,
+                v.Rating,
+                v.ReviewCount,
+                v.IsOpen,
+                v.HasLighting,
+                v.IsFree,
+                WorkingHours = v.WorkingHours.Value,
+                Address = new AddressDto(
+                    v.Address.City,
+                    v.Address.Street,
+                    v.Address.Building,
+                    v.Address.FullName),
+                v.Location,
+                v.VideoId,
+                v.CreatedAt,
+                DistanceMeters = hasOrigin
+                    ? EF.Functions.Distance(v.Location, origin, false)
+                    : (double?)null
+            })
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+        
+        List<VenueDto> venues = rows
             .Select(v => new VenueDto
             {
                 Id = v.Id,
@@ -95,18 +131,16 @@ public class GetVenuesUseCase
                 IsOpen = v.IsOpen,
                 HasLighting = v.HasLighting,
                 IsFree = v.IsFree,
-                WorkingHours = v.WorkingHours.Value,
-                Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building, v.Address.FullName),
+                WorkingHours = v.WorkingHours,
+                Address = v.Address,
                 Coordinates = new CoordinatesDto(v.Location.Y, v.Location.X),
                 Video = new MediaDto()
                 {
                     Id = v.VideoId
                 },
-                CreateAt = v.CreatedAt
-            })
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToListAsync(cancellationToken);
+                CreateAt = v.CreatedAt,
+                DistanceMeters = v.DistanceMeters,
+            }).ToList();
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
 
