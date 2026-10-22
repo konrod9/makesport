@@ -12,7 +12,7 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTimeOffset>(
-                name: "CreatedAt",
+                name: "created_at",
                 table: "venues",
                 type: "timestamp with time zone",
                 nullable: false,
@@ -23,7 +23,7 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "CreatedAt",
+                name: "created_at",
                 table: "venues");
         }
     }

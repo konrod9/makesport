@@ -37,6 +37,7 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
                     b.Property<Guid?>("CreatedByUserId")

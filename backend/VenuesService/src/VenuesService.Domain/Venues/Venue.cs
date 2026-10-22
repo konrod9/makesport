@@ -1,4 +1,6 @@
-﻿using VenuesService.Domain.Venues.ValueObjects;
+﻿using NetTopologySuite.Geometries;
+using VenuesService.Domain.Venues.ValueObjects;
+using Coordinates = VenuesService.Domain.Venues.ValueObjects.Coordinates;
 
 namespace VenuesService.Domain.Venues;
 
@@ -10,27 +12,26 @@ public class Venue
     }
 
     private Venue(
-        VenueId id, 
-        string title, 
-        string? description, 
-        Address address, 
-        Coordinates coordinates,
-        bool isOpen, 
+        VenueId id,
+        string title,
+        string? description,
+        Address address,
+        bool isOpen,
         bool hasLighting,
-        bool isFree, 
-        WorkingHours workingHours, 
-        double rating, 
+        bool isFree,
+        WorkingHours workingHours,
+        double rating,
         int reviewCount,
-        string surface, 
+        string surface,
         string sportType,
         Guid? createdByUserId,
-        DateTimeOffset createdAt)
+        DateTimeOffset createdAt,
+        Point location)
     {
         Id = id;
         Title = title;
         Description = description;
         Address = address;
-        Coordinates = coordinates;
         IsOpen = isOpen;
         HasLighting = hasLighting;
         IsFree = isFree;
@@ -41,6 +42,7 @@ public class Venue
         SportType = sportType;
         CreatedByUserId = createdByUserId;
         CreatedAt = createdAt;
+        Location = location;
     }
 
     public VenueId Id { get; private set; }
@@ -64,37 +66,40 @@ public class Venue
 
     public Address Address { get; private set; }
 
-    public Coordinates Coordinates { get; private set; }
+    public Point Location { get; private set; }
+
+    public Coordinates Coordinates => Coordinates.Create(Location.Y, Location.X).Value;
 
     public Guid VideoId { get; private set; }
-    
+
     public Guid? CreatedByUserId { get; private set; }
-    
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public static Venue Create(
-        VenueId id, 
+        VenueId id,
         string title,
         string? description,
-        Address address, 
+        Address address,
         Coordinates location,
-        bool isOpen, 
+        bool isOpen,
         bool hasLighting,
-        bool isFree, 
-        WorkingHours workingHours, 
-        string surface, 
+        bool isFree,
+        WorkingHours workingHours,
+        string surface,
         string sportType,
         Guid? userId)
     {
         var rating = 0;
         var reviewCount = 0;
-        
-        return new Venue(id, 
+
+        var point = new Point(location.Longitude, location.Latitude) { SRID = 4326 };
+
+        return new Venue(id,
             title,
-            description, 
+            description,
             address,
-            location, 
-            isOpen, 
+            isOpen,
             hasLighting,
             isFree,
             workingHours,
@@ -103,6 +108,7 @@ public class Venue
             surface,
             sportType,
             userId,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow, 
+            point);
     }
 }

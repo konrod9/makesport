@@ -2,6 +2,7 @@ using VenuesService.Application;
 using VenuesService.Application.UseCases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using VenuesService.Application.UseCases.GetVenues;
 using VenuesService.Infrastructure.Postgres.Database;
 
 namespace VenuesService.Infrastructure.Postgres;
@@ -13,6 +14,7 @@ public static class DependencyInjection
         services
             .AddScoped<IVenuesRepository, VenuesRepository>()
             .AddScoped<IGuidFactory, GuidFactory>()
+            .AddScoped<IVenueSortingService, VenueSortingService>()
             .AddDbContextPool<IVenuesReadDbContext, VenuesDbContext>(options => 
                 options.UseNpgsql(dbConnectionString, o => o.UseNetTopologySuite()));
         

@@ -16,13 +16,15 @@ public class GetVenuesUseCase
     private readonly IVenuesReadDbContext _readDbContext;
     private readonly IValidator<GetVenuesRequest> _validator;
     private readonly IFileCommunicationService _fileCommunicationService;
+    private readonly IVenueSortingService _sortingService;
 
     public GetVenuesUseCase(IVenuesReadDbContext readDbContext, IValidator<GetVenuesRequest> validator,
-        IFileCommunicationService fileCommunicationService)
+        IFileCommunicationService fileCommunicationService, IVenueSortingService sortingService)
     {
         _readDbContext = readDbContext;
         _validator = validator;
         _fileCommunicationService = fileCommunicationService;
+        _sortingService = sortingService;
     }
 
     public async Task<Result<PaginationVenuesResponse, Error>> Handle(GetVenuesRequest request,
@@ -50,17 +52,17 @@ public class GetVenuesUseCase
         {
             query = query.Where(v => v.SportType == request.SportType);
         }
-        
+
         if (!string.IsNullOrWhiteSpace(request.Surface))
         {
             query = query.Where(v => v.Surface == request.Surface);
         }
-        
+
         if (request.OnlyFree.HasValue && request.OnlyFree.Value)
         {
             query = query.Where(v => v.IsFree);
         }
-        
+
         if (request.OnlyOpen.HasValue && request.OnlyOpen.Value)
         {
             query = query.Where(v => v.IsOpen);
@@ -73,8 +75,14 @@ public class GetVenuesUseCase
 
         var venuesCount = await query.CountAsync(cancellationToken);
 
+        query = _sortingService.ApplySort(
+            query,
+            request.SortBy,
+            request.SortDirection,
+            request.Latitude,
+            request.Longitude);
+
         List<VenueDto> venues = await query
-            .OrderByDescending(v => v.Title)
             .Select(v => new VenueDto
             {
                 Id = v.Id,
@@ -89,26 +97,28 @@ public class GetVenuesUseCase
                 IsFree = v.IsFree,
                 WorkingHours = v.WorkingHours.Value,
                 Address = new AddressDto(v.Address.City, v.Address.Street, v.Address.Building, v.Address.FullName),
-                Coordinates = new CoordinatesDto(v.Coordinates.Latitude, v.Coordinates.Longitude),
+                Coordinates = new CoordinatesDto(v.Location.Y, v.Location.X),
                 Video = new MediaDto()
                 {
                     Id = v.VideoId
-                }
+                },
+                CreateAt = v.CreatedAt
             })
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling((double)venuesCount / request.PageSize);
-        
+
         var venueIds = venues.Select(v => v.Id).ToList();
 
-        Result<GetByOwnersResponse, FileService.Contracts.Shared.Error> mediaAssets = await _fileCommunicationService.GetByOwners(
-            new GetByOwnersRequest(venueIds, "venue"), 
-            cancellationToken);
+        Result<GetByOwnersResponse, FileService.Contracts.Shared.Error> mediaAssets =
+            await _fileCommunicationService.GetByOwners(
+                new GetByOwnersRequest(venueIds, "venue"),
+                cancellationToken);
         if (mediaAssets.IsFailure)
             return Error.Failure("file-service-error", "Error while getting files from FileService");
-        
+
         var imagesByVenue = mediaAssets.Value.MediaAssets
             .GroupBy(m => m.OwnerId)
             .ToDictionary(g => g.Key, g => g.ToList());

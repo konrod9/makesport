@@ -1,10 +1,7 @@
 ﻿using VenuesService.Domain.Venues;
 using VenuesService.Domain.Venues.ValueObjects;
-using VenuesService.Infrastructure.Postgres.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NetTopologySuite.Geometries;
-using Coordinates = VenuesService.Domain.Venues.ValueObjects.Coordinates;
 
 namespace VenuesService.Infrastructure.Postgres.Configurations;
 
@@ -59,17 +56,17 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 .IsRequired(false);
         });
 
-        builder.Property(v => v.Coordinates)
-            .HasConversion(
-                c => new Point(c.Longitude, c.Latitude),
-                p => Coordinates.Create(p.Y, p.X).Value)
+        builder.Property(v => v.Location)
+            .HasColumnName("coordinates")
             .HasColumnType("geography (Point,4326)")
-            .HasColumnName("coordinates");
+            .IsRequired();
+        
+        builder.Ignore(v => v.Coordinates);
 
         builder.Property(v => v.CreatedByUserId).HasColumnName("created_by_user_id").IsRequired(false);
         
         builder.Property(v => v.CreatedAt)
-            .HasColumnType("created_at")
+            .HasColumnName("created_at")
             .HasColumnType("timestamp with time zone")
             .HasDefaultValueSql("now()")
             .IsRequired();

@@ -13,7 +13,7 @@ using VenuesService.Infrastructure.Postgres.Database;
 namespace VenuesService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(VenuesDbContext))]
-    [Migration("20261021125032_AddCreatedAtToVenues")]
+    [Migration("20261022125615_AddCreatedAtToVenues")]
     partial class AddCreatedAtToVenues
     {
         /// <inheritdoc />
@@ -40,6 +40,7 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
                     b.Property<Guid?>("CreatedByUserId")

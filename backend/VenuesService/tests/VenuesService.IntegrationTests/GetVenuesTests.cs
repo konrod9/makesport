@@ -2,8 +2,13 @@ using CSharpFunctionalExtensions;
 using FileService.Contracts.HttpCommunication;
 using FileService.Contracts.Shared;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using VenuesService.Application.UseCases.GetVenues;
+using VenuesService.Contracts.Enums;
 using VenuesService.Contracts.Requests;
 using VenuesService.Contracts.Responses;
+using VenuesService.Infrastructure.Postgres.Database;
 using VenuesService.IntegrationTests.Infrastructure;
 
 namespace VenuesService.IntegrationTests;
@@ -49,5 +54,24 @@ public class GetVenuesTests : VenuesTestsBase
         Assert.True(venuesResult.IsSuccess);
         Assert.Equal(3, venuesResult.Value.Venues.Count);
         Assert.Equal(3, venuesResult.Value.Venues.Select(v => v.Video).Count());
+    }
+
+    [Fact]
+    public void Distance_sort_translates_to_st_distance()
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<VenuesDbContext>();
+        var sorting = scope.ServiceProvider.GetRequiredService<IVenueSortingService>();
+        
+        var query = sorting.ApplySort(
+            db.Venues.AsQueryable(),
+            VenueSortField.Distance,
+            SortDirection.Asc,
+            latitude: 55.75,
+            longitude: 37.61);
+
+        var sql = query.ToQueryString();
+        
+        Assert.Contains("ST_Distance", sql, StringComparison.OrdinalIgnoreCase);
     }
 }
