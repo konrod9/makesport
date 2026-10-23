@@ -2,6 +2,7 @@ import { PAGE_SIZE } from "./use-venues-list";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { SortDirection, VenueSortBy } from "@/entities/venues/types";
 
 export type VenuesFilterState = {
   search?: string;
@@ -12,7 +13,8 @@ export type VenuesFilterState = {
   city?: string;
   sportType?: string;
   surface?: string;
-  // сортировка
+  sortBy: VenueSortBy;
+  sortDirection: SortDirection;
 };
 
 type Actions = {
@@ -23,6 +25,10 @@ type Actions = {
   setOnlyFree: (input: VenuesFilterState["onlyFree"]) => void;
   setOnlyOpen: (input: VenuesFilterState["onlyOpen"]) => void;
   setHasLighting: (input: VenuesFilterState["hasLighting"]) => void;
+  setSorting: (
+    sortBy: VenuesFilterState["sortBy"],
+    sortDirection: VenuesFilterState["sortDirection"],
+  ) => void;
 };
 
 type VenuesFilterStore = VenuesFilterState & Actions;
@@ -36,6 +42,8 @@ const initialState: VenuesFilterState = {
   city: "",
   sportType: "",
   surface: "",
+  sortBy: "CreatedAt",
+  sortDirection: "Desc",
 };
 
 const useVenuesFilterStore = create<VenuesFilterStore>()(
@@ -56,6 +64,14 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
         set(() => ({ onlyOpen: input || false })),
       setHasLighting: (input: VenuesFilterState["hasLighting"]) =>
         set(() => ({ hasLighting: input || false })),
+      setSorting: (
+        sortBy: VenuesFilterState["sortBy"],
+        sortDirection: VenuesFilterState["sortDirection"],
+      ) =>
+        set(() => ({
+          sortBy: sortBy || "CreatedAt",
+          sortDirection: sortDirection || "Desc",
+        })),
     }),
     { name: "venues-filter", storage: createJSONStorage(() => localStorage) },
   ),
@@ -76,7 +92,19 @@ export const useGetVenuesFilter = () => {
   );
 };
 
-// TODO: export const useGetVenuesSorting
+export const useGetVenuesSorting = () => {
+  return useVenuesFilterStore(
+    useShallow((state) => ({
+      sortBy: state.sortBy,
+      sortDirection: state.sortDirection,
+    })),
+  );
+};
+
+export const setFilterSorting = (
+  sortBy: VenuesFilterState["sortBy"],
+  sortDirection: VenuesFilterState["sortDirection"],
+) => useVenuesFilterStore.getState().setSorting(sortBy, sortDirection);
 
 export const setFilterSearch = (input: VenuesFilterState["search"]) =>
   useVenuesFilterStore.getState().setSearchQuery(input);

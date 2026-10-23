@@ -32,7 +32,7 @@ public record VenueDto
 
     public IReadOnlyList<MediaDto> Images { get; set; } = [];
 
-    public DateTimeOffset CreateAt { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
     
     public double? DistanceMeters { get; set; }
 }

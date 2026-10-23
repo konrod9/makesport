@@ -138,7 +138,7 @@ public class GetVenuesUseCase
                 {
                     Id = v.VideoId
                 },
-                CreateAt = v.CreatedAt,
+                CreatedAt = v.CreatedAt,
                 DistanceMeters = v.DistanceMeters,
             }).ToList();
 

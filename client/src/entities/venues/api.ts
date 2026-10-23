@@ -5,7 +5,9 @@ import {
   AddressDto,
   CityDto,
   CoordinatesDto,
+  SortDirection,
   Venue,
+  VenueSortBy,
   WorkingHoursDto,
 } from "./types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
@@ -21,6 +23,10 @@ export type GetVenuesRequest = {
   city?: string;
   sportType?: string;
   surface?: string;
+  sortBy: VenueSortBy;
+  sortDirection: SortDirection;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type CreateVenueRequest = {

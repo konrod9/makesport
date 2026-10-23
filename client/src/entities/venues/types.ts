@@ -14,6 +14,8 @@ export type Venue = {
   video?: MediaDto;
   address: AddressDto;
   coordinates: CoordinatesDto;
+  createdAt: string;
+  distanceMeters: number | null;
 };
 
 export type WorkingHoursDto = {
@@ -49,3 +51,7 @@ export type MediaStatus =
   | "ready"
   | "failed"
   | "deleted";
+
+export type VenueSortBy = "CreatedAt" | "Title" | "Distance";
+
+export type SortDirection = "Asc" | "Desc";
