@@ -19,6 +19,8 @@ import { Button } from "@/shared/components/ui/button";
 import { ImageGallery } from "@/shared/components/image-gallery";
 import { Venue } from "@/entities/venues/types";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { Navigation } from "lucide-react";
+import { formatDistance } from "@/shared/lib/format";
 
 interface VenueDetailsDialogProps {
   venue: Venue | null;
@@ -32,6 +34,8 @@ export function VenueDetailsDialog({
   onOpenChange,
 }: VenueDetailsDialogProps) {
   if (!venue) return null;
+
+  const distance = formatDistance(venue.distanceMeters);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,11 +65,9 @@ export function VenueDetailsDialog({
               </div>
             </div>
           </DialogHeader>
-
           <p className="text-sm text-muted-foreground leading-relaxed">
             {venue.description}
           </p>
-
           {/* Key facts grid */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
@@ -109,7 +111,6 @@ export function VenueDetailsDialog({
               </div>
             </div>
           </div>
-
           {/* Lighting */}
           <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
             <Lightbulb
@@ -121,7 +122,6 @@ export function VenueDetailsDialog({
                 : "Освещение отсутствует"}
             </p>
           </div>
-
           {/* Address */}
           <div className="flex items-start gap-2.5 rounded-lg border border-border p-3">
             <MapPin className="h-4 w-4 text-chart-3 shrink-0 mt-0.5" />
@@ -134,7 +134,17 @@ export function VenueDetailsDialog({
               </p>
             </div>
           </div>
-
+          {distance && (
+            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
+              <Navigation className="h-4 w-4 text-chart-3 shrink-0" />
+              <div>
+                <p className="text-xs text-muted-foreground">Расстояние</p>
+                <p className="text-sm font-medium text-foreground">
+                  {distance}
+                </p>
+              </div>
+            </div>
+          )}
           <Button className="w-full" size="lg">
             Построить маршрут
           </Button>

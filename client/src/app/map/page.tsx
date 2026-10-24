@@ -43,6 +43,8 @@ export default function MapPage() {
     city: city,
     sportType: sportType,
     surface: surface,
+    sortBy: "CreatedAt",
+    sortDirection: "Desc",
   });
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);

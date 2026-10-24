@@ -1,10 +1,12 @@
 "use client";
 
-import { Star, MapPin, Clock, Lightbulb, CircleDollarSign } from "lucide-react";
+import { Star, MapPin, Clock, Lightbulb } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
 import { Venue } from "@/entities/venues/types";
+import { Navigation } from "lucide-react";
+import { formatDistance } from "@/shared/lib/format";
 
 interface VenueCardProps {
   venue: Venue;
@@ -12,6 +14,8 @@ interface VenueCardProps {
 }
 
 export function VenueCard({ venue, onClick }: VenueCardProps) {
+  const distance = formatDistance(venue.distanceMeters);
+
   return (
     <Card
       onClick={() => onClick?.(venue)}
@@ -99,6 +103,12 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
               </div>
             )}
           </div>
+          {distance && (
+            <div className="flex items-center gap-1">
+              <Navigation className="h-3.5 w-3.5 text-chart-3" />
+              <span>{distance}</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

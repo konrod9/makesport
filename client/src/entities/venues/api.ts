@@ -11,7 +11,6 @@ import {
   WorkingHoursDto,
 } from "./types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { VenuesFilterState } from "@/features/venues/model/venues-filter-store";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -25,9 +24,11 @@ export type GetVenuesRequest = {
   surface?: string;
   sortBy: VenueSortBy;
   sortDirection: SortDirection;
-  latitude: number | null;
-  longitude: number | null;
+  latitude?: number;
+  longitude?: number;
 };
+
+export type GetVenuesQueryParams = Omit<GetVenuesRequest, "page">;
 
 export type CreateVenueRequest = {
   title: string;
@@ -70,7 +71,7 @@ export const venuesApi = {
 export const venuesQueryOptions = {
   baseKey: "venues",
 
-  getVenuesInfiniteOptions: (filter: VenuesFilterState) => {
+  getVenuesInfiniteOptions: (filter: GetVenuesQueryParams) => {
     return infiniteQueryOptions({
       queryKey: [venuesQueryOptions.baseKey, filter],
       queryFn: ({ pageParam }) => {
@@ -91,7 +92,7 @@ export const venuesQueryOptions = {
     });
   },
 
-  getVenuesQueryOptions: (filter: VenuesFilterState) => {
+  getVenuesQueryOptions: (filter: GetVenuesQueryParams) => {
     return queryOptions({
       queryKey: [venuesQueryOptions.baseKey, filter],
       queryFn: () => venuesApi.getVenues({ ...filter, page: 1 }),
