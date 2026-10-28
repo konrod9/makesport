@@ -21,6 +21,7 @@ public class FileServiceCommunicationMock : IFileCommunicationService
 
     public Task<Result<GetByOwnersResponse, Error>> GetByOwners(GetByOwnersRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(
+            Result.Success<GetByOwnersResponse, Error>(new GetByOwnersResponse([])));
     }
 }

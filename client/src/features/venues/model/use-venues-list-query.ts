@@ -12,6 +12,10 @@ export function useVenuesListQuery({
   city,
   sportType,
   surface,
+  sortBy,
+  sortDirection,
+  latitude,
+  longitude,
 }: UseVenuesListParams) {
   const [debouncedSearch] = useDebounce(search, 300);
 
@@ -25,6 +29,10 @@ export function useVenuesListQuery({
       city: city === "" ? undefined : city,
       sportType: sportType === "" ? undefined : sportType,
       surface: surface === "" ? undefined : surface,
+      sortBy,
+      sortDirection,
+      latitude,
+      longitude,
     }),
   });
 }

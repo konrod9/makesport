@@ -3,14 +3,22 @@
 import { FiltersSidebar } from "@/shared/components/filters-sidebar";
 import { VenueCard } from "@/shared/components/venue-card";
 import { VenueDetailsDialog } from "@/shared/components/venue-details-dialog";
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useVenuesList } from "./model/use-venues-list";
 import { Venue } from "@/entities/venues/types";
 import { Spinner } from "@/shared/components/ui/spinner";
 import {
+  setFilterSorting,
   setInitialFilters,
   useGetVenuesFilter,
+  useGetVenuesSorting,
 } from "./model/venues-filter-store";
+import {
+  type DistanceOriginResult,
+  useUserLocation,
+} from "./model/use-user-location";
+import { useCities } from "./model/use-cities";
+import { VenueSorting } from "./venue-sorting";
 
 export function VenuesList() {
   const {
@@ -24,17 +32,91 @@ export function VenuesList() {
     surface,
   } = useGetVenuesFilter();
 
-  const { data, isPending, error, isError, isFetchingNextPage, cursorRef } =
-    useVenuesList({
-      search: search === "" ? undefined : search,
-      pageSize: pageSize,
-      hasLighting: hasLighting,
-      onlyFree: onlyFree,
-      onlyOpen: onlyOpen,
-      city: city,
-      sportType: sportType,
-      surface: surface,
-    });
+  const { sortBy, sortDirection } = useGetVenuesSorting();
+
+  const {
+    coordinates: userCoordinates,
+    status,
+    errorCode,
+    requestLocation,
+  } = useUserLocation();
+
+  const { data: cities, isPending: citiesPending } = useCities();
+
+  const cityCenter = useMemo(() => {
+    const cityData = cities?.result?.find((c) => c.name === city);
+    return cityData
+      ? { latitude: cityData.latitude, longitude: cityData.longitude }
+      : null;
+  }, [cities, city]);
+
+  const origin = userCoordinates ?? cityCenter;
+  const originSource: "geolocation" | "city" | null = userCoordinates
+    ? "geolocation"
+    : cityCenter
+      ? "city"
+      : null;
+
+  const ensureDistanceOrigin =
+    useCallback(async (): Promise<DistanceOriginResult> => {
+      if (userCoordinates) {
+        return {
+          coordinates: userCoordinates,
+          source: "geolocation",
+          errorCode: null,
+        };
+      }
+
+      if (status === "denied" || status === "unavailable") {
+        return cityCenter
+          ? { coordinates: cityCenter, source: "city", errorCode: null }
+          : {
+              coordinates: null,
+              source: null,
+              errorCode: errorCode ?? "no_city",
+            };
+      }
+
+      const requested = await requestLocation();
+
+      if (requested.coordinates) {
+        return {
+          coordinates: requested.coordinates,
+          source: "geolocation",
+          errorCode: null,
+        };
+      }
+
+      return cityCenter
+        ? { coordinates: cityCenter, source: "city", errorCode: null }
+        : { coordinates: null, source: null, errorCode: requested.errorCode };
+    }, [userCoordinates, status, errorCode, cityCenter, requestLocation]);
+
+  const distanceReady = sortBy === "Distance" && origin !== null;
+  const requestSortBy =
+    sortBy === "Distance" && !distanceReady ? "CreatedAt" : sortBy;
+  const requestSortDirection =
+    sortBy === "Distance" && !distanceReady ? "Desc" : sortDirection;
+
+  const { data, error, isFetchingNextPage, cursorRef } = useVenuesList({
+    search: search === "" ? undefined : search,
+    pageSize,
+    hasLighting,
+    onlyFree,
+    onlyOpen,
+    city,
+    sportType,
+    surface,
+    sortBy: requestSortBy,
+    sortDirection: requestSortDirection,
+    latitude: distanceReady ? origin?.latitude : undefined,
+    longitude: distanceReady ? origin?.longitude : undefined,
+  });
+
+  useEffect(() => {
+    if (sortBy !== "Distance" || origin || citiesPending) return;
+    setFilterSorting("CreatedAt", "Desc");
+  }, [sortBy, origin, citiesPending]);
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -51,7 +133,6 @@ export function VenuesList() {
   return (
     <div className="min-h-screen">
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 text-balance">
             Найди свою <span className="text-chart-3">площадку</span>
@@ -64,7 +145,7 @@ export function VenuesList() {
         <div className="lg:flex gap-8">
           <FiltersSidebar />
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <p className="text-sm text-muted-foreground">
                 Найдено:{" "}
                 <span className="text-foreground font-medium">
@@ -72,6 +153,10 @@ export function VenuesList() {
                 </span>{" "}
                 площадок
               </p>
+              <VenueSorting
+                onEnsureOrigin={ensureDistanceOrigin}
+                originSource={originSource}
+              />
             </div>
 
             {data?.venues.length != undefined && data?.venues.length > 0 ? (

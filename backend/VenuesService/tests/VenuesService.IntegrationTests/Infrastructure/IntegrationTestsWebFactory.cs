@@ -25,7 +25,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-        
+
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<VenuesDbContext>();
 
@@ -53,12 +53,16 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
 
             services.AddDbContextPool<VenuesDbContext>((sp, options) =>
             {
-                options.UseNpgsql(_dbContainer.GetConnectionString());
+                options.UseNpgsql(
+                    _dbContainer.GetConnectionString(),
+                    o => o.UseNetTopologySuite());
             });
 
             services.AddDbContextPool<IVenuesReadDbContext, VenuesDbContext>((sp, options) =>
             {
-                options.UseNpgsql(_dbContainer.GetConnectionString());
+                options.UseNpgsql(
+                    _dbContainer.GetConnectionString(),
+                    o => o.UseNetTopologySuite());
             });
 
             services.RemoveAll<IFileCommunicationService>();

@@ -29,10 +29,11 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<Point>("Coordinates")
-                        .IsRequired()
-                        .HasColumnType("geography (Point,4326)")
-                        .HasColumnName("coordinates");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid")
@@ -54,6 +55,11 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                     b.Property<bool>("IsOpen")
                         .HasColumnType("boolean")
                         .HasColumnName("is_open");
+
+                    b.Property<Point>("Location")
+                        .IsRequired()
+                        .HasColumnType("geography (Point,4326)")
+                        .HasColumnName("coordinates");
 
                     b.Property<double>("Rating")
                         .HasColumnType("double precision")

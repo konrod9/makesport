@@ -1,4 +1,7 @@
-import { venuesQueryOptions } from "@/entities/venues/api";
+import {
+  GetVenuesQueryParams,
+  venuesQueryOptions,
+} from "@/entities/venues/api";
 import { EnvelopeError } from "@/shared/api/errors";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RefCallback, useCallback } from "react";
@@ -8,7 +11,8 @@ import { VenuesFilterState } from "./venues-filter-store";
 export const PAGE_SIZE = 10;
 
 export type UseVenuesListParams = VenuesFilterState & {
-  pageSize: number;
+  latitude?: number;
+  longitude?: number;
 };
 
 export function useVenuesList({
@@ -20,8 +24,27 @@ export function useVenuesList({
   city,
   sportType,
   surface,
+  sortBy,
+  sortDirection,
+  latitude,
+  longitude,
 }: UseVenuesListParams) {
   const [debouncedSearch] = useDebounce(search, 300);
+
+  const params: GetVenuesQueryParams = {
+    search: debouncedSearch,
+    pageSize,
+    hasLighting: hasLighting ? hasLighting : undefined,
+    onlyFree: onlyFree ? onlyFree : undefined,
+    onlyOpen: onlyOpen ? onlyOpen : undefined,
+    city: city === "" ? undefined : city,
+    sportType: sportType === "" ? undefined : sportType,
+    surface: surface === "" ? undefined : surface,
+    sortBy,
+    sortDirection,
+    latitude,
+    longitude,
+  };
 
   const {
     data,
@@ -32,16 +55,7 @@ export function useVenuesList({
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    ...venuesQueryOptions.getVenuesInfiniteOptions({
-      pageSize: pageSize,
-      search: debouncedSearch,
-      hasLighting: hasLighting ? hasLighting : undefined,
-      onlyFree: onlyFree ? onlyFree : undefined,
-      onlyOpen: onlyOpen ? onlyOpen : undefined,
-      city: city === "" ? undefined : city,
-      sportType: sportType === "" ? undefined : sportType,
-      surface: surface === "" ? undefined : surface,
-    }),
+    ...venuesQueryOptions.getVenuesInfiniteOptions(params),
   });
 
   const cursorRef: RefCallback<HTMLDivElement> = useCallback(
