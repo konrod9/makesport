@@ -2,8 +2,8 @@
 
 import { queryClient } from "@/shared/api/query-client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Header } from "@/shared/components/header";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { Header } from "@/shared/components/layout/header";
 
 export default function Layout({
   children,
