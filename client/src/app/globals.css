@@ -123,9 +123,10 @@
     scrollbar-width: none;
   }
   .grain {
-    /* ... */
-  }
-  .glass {
-    /* ... */
+    background-image: radial-gradient(
+      rgba(16, 19, 18, 0.08) 0.5px,
+      transparent 0.5px
+    );
+    background-size: 4px 4px;
   }
 }
