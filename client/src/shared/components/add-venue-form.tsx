@@ -9,8 +9,8 @@ import {
 import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Controller, useForm, type FieldPath } from "react-hook-form";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -29,6 +29,8 @@ import { useAuthSession } from "@/features/auth/model/auth-store";
 import { routes } from "@/shared/routes";
 import { cn } from "../lib/utils";
 import { FormError } from "./ui/form-error";
+import { sportTypes, surfaces } from "../lib/data";
+import { FileUploadDialog } from "@/entities/file/ui/file-upload-dialog";
 
 type SelectedFile = {
   id: string;
@@ -62,6 +64,16 @@ const MapPicker = dynamic(
 );
 
 const steps = ["Основное", "Локация", "Характеристики", "Фото"];
+const stepFields: FieldPath<CreateVenueData>[][] = [
+  ["title"],
+  [
+    "address.city",
+    "address.street",
+    "coordinates.latitude",
+    "coordinates.longitude",
+  ],
+  ["workingHours.workingStart", "workingHours.workingEnd"],
+];
 
 export function AddVenueForm() {
   const initialData: CreateVenueData = {
@@ -92,6 +104,7 @@ export function AddVenueForm() {
   const [step, setStep] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
+  const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
 
   const { createVenue, isPending, error, isError } = useCreateVenue();
   const { upload, uploadState } = useFileUpload({ ownerType: "venue" });
@@ -102,8 +115,12 @@ export function AddVenueForm() {
     reset,
     control,
     setValue,
+    trigger,
+    getValues,
+    clearErrors,
   } = useForm<CreateVenueData>({
     defaultValues: initialData,
+    mode: "onTouched",
   });
 
   const { isAuthenticated, isHydrated } = useAuthSession();
@@ -141,6 +158,18 @@ export function AddVenueForm() {
     });
   };
 
+  const handleNext = async () => {
+    const fields = stepFields[step];
+
+    if (fields.length === 0) {
+      setStep((s) => s + 1);
+      return;
+    }
+
+    const ok = await trigger(fields, { shouldFocus: true });
+    if (ok) setStep((s) => s + 1);
+  };
+
   const handleCoordsChange = useCallback(
     (coords: CoordinatesDto) => {
       setValue("coordinates.latitude", coords.latitude);
@@ -158,6 +187,43 @@ export function AddVenueForm() {
     },
     [setValue],
   );
+
+  const selectedFilesRef = useRef<SelectedFile[]>([]);
+
+  useEffect(() => {
+    selectedFilesRef.current = selectedFiles;
+  }, [selectedFiles]);
+
+  useEffect(() => {
+    return () => {
+      selectedFilesRef.current.forEach((f) =>
+        URL.revokeObjectURL(f.previewUrl),
+      );
+    };
+  }, []);
+
+  const handleFilesSelected = useCallback((files: File[]) => {
+    setSelectedFiles((prev) => {
+      const remaining = 5 - prev.length;
+      if (remaining <= 0) return prev;
+
+      const newFiles = files.slice(0, remaining).map((file) => ({
+        id: crypto.randomUUID(),
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      return [...prev, ...newFiles];
+    });
+  }, []);
+
+  const removeFile = useCallback((id: string) => {
+    setSelectedFiles((prev) => {
+      const file = prev.find((f) => f.id === id);
+      if (file) URL.revokeObjectURL(file.previewUrl);
+      return prev.filter((f) => f.id !== id);
+    });
+  }, []);
 
   if (isSuccess) {
     return (
@@ -258,7 +324,10 @@ export function AddVenueForm() {
             ))}
           </div>
 
-          <form className="mt-6 rounded-4xl border border-ink-200/70 bg-white p-6 shadow-card sm:p-8">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-6 rounded-4xl border border-ink-200/70 bg-white p-6 shadow-card sm:p-8"
+          >
             {step === 0 && (
               <div className="animate-fade-up space-y-6">
                 <SectionTitle
@@ -298,14 +367,28 @@ export function AddVenueForm() {
                 <SectionTitle
                   icon={<MapPin className="size-4" />}
                   title="Местоположение"
-                  subtitle="Поставьте метку на карте и уточните адрес"
+                  subtitle="Поставьте метку на карте и затем уточните адрес при необходимости"
                 />
-                {/* <LocationPicker value={coords} onChange={setCoords} /> */}
                 <div className="mt-4 h-[400px] rounded-lg overflow-hidden border border-border">
                   <MapPicker
                     onCoordinatesChange={handleCoordsChange}
                     onAddressChange={handleAddressChange}
                   />
+                  <input
+                    type="hidden"
+                    {...register("coordinates.latitude", {
+                      valueAsNumber: true,
+                      validate: (v) => v !== 0 || "Поставьте метку на карте",
+                    })}
+                  />
+                  <input
+                    type="hidden"
+                    {...register("coordinates.longitude", {
+                      valueAsNumber: true,
+                      validate: (v) => v !== 0 || "Поставьте метку на карте",
+                    })}
+                  />
+                  <FormError message={errors.coordinates?.latitude?.message} />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Город" required>
@@ -341,36 +424,44 @@ export function AddVenueForm() {
                   title="Характеристики"
                   subtitle="Вид спорта, покрытие и условия"
                 />
-                {/* <Field label="Виды спорта" required>
-                  <select
-                    value={field.value?.toString()}
-                    onChange={(e) => setCity(e.target.value)}
-                    className={inputCls}
-                  >
-                    {cities.map((c) => (
-                      <option key={c}>{c}</option>
-                    ))}
-                  </select>
-                </Field> */}
-                {/* <Field label="Покрытие" required>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                    {surfaces.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setSurface(s)}
-                        className={cn(
-                          "rounded-xl border px-3 py-3 text-[13px] font-semibold transition-all",
-                          surface === s
-                            ? "border-ink bg-ink text-cream"
-                            : "border-ink-200 bg-white text-ink-500 hover:border-ink-300",
-                        )}
+                <Field label="Виды спорта" required>
+                  <Controller<CreateVenueData>
+                    name="sportType"
+                    control={control}
+                    rules={{ required: "Вид спорта обязателен" }}
+                    render={({ field }) => (
+                      <select
+                        id="sportType"
+                        value={field.value?.toString()}
+                        onChange={field.onChange}
+                        className={inputCls}
                       >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </Field> */}
+                        {sportTypes.map((c) => (
+                          <option key={c}>{c}</option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                </Field>
+                <Field label="Покрытие" required>
+                  <Controller<CreateVenueData>
+                    name="surface"
+                    control={control}
+                    rules={{ required: "Покрытие обязательно" }}
+                    render={({ field }) => (
+                      <select
+                        id="surface"
+                        value={field.value?.toString()}
+                        onChange={field.onChange}
+                        className={inputCls}
+                      >
+                        {surfaces.map((c) => (
+                          <option key={c}>{c}</option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                </Field>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Открытие">
                     <div className="relative">
@@ -426,7 +517,7 @@ export function AddVenueForm() {
               </div>
             )}
 
-            {/* {step === 3 && (
+            {step === 3 && (
               <div className="animate-fade-up space-y-6">
                 <SectionTitle
                   icon={<Camera className="size-4" />}
@@ -434,64 +525,50 @@ export function AddVenueForm() {
                   subtitle="До 5 фото — они появятся в карточке площадки"
                 />
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {photoPool.map((src) => {
-                    const on = photos.includes(src);
-                    return (
+                  {selectedFiles.map((file) => (
+                    <div
+                      key={file.id}
+                      className="relative aspect-square rounded-lg overflow-hidden group"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={file.previewUrl}
+                        alt={`Фото`}
+                        className="w-full h-full object-cover"
+                      />
                       <button
-                        key={src}
                         type="button"
-                        onClick={() => togglePhoto(src)}
-                        className={cn(
-                          "group relative aspect-[4/3] overflow-hidden rounded-2xl border-2 transition-all",
-                          on ? "border-lime-500" : "border-transparent",
-                        )}
-                      > */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {/* <img
-                          src={src}
-                          alt=""
-                          className={cn(
-                            "size-full object-cover transition-all",
-                            on
-                              ? "opacity-100"
-                              : "opacity-70 group-hover:opacity-100",
-                          )}
-                        />
-                        <span
-                          className={cn(
-                            "absolute right-2 top-2 grid size-6 place-items-center rounded-full text-ink transition-all",
-                            on
-                              ? "bg-lime"
-                              : "bg-white/80 opacity-0 group-hover:opacity-100",
-                          )}
-                        >
-                          {on ? (
-                            <Check className="size-3.5" />
-                          ) : (
-                            <ImagePlus className="size-3.5" />
-                          )}
-                        </span>
+                        onClick={() => removeFile(file.id)}
+                        className="absolute top-1 right-1 p-1 rounded-full bg-background/80 text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
                       </button>
-                    );
-                  })}
-                  <button
-                    type="button"
-                    className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 text-ink-400 transition-colors hover:border-ink hover:text-ink"
-                  >
-                    <ImagePlus className="size-6" />
-                    <span className="text-[11px] font-semibold">Загрузить</span>
-                  </button>
+                    </div>
+                  ))}
+                  {selectedFiles.length < 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsFileUploadDialogOpen(true)}
+                      className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 text-ink-400 transition-colors hover:border-ink hover:text-ink"
+                    >
+                      <ImagePlus className="size-6" />
+                      <span className="text-[11px] font-semibold">
+                        Загрузить
+                      </span>
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-start gap-2 rounded-2xl bg-cream p-4 text-xs leading-relaxed text-ink-500">
                   <Info className="mt-0.5 size-4 shrink-0" />
-                  Выбрано {photos.length} из 5. Загружайте только свои фото или
-                  изображения со свободной лицензией.
+                  Загружайте только свои фото или изображения со свободной
+                  лицензией.
                 </div>
               </div>
-            )} */}
+            )}
 
             <div className="mt-8 flex items-center justify-between gap-3 border-t border-ink-100 pt-6">
               <button
+                type="button"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
                 disabled={step === 0}
                 className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-ink-400 transition-colors hover:text-ink disabled:pointer-events-none disabled:opacity-40"
@@ -499,10 +576,10 @@ export function AddVenueForm() {
                 <ArrowLeft className="size-4" /> Назад
               </button>
 
-              {/* {step < steps.length - 1 ? (
+              {step < steps.length - 1 ? (
                 <button
-                  onClick={() => canNext && setStep((s) => s + 1)}
-                  disabled={!canNext}
+                  type="button"
+                  onClick={handleNext}
                   className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream transition-all hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Далее
@@ -518,14 +595,20 @@ export function AddVenueForm() {
                 </button>
               ) : (
                 <button
-                  //   onClick={() => setSubmitted(true)}
+                  type="submit"
+                  disabled={isPending}
                   className="inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink transition-all hover:shadow-lime"
                 >
                   <Check className="size-4" /> Отправить на модерацию
                 </button>
-              )} */}
+              )}
             </div>
           </form>
+          <FileUploadDialog
+            open={isFileUploadDialogOpen}
+            onOpenChange={setIsFileUploadDialogOpen}
+            onFilesSelected={handleFilesSelected}
+          />
         </div>
 
         {/* <aside className="space-y-4 lg:sticky lg:top-24">
