@@ -270,11 +270,7 @@ export function AddVenueForm() {
                   <input
                     id="name"
                     placeholder="Например, Воркаут-зона в Парке Горького"
-                    className={`bg-input border-border ${
-                      errors.title
-                        ? "border-destructive focus-visible:ring-destructive"
-                        : ""
-                    }`}
+                    className={fieldCls(!!errors.title)}
                     {...register("title", { required: "Название обязательно" })}
                   />
                   <FormError message={errors.title?.message} />
@@ -287,7 +283,10 @@ export function AddVenueForm() {
                     id="description"
                     rows={4}
                     placeholder="Расскажите, что есть на площадке: покрытие, инвентарь, особенности..."
-                    className="bg-input border-border min-h-[120px] resize-none"
+                    className={cn(
+                      inputCls,
+                      "h-auto min-h-[120px] resize-none py-3",
+                    )}
                     {...register("description")}
                   />
                 </Field>
@@ -313,11 +312,7 @@ export function AddVenueForm() {
                     <input
                       id="city"
                       placeholder="Москва"
-                      className={`bg-input border-border ${
-                        errors.address?.city
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }`}
+                      className={fieldCls(!!errors.address?.city)}
                       {...register("address.city", {
                         required: "Город",
                       })}
@@ -328,11 +323,7 @@ export function AddVenueForm() {
                     <input
                       id="address"
                       placeholder="Улица, дом"
-                      className={`bg-input border-border ${
-                        errors.address?.street
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }`}
+                      className={fieldCls(!!errors.address?.street)}
                       {...register("address.street", {
                         required: "Улица обязательна",
                       })}
@@ -636,6 +627,13 @@ export function AddVenueForm() {
 
 const inputCls =
   "h-12 w-full rounded-2xl border border-ink-200 bg-cream/50 px-4 text-sm font-medium text-ink outline-none transition-all placeholder:text-ink-400 focus:border-ink focus:bg-white focus:ring-4 focus:ring-lime/30";
+
+const fieldCls = (invalid?: boolean) =>
+  cn(
+    inputCls,
+    invalid &&
+      "border-destructive focus:border-destructive focus:ring-destructive/20",
+  );
 
 const photoPool = [
   "https://images.unsplash.com/photo-1529903384028-929ae5dccdf1?auto=format&fit=crop&w=600&q=80",
