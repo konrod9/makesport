@@ -10,7 +10,13 @@ import { useCreateVenue } from "@/features/venues/model/use-create-venue";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Controller, useForm, type FieldPath } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  useForm,
+  useWatch,
+  type FieldPath,
+} from "react-hook-form";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -599,7 +605,8 @@ export function AddVenueForm() {
                   disabled={isPending}
                   className="inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink transition-all hover:shadow-lime"
                 >
-                  <Check className="size-4" /> Отправить на модерацию
+                  <Check className="size-4" />{" "}
+                  {isPending ? "Отправка..." : "Отправить на модерацию"}
                 </button>
               )}
             </div>
@@ -611,68 +618,8 @@ export function AddVenueForm() {
           />
         </div>
 
-        {/* <aside className="space-y-4 lg:sticky lg:top-24">
-          <div className="rounded-4xl border border-ink-200/70 bg-white p-6">
-            <h3 className="font-display text-base font-semibold">
-              Предпросмотр
-            </h3>
-            <div className="mt-4 overflow-hidden rounded-3xl border border-ink-100 bg-cream">
-              <div className="relative aspect-[4/3] bg-ink-100">
-                {photos[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={photos[0]}
-                    alt=""
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <div className="grid size-full place-items-center text-ink-300">
-                    <Camera className="size-8" />
-                  </div>
-                )}
-                <div className="absolute left-3 top-3 flex gap-1.5">
-                  <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-bold text-ink">
-                    {free ? "Бесплатно" : "Платно"}
-                  </span>
-                  {lighting && (
-                    <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-ink">
-                      Свет
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="p-4">
-                <p className="line-clamp-1 text-sm font-semibold text-ink">
-                  {name || "Название площадки"}
-                </p>
-                <p className="mt-1 line-clamp-1 text-xs text-ink-400">
-                  {address ? `${city}, ${address}` : "Адрес не указан"}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {(selectedSports.length
-                    ? selectedSports
-                    : ["Вид спорта"]
-                  ).map((s) => (
-                    <span
-                      key={s}
-                      className="rounded-full bg-ink-50 px-2 py-0.5 text-[10px] font-semibold text-ink-500"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-ink-400">
-                  <Clock className="size-3" /> {openTime} — {closeTime}
-                  {surface && (
-                    <>
-                      <span>·</span>
-                      {surface}
-                    </>
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
+        <aside className="space-y-4 lg:sticky lg:top-24">
+          <VenuePreview control={control} selectedFiles={selectedFiles} />
 
           <div className="rounded-4xl bg-clay p-6">
             <h3 className="text-sm font-semibold text-ink">
@@ -698,11 +645,12 @@ export function AddVenueForm() {
 
           <button
             type="button"
+            onClick={() => router.push("/venues")}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-ink-200 bg-white py-3 text-xs font-semibold text-ink-400 transition-colors hover:text-ink"
           >
             <X className="size-3.5" /> Отменить добавление
           </button>
-        </aside> */}
+        </aside>
       </div>
     </div>
   );
@@ -717,14 +665,6 @@ const fieldCls = (invalid?: boolean) =>
     invalid &&
       "border-destructive focus:border-destructive focus:ring-destructive/20",
   );
-
-const photoPool = [
-  "https://images.unsplash.com/photo-1529903384028-929ae5dccdf1?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=600&q=80",
-];
 
 function SectionTitle({
   icon,
@@ -827,5 +767,81 @@ function Toggle({
         />
       </span>
     </button>
+  );
+}
+
+function VenuePreview({
+  control,
+  selectedFiles,
+}: {
+  control: Control<CreateVenueData>;
+  selectedFiles: SelectedFile[];
+}) {
+  const title = useWatch({ control, name: "title" });
+  const address = useWatch({ control, name: "address" });
+  const isFree = useWatch({ control, name: "isFree" });
+  const hasLighting = useWatch({ control, name: "hasLighting" });
+  const sportType = useWatch({ control, name: "sportType" });
+  const workingHours = useWatch({ control, name: "workingHours" });
+  const surface = useWatch({ control, name: "surface" });
+
+  return (
+    <div className="rounded-4xl border border-ink-200/70 bg-white p-6">
+      <h3 className="font-display text-base font-semibold">Предпросмотр</h3>
+      <div className="mt-4 overflow-hidden rounded-3xl border border-ink-100 bg-cream">
+        <div className="relative aspect-[4/3] bg-ink-100">
+          {selectedFiles[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={selectedFiles[0].previewUrl}
+              alt=""
+              className="size-full object-cover"
+            />
+          ) : (
+            <div className="grid size-full place-items-center text-ink-300">
+              <Camera className="size-8" />
+            </div>
+          )}
+          <div className="absolute left-3 top-3 flex gap-1.5">
+            <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] font-bold text-ink">
+              {isFree ? "Бесплатно" : "Платно"}
+            </span>
+            {hasLighting && (
+              <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-ink">
+                Свет
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4">
+          <p className="line-clamp-1 text-sm font-semibold text-ink">
+            {title || "Название площадки"}
+          </p>
+          <p className="mt-1 line-clamp-1 text-xs text-ink-400">
+            {address?.fullName?.trim()
+              ? `${address.city}, ${address.street}`
+              : "Адрес не указан"}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-1">
+            <span className="rounded-full bg-ink-50 px-2 py-0.5 text-[10px] font-semibold text-ink-500">
+              {sportType || "Вид спорта"}
+            </span>
+          </div>
+          <p className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-ink-400">
+            <Clock className="size-3" />
+            {workingHours?.workingStart
+              ? `${workingHours.workingStart} — ${workingHours.workingEnd}`
+              : "Круглосуточно"}
+            {surface && (
+              <>
+                <span>·</span>
+                {surface}
+              </>
+            )}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
