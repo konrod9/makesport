@@ -5,17 +5,17 @@ import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 
 interface VenueMapProps {
   venues: Venue[];
-  selectedVenue: Venue | null;
-  center?: [number, number];
-  onSelectVenue: (venue: Venue | null) => void;
-  onShowDetails?: (venue: Venue) => void;
+  // selectedVenue: Venue | null;
+  // center?: [number, number];
+  // onSelectVenue: (venue: Venue | null) => void;
+  // onShowDetails?: (venue: Venue) => void;
 }
 
 export function VenuesMap({
   venues,
-  center,
-  onSelectVenue,
-  onShowDetails,
+  // center,
+  // onSelectVenue,
+  // onShowDetails,
 }: VenueMapProps) {
   return (
     <YMaps
@@ -24,7 +24,7 @@ export function VenuesMap({
       }}
     >
       <Map
-        state={{ center: center ?? [55.75, 37.57], zoom: 9 }}
+        state={{ center: /*center ??*/ [55.75, 37.57], zoom: 9 }}
         className="w-full h-full"
       >
         {venues.map((venue) => (
@@ -39,8 +39,8 @@ export function VenuesMap({
               preset: "islands#redCircleDotIcon",
             }}
             onClick={() => {
-              onSelectVenue(venue);
-              onShowDetails?.(venue);
+              // onSelectVenue(venue);
+              // onShowDetails?.(venue);
             }}
           />
         ))}
