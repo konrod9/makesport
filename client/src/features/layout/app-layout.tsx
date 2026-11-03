@@ -12,10 +12,8 @@ export default function Layout({
 }>) {
   return (
     <QueryClientProvider client={queryClient}>
-      <main className="min-h-full flex flex-col">
-        <Header />
-        {children}
-      </main>
+      <Header />
+      <main>{children}</main>
       <ReactQueryDevtools initialIsOpen={false} position="bottom" />
     </QueryClientProvider>
   );
