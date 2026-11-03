@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         hostname: "make-sport.ru",
         pathname: "/storage/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
     ],
   },
 };
