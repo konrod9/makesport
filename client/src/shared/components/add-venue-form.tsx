@@ -78,7 +78,12 @@ const stepFields: FieldPath<CreateVenueData>[][] = [
     "coordinates.latitude",
     "coordinates.longitude",
   ],
-  ["workingHours.workingStart", "workingHours.workingEnd"],
+  [
+    "sportType",
+    "surface",
+    "workingHours.workingStart",
+    "workingHours.workingEnd",
+  ],
 ];
 
 export function AddVenueForm() {
@@ -111,6 +116,7 @@ export function AddVenueForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [isFileUploadDialogOpen, setIsFileUploadDialogOpen] = useState(false);
+  const [isAdvancing, setIsAdvancing] = useState(false);
 
   const { createVenue, isPending, error, isError } = useCreateVenue();
   const { upload, uploadState } = useFileUpload({ ownerType: "venue" });
@@ -165,15 +171,19 @@ export function AddVenueForm() {
   };
 
   const handleNext = async () => {
-    const fields = stepFields[step];
-
-    if (fields.length === 0) {
-      setStep((s) => s + 1);
-      return;
+    if (step >= steps.length - 1 || isAdvancing) return;
+    setIsAdvancing(true);
+    try {
+      const fields = stepFields[step] ?? [];
+      if (fields.length === 0) {
+        setStep((s) => s + 1);
+        return;
+      }
+      const ok = await trigger(fields, { shouldFocus: true });
+      if (ok) setStep((s) => s + 1);
+    } finally {
+      setIsAdvancing(false);
     }
-
-    const ok = await trigger(fields, { shouldFocus: true });
-    if (ok) setStep((s) => s + 1);
   };
 
   const handleCoordsChange = useCallback(
@@ -294,6 +304,7 @@ export function AddVenueForm() {
             {steps.map((label, i) => (
               <div key={label} className="flex flex-1 items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => i < step && setStep(i)}
                   className={cn(
                     "flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
@@ -442,6 +453,7 @@ export function AddVenueForm() {
                         onChange={field.onChange}
                         className={inputCls}
                       >
+                        <option value="">Выберите вид спорта</option>
                         {sportTypes.map((c) => (
                           <option key={c}>{c}</option>
                         ))}
@@ -461,6 +473,7 @@ export function AddVenueForm() {
                         onChange={field.onChange}
                         className={inputCls}
                       >
+                        <option value="">Выберите тип покрытия</option>
                         {surfaces.map((c) => (
                           <option key={c}>{c}</option>
                         ))}
@@ -581,34 +594,40 @@ export function AddVenueForm() {
               >
                 <ArrowLeft className="size-4" /> Назад
               </button>
-
-              {step < steps.length - 1 ? (
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream transition-all hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Далее
-                  <svg viewBox="0 0 24 24" className="size-4" fill="none">
-                    <path
-                      d="M5 12h14M13 6l6 6-6 6"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink transition-all hover:shadow-lime"
-                >
-                  <Check className="size-4" />{" "}
-                  {isPending ? "Отправка..." : "Отправить на модерацию"}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (step < steps.length - 1) void handleNext();
+                  else void handleSubmit(onSubmit)();
+                }}
+                disabled={step < steps.length - 1 ? isAdvancing : isPending}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm transition-all disabled:cursor-not-allowed disabled:opacity-40",
+                  step < steps.length - 1
+                    ? "bg-ink font-semibold text-cream hover:bg-ink-700"
+                    : "bg-lime font-bold text-ink hover:shadow-lime",
+                )}
+              >
+                {step < steps.length - 1 ? (
+                  <>
+                    Далее{" "}
+                    <svg viewBox="0 0 24 24" className="size-4" fill="none">
+                      <path
+                        d="M5 12h14M13 6l6 6-6 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <Check className="size-4" />{" "}
+                    {isPending ? "Отправка..." : "Отправить на модерацию"}
+                  </>
+                )}
+              </button>
             </div>
           </form>
           <FileUploadDialog
