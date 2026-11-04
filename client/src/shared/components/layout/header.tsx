@@ -5,6 +5,7 @@ import { Menu, Plus, UserRound, X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Logo } from "../ui/logo";
 import { routes } from "@/shared/routes";
+import { useAuthSession } from "@/features/auth/model/auth-store";
 
 const links = [
   { href: "/", label: "Площадки" },
@@ -16,6 +17,8 @@ export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const { isAuthenticated } = useAuthSession();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -58,19 +61,22 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href={routes.authLogin}
-            className="rounded-full px-4 py-2.5 text-sm font-semibold text-ink-500 transition-colors hover:text-ink"
-          >
-            Войти
-          </Link>
-          <Link
-            href={routes.profile}
-            aria-label="Мой профиль"
-            className="grid size-10 place-items-center rounded-full border border-ink-200 bg-white/60 text-ink-500 transition-colors hover:border-ink-300 hover:text-ink"
-          >
-            <UserRound className="size-4" />
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              href={routes.profile}
+              aria-label="Мой профиль"
+              className="grid size-10 place-items-center rounded-full border border-ink-200 bg-white/60 text-ink-500 transition-colors hover:border-ink-300 hover:text-ink"
+            >
+              <UserRound className="size-4" />
+            </Link>
+          ) : (
+            <Link
+              href={routes.authLogin}
+              className="rounded-full px-4 py-2.5 text-sm font-semibold text-ink-500 transition-colors hover:text-ink"
+            >
+              Войти
+            </Link>
+          )}
           <Link
             href={routes.add}
             className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-all hover:bg-ink-700 hover:shadow-soft"
