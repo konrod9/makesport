@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Star,
   MapPin,
@@ -8,19 +10,14 @@ import {
   CircleDollarSign,
   Building2,
   Layers,
+  Navigation,
+  ArrowRight,
+  X,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
-import { Button } from "@/shared/components/ui/button";
 import { ImageGallery } from "@/shared/components/image-gallery";
 import { Venue } from "@/entities/venues/types";
-import { DialogDescription } from "@radix-ui/react-dialog";
-import { Navigation } from "lucide-react";
 import { formatDistance } from "@/shared/lib/format";
+import { useRouter } from "next/navigation";
 
 interface VenueDetailsDialogProps {
   venue: Venue | null;
@@ -33,124 +30,207 @@ export function VenueDetailsDialog({
   open,
   onOpenChange,
 }: VenueDetailsDialogProps) {
-  if (!venue) return null;
+  const router = useRouter();
+
+  // Закрытие по Esc
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, onOpenChange]);
+
+  // Блокировка скролла фона
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
+
+  if (!venue || !open) return null;
 
   const distance = formatDistance(venue.distanceMeters);
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 overflow-hidden gap-0 border-border bg-card max-h-[90vh] overflow-y-auto">
-        <ImageGallery
-          images={venue.images}
-          title={venue.title}
-          sportType={venue.sportType}
-          isOpen={venue.isOpen}
-          isFree={venue.isFree}
-        />
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      {/* Оверлей */}
+      <div
+        className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+        onClick={() => onOpenChange(false)}
+        aria-hidden="true"
+      />
 
-        <div className="p-6 space-y-5">
-          <DialogHeader className="space-y-2">
+      {/* Модалка */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="venue-details-title"
+        className="relative w-full max-w-lg animate-fade-up overflow-hidden rounded-4xl border border-ink-200/70 bg-white shadow-card"
+      >
+        {/* Кнопка закрытия — поверх всего, не скроллится */}
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-white/90 text-ink shadow-soft backdrop-blur-sm transition-colors hover:bg-white"
+          aria-label="Закрыть"
+        >
+          <X className="size-4" />
+        </button>
+
+        {/* Скроллируемая часть */}
+        <div className="max-h-[90vh] overflow-y-auto">
+          <ImageGallery
+            images={venue.images}
+            title={venue.title}
+            sportType={venue.sportType}
+            isOpen={venue.isOpen}
+            isFree={venue.isFree}
+          />
+
+          <div className="space-y-5 p-6 sm:p-8">
+            {/* Заголовок + рейтинг */}
             <div className="flex items-start justify-between gap-3">
-              <DialogTitle className="text-xl text-foreground text-balance leading-tight">
+              <h2
+                id="venue-details-title"
+                className="text-balance font-display text-xl font-bold leading-tight text-ink"
+              >
                 {venue.title}
-              </DialogTitle>
-              <div className="flex items-center gap-1 shrink-0 rounded-md bg-secondary px-2 py-1">
-                <Star className="h-4 w-4 fill-chart-3 text-chart-3" />
-                <span className="text-sm font-semibold text-foreground">
+              </h2>
+              <div className="flex shrink-0 items-center gap-1 rounded-full bg-lime px-2.5 py-1">
+                <Star className="size-3.5 fill-ink text-ink" />
+                <span className="text-sm font-bold text-ink">
                   {venue.rating}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[11px] font-medium text-ink-500">
                   ({venue.reviewCount})
                 </span>
               </div>
             </div>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {venue.description}
-          </p>
-          {/* Key facts grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-              <Building2 className="h-4 w-4 text-chart-3 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Вид спорта</p>
-                <p className="text-sm font-medium text-foreground truncate">
-                  {venue.sportType}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-              <Layers className="h-4 w-4 text-chart-3 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Покрытие</p>
-                <p className="text-sm font-medium text-foreground truncate">
-                  {venue.surface}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-              <Clock className="h-4 w-4 text-chart-3 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Время работы</p>
-                <p className="text-sm font-medium text-foreground truncate">
-                  {venue.workingHours}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-              {venue.isFree ? (
-                <CircleDollarSign className="h-4 w-4 text-chart-3 shrink-0" />
-              ) : (
-                <CircleDollarSign className="h-4 w-4 text-chart-3 shrink-0" />
-              )}
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Стоимость</p>
-                <p className="text-sm font-medium text-foreground truncate">
-                  {venue.isFree ? "Бесплатно" : "Платно"}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Lighting */}
-          <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-            <Lightbulb
-              className={`h-4 w-4 shrink-0 ${venue.hasLighting ? "text-chart-3" : "text-muted-foreground"}`}
-            />
-            <p className="text-sm text-foreground">
-              {venue.hasLighting
-                ? "Есть освещение для вечерних игр"
-                : "Освещение отсутствует"}
+
+            {/* Описание */}
+            <p className="text-sm leading-relaxed text-ink-500">
+              {venue.description}
             </p>
-          </div>
-          {/* Address */}
-          <div className="flex items-start gap-2.5 rounded-lg border border-border p-3">
-            <MapPin className="h-4 w-4 text-chart-3 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {venue.address.street}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {venue.address.city}
+
+            {/* Ключевые факты */}
+            <div className="grid grid-cols-2 gap-3">
+              <FactCard
+                icon={<Building2 className="size-4" />}
+                label="Вид спорта"
+                value={venue.sportType}
+              />
+              <FactCard
+                icon={<Layers className="size-4" />}
+                label="Покрытие"
+                value={venue.surface}
+              />
+              <FactCard
+                icon={<Clock className="size-4" />}
+                label="Время работы"
+                value={venue.workingHours}
+              />
+              <FactCard
+                icon={<CircleDollarSign className="size-4" />}
+                label="Стоимость"
+                value={venue.isFree ? "Бесплатно" : "Платно"}
+              />
+            </div>
+
+            {/* Освещение */}
+            <div className="flex items-center gap-3 rounded-2xl bg-cream p-4">
+              <span
+                className={`grid size-9 shrink-0 place-items-center rounded-xl ${
+                  venue.hasLighting
+                    ? "bg-lime text-ink"
+                    : "bg-ink-100 text-ink-400"
+                }`}
+              >
+                <Lightbulb className="size-4" />
+              </span>
+              <p className="text-sm font-medium text-ink">
+                {venue.hasLighting
+                  ? "Есть освещение для вечерних игр"
+                  : "Освещение отсутствует"}
               </p>
             </div>
-          </div>
-          {distance && (
-            <div className="flex items-center gap-2.5 rounded-lg bg-secondary/50 p-3">
-              <Navigation className="h-4 w-4 text-chart-3 shrink-0" />
+
+            {/* Адрес */}
+            <div className="flex items-start gap-3 rounded-2xl border border-ink-100 p-4">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-lime/20 text-lime-600">
+                <MapPin className="size-4" />
+              </span>
               <div>
-                <p className="text-xs text-muted-foreground">Расстояние</p>
-                <p className="text-sm font-medium text-foreground">
-                  {distance}
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">
+                  Адрес
                 </p>
+                <p className="mt-0.5 text-sm font-semibold text-ink">
+                  {venue.address.street}
+                </p>
+                <p className="text-sm text-ink-500">{venue.address.city}</p>
               </div>
             </div>
-          )}
-          <Button className="w-full" size="lg">
-            Построить маршрут
-          </Button>
+
+            {/* Расстояние */}
+            {distance && (
+              <div className="flex items-center gap-3 rounded-2xl bg-cream p-4">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-ink">
+                  <Navigation className="size-4" />
+                </span>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">
+                    Расстояние
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold text-ink">
+                    {distance}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Кнопка «Подробнее» */}
+            <button
+              type="button"
+              onClick={() => router.push("/venues/" + venue.id)}
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-3.5 text-sm font-bold text-ink transition-all hover:shadow-lime"
+            >
+              Подробнее
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </div>
         </div>
-        <DialogDescription />
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function FactCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl bg-cream p-3.5">
+      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-lime text-ink">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">
+          {label}
+        </p>
+        <p className="mt-0.5 truncate text-sm font-semibold text-ink">
+          {value}
+        </p>
+      </div>
+    </div>
   );
 }
