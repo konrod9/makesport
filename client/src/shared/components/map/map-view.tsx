@@ -1,6 +1,7 @@
 "use client";
 
 import { Venue } from "@/entities/venues/types";
+import { useCities } from "@/features/venues/model/use-cities";
 import {
   setFilterCity,
   setFilterSearch,
@@ -22,7 +23,10 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { VenuesMap } from "../map-page";
+import { useVenuesListQuery } from "@/features/venues/model/use-venues-list-query";
+import { VenueDetailsDialog } from "../venue-details-dialog";
 
 const sportEmoji: Record<string, string> = {
   Футбол: "⚽",
@@ -44,23 +48,44 @@ function plural(n: number) {
   return "площадок";
 }
 
-interface MapViewProps {
-  venues: Venue[];
-  //   selectedVenue: Venue | null;
-  //   center?: [number, number];
-  //   onSelectVenue: (venue: Venue | null) => void;
-  //   onShowDetails?: (venue: Venue) => void;
-}
-
-export function MapView({
-  venues,
-  //   center,
-  //   onSelectVenue,
-  //   onShowDetails,
-}: MapViewProps) {
+export function MapView() {
   const [listOpen, setListOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [focus, setFocus] = useState<{ lat: number; lng: number } | null>(null);
+
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [detailsVenue, setDetailsVenue] = useState<Venue | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const handleShowDetails = (venue: Venue) => {
+    setDetailsVenue(venue);
+    setDetailsOpen(true);
+    setSelectedVenue(null);
+  };
+
   const { search, hasLighting, onlyFree, onlyOpen, city, sportType, surface } =
     useGetVenuesFilter();
+  const { data: cities } = useCities();
+
+  const { data, isPending, error, isError } = useVenuesListQuery({
+    search: search === "" ? undefined : search,
+    pageSize: 1000,
+    hasLighting: hasLighting,
+    onlyFree: onlyFree,
+    onlyOpen: onlyOpen,
+    city: city,
+    sportType: sportType,
+    surface: surface,
+    sortBy: "CreatedAt",
+    sortDirection: "Desc",
+  });
+
+  const center = useMemo(() => {
+    const found = (cities?.result ?? []).find((c) => c.name === city);
+    return found
+      ? ([found.latitude, found.longitude] as [number, number])
+      : undefined;
+  }, [cities, city]);
 
   return (
     <div className="relative flex h-[calc(100vh-4.5rem)] min-h-[620px] w-full overflow-hidden">
@@ -77,7 +102,8 @@ export function MapView({
                 Карта площадок
               </h1>
               <p className="mt-1 text-xs text-ink-400">
-                {venues.length} {plural(venues.length)} {city}
+                Найдено {data?.venues.length}{" "}
+                {plural(data?.venues.length ?? 1)}{" "}
               </p>
             </div>
             <button
@@ -104,20 +130,21 @@ export function MapView({
               value={city}
               onChange={(e) => {
                 setFilterCity(e.target.value);
-                //setActiveId(null);
+                setActiveId(null);
               }}
               className="h-10 flex-1 rounded-xl border border-ink-200 bg-white px-3 text-xs font-semibold outline-none focus:border-ink"
             >
-              {/* {cities.map((c) => (
-                <option key={c}>{c}</option>
-              ))} */}
+              <option value="">Все</option>
+              {cities?.result?.map((c) => (
+                <option key={c.name}>{c.name}</option>
+              ))}
             </select>
             <select
               value={sportType}
               onChange={(e) => setFilterSportType(e.target.value)}
               className="h-10 flex-1 rounded-xl border border-ink-200 bg-white px-3 text-xs font-semibold outline-none focus:border-ink"
             >
-              <option>Все</option>
+              <option value="">Все</option>
               {sportTypes.map((s) => (
                 <option key={s}>{s}</option>
               ))}
@@ -129,10 +156,10 @@ export function MapView({
               (s) => (
                 <button
                   key={s}
-                  onClick={() => setFilterSportType(s ?? "Все")}
+                  onClick={() => setFilterSportType(s === "Все" ? "" : s)}
                   className={cn(
                     "whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors",
-                    sportType === s
+                    (sportType || "Все") === s
                       ? "bg-ink text-cream"
                       : "bg-ink-100 text-ink-500 hover:bg-ink-200",
                   )}
@@ -145,7 +172,7 @@ export function MapView({
         </div>
 
         <div className="no-scrollbar flex-1 space-y-2 overflow-y-auto p-3">
-          {venues.length === 0 && (
+          {data?.venues.length === 0 && (
             <div className="p-8 text-center">
               <p className="text-sm font-semibold text-ink">
                 Ничего не найдено
@@ -155,18 +182,21 @@ export function MapView({
               </p>
             </div>
           )}
-          {venues.map((v) => (
+          {data?.venues.map((v) => (
             <button
               key={v.id}
               onClick={() => {
-                //setActiveId(v.id);
-                //setFocus({ lat: v.lat, lng: v.lng });
+                setActiveId(v.id);
+                setFocus({
+                  lat: v.coordinates.latitude,
+                  lng: v.coordinates.longitude,
+                });
               }}
               className={cn(
                 "flex w-full gap-3 rounded-2xl border p-3 text-left transition-all",
-                // activeId === v.id
-                //   ? "border-ink bg-white shadow-card"
-                //   : "border-transparent bg-white/60 hover:border-ink-200 hover:bg-white",
+                activeId === v.id
+                  ? "border-ink bg-white shadow-card"
+                  : "border-transparent bg-white/60 hover:border-ink-200 hover:bg-white",
               )}
             >
               <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-ink-100">
@@ -188,7 +218,7 @@ export function MapView({
                   </span>
                 </div>
                 <p className="mt-1 line-clamp-1 text-[11px] text-ink-400">
-                  {v.address.fullName}
+                  {v.address.city}, {v.address.street}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-1">
                   {/* {v.sports.slice(0, 2).map((s) => (
@@ -220,37 +250,18 @@ export function MapView({
           </Link>
         </div>
       </div>
-      <YMaps
-        query={{
-          apikey: process.env.NEXT_PUBLIC_YMAPS_JS_API_KEY ?? "",
-        }}
-      >
-        <Map
-          state={{ center: /* center ??*/ [55.75, 37.57], zoom: 9 }}
-          className="w-full h-full"
-        >
-          {venues.map((venue) => (
-            <Placemark
-              key={venue.id}
-              geometry={[
-                venue.coordinates.latitude,
-                venue.coordinates.longitude,
-              ]}
-              properties={{
-                hintContent: venue.title,
-                balloonContentBody: venue.title,
-              }}
-              options={{
-                preset: "islands#redCircleDotIcon",
-              }}
-              onClick={() => {
-                // onSelectVenue(venue);
-                // onShowDetails?.(venue);
-              }}
-            />
-          ))}
-        </Map>
-      </YMaps>
+      <VenuesMap
+        venues={data?.venues ?? []}
+        center={center}
+        selectedVenue={selectedVenue}
+        onSelectVenue={setSelectedVenue}
+        onShowDetails={handleShowDetails}
+      />
+      <VenueDetailsDialog
+        venue={detailsVenue}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+      />
     </div>
   );
 }

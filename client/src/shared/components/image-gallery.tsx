@@ -140,18 +140,10 @@ export function ImageGallery({
       )}
 
       <div className="absolute top-3 left-3 flex gap-2 z-10">
-        <Badge
-          variant={isOpen ? "default" : "secondary"}
-          className={
-            isOpen ? "bg-green-600 hover:bg-green-600 text-foreground" : ""
-          }
-        >
-          {isOpen ? "Открыто" : "Закрыто"}
-        </Badge>
         {isFree && (
           <Badge
             variant="secondary"
-            className="bg-primary/20 text-primary border-0"
+            className="bg-green-600 hover:bg-green-600 text-foreground"
           >
             Бесплатно
           </Badge>
