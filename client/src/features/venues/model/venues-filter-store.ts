@@ -51,7 +51,7 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
     (set) => ({
       ...initialState,
       setSearchQuery: (input: VenuesFilterState["search"]) =>
-        set(() => ({ search: input?.trim() || "" })),
+        set(() => ({ search: input || "" })),
       setCity: (input: VenuesFilterState["city"]) =>
         set(() => ({ city: input?.trim() || "" })),
       setSportType: (input: VenuesFilterState["sportType"]) =>
@@ -111,7 +111,7 @@ export const setFilterSearch = (input: VenuesFilterState["search"]) =>
 
 export const setFilterCity = (input: VenuesFilterState["city"]) => {
   const { setCity } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все") {
     setCity("");
   } else {
     setCity(input);
@@ -120,7 +120,7 @@ export const setFilterCity = (input: VenuesFilterState["city"]) => {
 
 export const setFilterSportType = (input: VenuesFilterState["sportType"]) => {
   const { setSportType } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все") {
     setSportType("");
   } else {
     setSportType(input);
