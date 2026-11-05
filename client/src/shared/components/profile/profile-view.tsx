@@ -127,20 +127,13 @@ export function ProfileView() {
           <div className="grain pointer-events-none absolute inset-0 opacity-30" />
           <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-lime/30 blur-[90px]" />
 
-          <div className="absolute inset-x-5 top-5 flex items-start justify-between gap-3 sm:inset-x-7 sm:top-6">
+          <div className="absolute inset-x-5 top-5 flex flex-col items-start gap-2 sm:inset-x-7 sm:top-6 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
             <RoleBadge
               role={sessionUser?.role ?? "User"}
               tone="dark"
               className="whitespace-nowrap border border-cream/15 bg-ink/70 backdrop-blur"
-            ></RoleBadge>
-            {/* <Badge
-              tone="dark"
-              className="whitespace-nowrap border border-cream/15 bg-ink/70 backdrop-blur"
-            >
-              <span className="size-1.5 rounded-full bg-lime" />
-              {sessionUser?.role}
-            </Badge> */}
-            <div className="flex items-center gap-2">
+            />
+            <div className="flex flex-row items-center gap-2">
               <a
                 href="#settings"
                 aria-label="Настройки"
