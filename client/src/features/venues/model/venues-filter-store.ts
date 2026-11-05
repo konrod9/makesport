@@ -153,7 +153,7 @@ export const setFilterSportType = (input: VenuesFilterState["sportType"]) => {
 
 export const setFilterSurface = (input: VenuesFilterState["surface"]) => {
   const { setSurface } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все" || input == "Любое") {
     setSurface("");
   } else {
     setSurface(input);

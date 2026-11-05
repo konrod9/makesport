@@ -20,12 +20,7 @@
 
 import { LoginForm } from "@/shared/components/auth/login-form";
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
-
-type LoginFormData = {
-  email: string;
-  password: string;
-};
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Вход — MakeSport",
@@ -125,7 +120,17 @@ export default function LoginPage() {
   //     <LoginForm />
   //   </Suspense>
   // );
-  return <LoginForm />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <p className="text-sm text-muted-foreground">Загрузка...</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
 }
 
 // export default function AuthPage() {

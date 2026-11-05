@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,6 +9,13 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
+import { useVenuesList } from "@/features/venues/model/use-venues-list";
+import {
+  DistanceOriginResult,
+  useUserLocation,
+} from "@/features/venues/model/use-user-location";
+import { formatDistance } from "@/shared/lib/format";
+import { useCallback } from "react";
 
 export default function Home() {
   return (
@@ -22,6 +30,69 @@ export default function Home() {
   );
 }
 function Hero() {
+  const {
+    coordinates: userCoordinates,
+    status,
+    errorCode,
+    requestLocation,
+  } = useUserLocation();
+
+  const ensureDistanceOrigin =
+    useCallback(async (): Promise<DistanceOriginResult> => {
+      if (userCoordinates) {
+        return {
+          coordinates: userCoordinates,
+          source: "geolocation",
+          errorCode: null,
+        };
+      }
+
+      if (status === "denied" || status === "unavailable") {
+        return {
+          coordinates: {
+            latitude: 56.010569,
+            longitude: 92.852545,
+          },
+          source: "city",
+          errorCode: null,
+        };
+      }
+
+      const requested = await requestLocation();
+
+      if (requested.coordinates) {
+        return {
+          coordinates: requested.coordinates,
+          source: "geolocation",
+          errorCode: null,
+        };
+      }
+
+      return {
+        coordinates: {
+          latitude: 56.010569,
+          longitude: 92.852545,
+        },
+        source: "city",
+        errorCode: null,
+      };
+    }, [userCoordinates, status, requestLocation]);
+
+  const origin = userCoordinates ?? {
+    latitude: 56.010569,
+    longitude: 92.852545,
+  };
+  const distanceReady = origin !== null;
+
+  const { data: venues, error } = useVenuesList({
+    pageSize: 1,
+    sortBy: "Distance",
+    sortDirection: "Asc",
+    latitude: distanceReady ? origin?.latitude : undefined,
+    longitude: distanceReady ? origin?.longitude : undefined,
+  });
+  const nearestVenue = venues?.venues[0];
+
   return (
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute -left-40 top-10 size-[30rem] rounded-full bg-lime/30 blur-[120px]" />
@@ -119,9 +190,13 @@ function Hero() {
         <div className="relative animate-fade-up [animation-delay:120ms]">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-ink-200 bg-ink shadow-soft sm:aspect-[5/5] lg:aspect-[4/5]">
             <Image
-              src="https://make-sport.ru/storage/pictures/9279a179-68da-4335-a084-2d85796c7bd7"
-              alt="Спортивная площадка"
+              src={
+                nearestVenue?.images[0].url ??
+                "https://make-sport.ru/storage/pictures/52c463c5-8453-4368-9329-d47bd6d93e51?"
+              }
+              alt={nearestVenue?.title ?? "Спортивная площадка"}
               fill
+              unoptimized
               priority
               sizes="(max-width: 1024px) 100vw, 45vw"
               className="object-cover"
@@ -130,7 +205,7 @@ function Hero() {
 
             <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full bg-cream/95 px-3.5 py-2 text-xs font-semibold text-ink backdrop-blur">
               <MapPin className="size-3.5 text-lime-600" />
-              Москва · Хамовники
+              {nearestVenue?.address.city} · {nearestVenue?.address.street}
             </div>
 
             <div className="absolute inset-x-5 bottom-5 rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl">
@@ -140,7 +215,7 @@ function Hero() {
                     Ближайшая площадка
                   </p>
                   <p className="mt-1 font-display text-base font-semibold text-cream">
-                    Воркаут-зона в Парке Горького
+                    {nearestVenue?.title}
                   </p>
                 </div>
                 <span className="grid size-10 place-items-center rounded-full bg-lime text-ink">
@@ -148,11 +223,11 @@ function Hero() {
                 </span>
               </div>
               <div className="mt-3 flex items-center gap-4 text-[11px] font-medium text-cream/70">
-                <span>★ 4.6</span>
+                <span>★ {nearestVenue?.rating}</span>
                 <span>·</span>
-                <span>350 м</span>
+                <span>{formatDistance(nearestVenue?.distanceMeters)}</span>
                 <span>·</span>
-                <span>круглосуточно</span>
+                <span>{nearestVenue?.workingHours}</span>
               </div>
             </div>
           </div>
@@ -162,10 +237,10 @@ function Hero() {
               Бесплатных
             </p>
             <p className="mt-1 font-display text-2xl font-extrabold text-ink">
-              68%
+              92%
             </p>
             <div className="mt-2 h-1.5 w-20 overflow-hidden rounded-full bg-ink-100">
-              <div className="h-full w-[68%] rounded-full bg-lime-500" />
+              <div className="h-full w-[92%] rounded-full bg-lime-500" />
             </div>
           </div>
 

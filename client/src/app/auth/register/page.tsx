@@ -1,6 +1,7 @@
 // "use client";
 
 import { RegisterForm } from "@/shared/components/auth/register-form";
+import { Suspense } from "react";
 
 // import { useForm } from "react-hook-form";
 // import { useRouter, useSearchParams } from "next/navigation";
@@ -161,5 +162,15 @@ export default function RegisterPage() {
   //     <RegisterForm />
   //   </Suspense>
   // );
-  return <RegisterForm />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <p className="text-sm text-muted-foreground">Загрузка...</p>
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
+  );
 }

@@ -142,7 +142,7 @@ export function ImageGallery({
       <div className="absolute top-3 left-3 flex gap-2 z-10">
         {isFree && (
           <Badge
-            variant="secondary"
+            // variant="secondary"
             className="bg-green-600 hover:bg-green-600 text-foreground"
           >
             Бесплатно
