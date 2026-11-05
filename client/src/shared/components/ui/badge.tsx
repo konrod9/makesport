@@ -1,46 +1,55 @@
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/shared/lib/utils";
+import { Star } from "lucide-react";
 
-const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
-  {
-    variants: {
-      variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-        destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-);
-
-function Badge({
+export function Badge({
+  children,
   className,
-  variant,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : "span";
-
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  tone?: "neutral" | "lime" | "dark" | "outline";
+}) {
+  const tones = {
+    neutral: "bg-ink-100 text-ink-600",
+    lime: "bg-lime text-ink",
+    dark: "bg-ink text-cream",
+    outline: "border border-ink-200 bg-white/70 text-ink-600",
+  };
   return (
-    <Comp
-      data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none",
+        tones[tone],
+        className,
+      )}
+    >
+      {children}
+    </span>
   );
 }
 
-export { Badge, badgeVariants };
+export function Rating({
+  value,
+  reviews,
+  className,
+}: {
+  value: number;
+  reviews?: number;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 text-xs font-semibold",
+        className,
+      )}
+    >
+      <Star className="size-3.5 fill-lime-500 text-lime-500" />
+      {value.toFixed(1)}
+      {reviews !== undefined && (
+        <span className="font-medium text-ink-400">({reviews})</span>
+      )}
+    </span>
+  );
+}

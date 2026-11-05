@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   output: "standalone",
   images: {
@@ -21,6 +20,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "make-sport.ru",
         pathname: "/storage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
     ],
   },

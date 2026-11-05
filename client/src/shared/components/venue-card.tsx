@@ -34,7 +34,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
         </div>
         <div className="absolute top-3 left-3 flex gap-2">
           <Badge
-            variant={venue.isOpen ? "default" : "secondary"}
+            // variant={venue.isOpen ? "default" : "secondary"}
             className={
               venue.isOpen
                 ? "bg-green-600 hover:bg-green-600 text-foreground"
@@ -43,14 +43,14 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
           >
             {venue.isOpen ? "Открыто" : "Закрыто"}
           </Badge>
-          {venue.isFree && (
+          {/* {venue.isFree && (
             <Badge
               variant="secondary"
               className="bg-chart-3/20 text-chart-3 border-0"
             >
               Бесплатно
             </Badge>
-          )}
+          )} */}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
@@ -76,12 +76,12 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
         </p>
 
         <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="outline" className="text-xs">
+          {/* <Badge variant="outline" className="text-xs">
             {venue.sportType}
           </Badge>
           <Badge variant="outline" className="text-xs">
             {venue.surface}
-          </Badge>
+          </Badge> */}
         </div>
 
         <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">

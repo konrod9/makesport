@@ -4,6 +4,8 @@ import { useShallow } from "zustand/react/shallow";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { SortDirection, VenueSortBy } from "@/entities/venues/types";
 
+const PERSISTED_VERSION = 1;
+
 export type VenuesFilterState = {
   search?: string;
   pageSize: number;
@@ -51,7 +53,7 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
     (set) => ({
       ...initialState,
       setSearchQuery: (input: VenuesFilterState["search"]) =>
-        set(() => ({ search: input?.trim() || "" })),
+        set(() => ({ search: input || "" })),
       setCity: (input: VenuesFilterState["city"]) =>
         set(() => ({ city: input?.trim() || "" })),
       setSportType: (input: VenuesFilterState["sportType"]) =>
@@ -73,7 +75,29 @@ const useVenuesFilterStore = create<VenuesFilterStore>()(
           sortDirection: sortDirection || "Desc",
         })),
     }),
-    { name: "venues-filter", storage: createJSONStorage(() => localStorage) },
+    {
+      name: "venues-filter",
+      storage: createJSONStorage(() => localStorage),
+      version: PERSISTED_VERSION,
+      partialize: (s) => ({
+        search: s.search,
+        onlyFree: s.onlyFree,
+        onlyOpen: s.onlyOpen,
+        hasLighting: s.hasLighting,
+        city: s.city,
+        sportType: s.sportType,
+        surface: s.surface,
+        sortBy: s.sortBy,
+        sortDirection: s.sortDirection,
+      }),
+      migrate: (persisted, version) => {
+        const { pageSize, ...rest } = (persisted ?? {}) as Record<
+          string,
+          unknown
+        >;
+        return rest as VenuesFilterState;
+      },
+    },
   ),
 );
 
@@ -111,7 +135,7 @@ export const setFilterSearch = (input: VenuesFilterState["search"]) =>
 
 export const setFilterCity = (input: VenuesFilterState["city"]) => {
   const { setCity } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все") {
     setCity("");
   } else {
     setCity(input);
@@ -120,7 +144,7 @@ export const setFilterCity = (input: VenuesFilterState["city"]) => {
 
 export const setFilterSportType = (input: VenuesFilterState["sportType"]) => {
   const { setSportType } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все") {
     setSportType("");
   } else {
     setSportType(input);
@@ -129,7 +153,7 @@ export const setFilterSportType = (input: VenuesFilterState["sportType"]) => {
 
 export const setFilterSurface = (input: VenuesFilterState["surface"]) => {
   const { setSurface } = useVenuesFilterStore.getState();
-  if (input === "all") {
+  if (input === "all" || input === "Все" || input == "Любое") {
     setSurface("");
   } else {
     setSurface(input);
