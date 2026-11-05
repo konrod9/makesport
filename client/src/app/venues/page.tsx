@@ -1,7 +1,7 @@
 "use client";
 
-import { VenuesList } from "@/features/venues/venues-list";
+import { VenueExplorer } from "@/shared/components/venues/venue-explorer";
 
 export default function VenuesPage() {
-  return <VenuesList />;
+  return <VenueExplorer />;
 }

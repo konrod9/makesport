@@ -230,7 +230,6 @@ function Stats() {
   const stats = [
     { value: "1 240", label: "площадок на карте", note: "в 4 городах" },
     { value: "68%", label: "бесплатных локаций", note: "без абонемента" },
-    { value: "12 мин", label: "средний путь пешком", note: "до ближайшей" },
     {
       value: "2 400",
       label: "участников сообщества",
@@ -239,7 +238,7 @@ function Stats() {
   ];
   return (
     <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-      <div className="grid gap-px overflow-hidden rounded-4xl border border-ink-200/70 bg-ink-200/70 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-px overflow-hidden rounded-4xl border border-ink-200/70 bg-ink-200/70 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((s) => (
           <div
             key={s.label}

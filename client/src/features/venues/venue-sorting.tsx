@@ -11,13 +11,6 @@ import {
 } from "./model/venues-filter-store";
 import { SortDirection, VenueSortBy } from "@/entities/venues/types";
 import { Loader2 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/select";
 
 type SortOption = {
   value: string;
@@ -129,31 +122,19 @@ export function VenueSorting({
         {isResolving && (
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         )}
-        <Select
+        <select
           value={selectedValue}
-          onValueChange={handleChange}
+          onChange={(e) => handleChange(e.currentTarget.value)}
           disabled={isResolving}
+          className="h-12 appearance-none rounded-2xl border border-ink-200 bg-cream/60 pl-4 pr-9 text-sm font-semibold text-ink outline-none transition-colors hover:border-ink-300 focus:border-ink focus:ring-4 focus:ring-lime/30"
         >
-          <SelectTrigger className="w-[200px] bg-input border-border">
-            <SelectValue placeholder="Сортировка" />
-          </SelectTrigger>
-          <SelectContent>
-            {SORT_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          {SORT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
-
-      {originSource && sortBy === "Distance" && !error && (
-        <span className="text-xs text-muted-foreground">
-          {originSource === "geolocation"
-            ? "Рядом с вами"
-            : "Рядом с центром города"}
-        </span>
-      )}
 
       {error && (
         <span className="text-xs text-destructive" role="alert">

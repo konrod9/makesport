@@ -8,7 +8,7 @@ import { routes } from "@/shared/routes";
 import { useAuthSession } from "@/features/auth/model/auth-store";
 
 const links = [
-  { href: "/", label: "Площадки" },
+  { href: "/venues", label: "Площадки" },
   { href: "/map", label: "На карте" },
   { href: "/add", label: "Добавить" },
 ];
