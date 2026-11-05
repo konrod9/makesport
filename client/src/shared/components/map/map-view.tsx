@@ -187,6 +187,9 @@ export function MapView() {
               key={v.id}
               onClick={() => {
                 setActiveId(v.id);
+                setSelectedVenue(v);
+                setDetailsVenue(v);
+                setDetailsOpen(true);
                 setFocus({
                   lat: v.coordinates.latitude,
                   lng: v.coordinates.longitude,
