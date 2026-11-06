@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { Envelope } from "@/shared/api/envelope";
-import { PaginationVenuesResponse } from "@/shared/api/types";
+import { PaginationVenuesResponse, VenuesResponse } from "@/shared/api/types";
 import {
   AddressDto,
   CityDto,
@@ -66,6 +66,13 @@ export const venuesApi = {
 
     return response.data;
   },
+
+  getMyVenues: async () => {
+    const response =
+      await apiClient.get<Envelope<VenuesResponse<Venue>>>("/venues/my");
+
+    return response.data;
+  },
 };
 
 export const venuesQueryOptions = {
@@ -104,5 +111,11 @@ export const venuesQueryOptions = {
       queryKey: ["cities"],
       queryFn: () => venuesApi.getCities(),
       staleTime: 5 * 60 * 1000,
+    }),
+
+  getMyVenuesQueryOptions: () =>
+    queryOptions({
+      queryKey: ["myVenues"],
+      queryFn: () => venuesApi.getMyVenues(),
     }),
 };

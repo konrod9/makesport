@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import {
+  ArrowUpRight,
   Award,
   Camera,
   ChevronRight,
@@ -25,6 +26,8 @@ import { cn } from "@/shared/lib/utils";
 import { useAuthSession } from "@/features/auth/model/auth-store";
 import { useLogout } from "@/features/auth/model/use-logout";
 import { RoleBadge } from "./role-badge";
+import { useMyVenues } from "@/features/venues/model/use-my-venues";
+import { VenueCard } from "../venues/venue-card";
 
 //const initialInterests: Sport[] = ["Бег", "Баскетбол", "Воркаут"];
 
@@ -72,6 +75,7 @@ export function ProfileView() {
 
   const { isAuthenticated, isHydrated, user: sessionUser } = useAuthSession();
   const { logout, isPending: isLoggingOut } = useLogout();
+  const { data: myVenues } = useMyVenues();
 
   const contactRows = [
     { id: "email", icon: Mail, value: sessionUser?.email },
@@ -260,7 +264,9 @@ export function ProfileView() {
                     active ? "bg-lime text-ink" : "bg-ink-50 text-ink-400",
                   )}
                 >
-                  {item.count}
+                  {item.label === "Мои площадки"
+                    ? myVenues?.result?.totalCount
+                    : item.count}
                 </span>
               )}
             </button>
@@ -359,16 +365,13 @@ export function ProfileView() {
                       onClick={() => setTab("venues")}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-ink-400 transition-colors hover:text-ink"
                     >
-                      {/* Все {myVenues.length}{" "} */}
+                      Все {myVenues?.result?.totalCount}{" "}
                       <ChevronRight className="size-3.5" />
                     </button>
                   }
                 />
-                <p className="mt-3 text-sm leading-relaxed text-ink-500">
-                  Здесь скоро будут ваши добавленные площадки
-                </p>
-                {/* <div className="mt-4 space-y-2.5">
-                  {myVenues.map((venue, index) => (
+                <div className="mt-4 space-y-2.5">
+                  {myVenues?.result?.venues.map((venue, index) => (
                     <Link
                       key={venue.id}
                       href={`/venue/${venue.id}`}
@@ -376,25 +379,26 @@ export function ProfileView() {
                     >
                       <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
                         <Image
-                          src={venue.image}
-                          alt={venue.name}
+                          src={venue.images[0].url}
+                          alt={venue.title}
                           fill
+                          unoptimized
                           sizes="56px"
                           className="object-cover"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-lime-600">
-                          {venue.name}
+                          {venue.title}
                         </p>
                         <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-ink-400">
-                          <MapPin className="size-3" /> {venue.city}
+                          <MapPin className="size-3" /> {venue.address.city}
                           <span className="size-1 rounded-full bg-ink-200" />
                           <Star className="size-3 fill-lime-500 text-lime-500" />
                           {venue.rating}
                         </p>
                       </div>
-                      <span
+                      {/* <span
                         className={cn(
                           "hidden shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold sm:inline-flex",
                           index === 2
@@ -403,11 +407,19 @@ export function ProfileView() {
                         )}
                       >
                         {index === 2 ? "На модерации" : "Опубликовано"}
+                      </span> */}
+                      <span
+                        className={cn(
+                          "hidden shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold sm:inline-flex",
+                          "bg-lime/20 text-ink-600",
+                        )}
+                      >
+                        Опубликовано
                       </span>
                       <ArrowUpRight className="size-4 shrink-0 text-ink-200 transition-colors group-hover:text-ink" />
                     </Link>
                   ))}
-                </div> */}
+                </div>
               </section>
             </div>
           )}
@@ -431,11 +443,11 @@ export function ProfileView() {
                 </Link>
               </div>
 
-              {/* <div className="grid gap-5 sm:grid-cols-2">
-                {myVenues.map((venue) => (
+              <div className="grid gap-5 sm:grid-cols-2">
+                {myVenues?.result?.venues.map((venue) => (
                   <VenueCard key={venue.id} venue={venue} compact />
                 ))}
-              </div> */}
+              </div>
 
               <Link
                 href="/add"
