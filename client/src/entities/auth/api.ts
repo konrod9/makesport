@@ -12,6 +12,7 @@ export type RegisterRequest = {
   password: string;
   firstName: string;
   lastName: string;
+  userName: string;
 };
 
 export type RefreshRequest = {
