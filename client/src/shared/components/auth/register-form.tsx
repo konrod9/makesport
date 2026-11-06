@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Check, Mail, MapPin, UserRound } from "lucide-react";
+import {
+  ArrowRight,
+  AtSign,
+  Check,
+  Mail,
+  MapPin,
+  UserRound,
+} from "lucide-react";
 import {
   AuthDivider,
   DemoHint,
@@ -17,6 +24,7 @@ import { cn } from "@/shared/lib/utils";
 import { useAuthSession } from "@/features/auth/model/auth-store";
 import { useRegister } from "@/features/auth/model/use-register";
 import { useForm } from "react-hook-form";
+import { FormError } from "../ui/form-error";
 
 const strengthLabels = [
   "Слишком короткий",
@@ -31,6 +39,7 @@ type RegisterFormData = {
   password: string;
   firstName: string;
   lastName: string;
+  userName: string;
 };
 
 export function RegisterForm() {
@@ -53,7 +62,13 @@ export function RegisterForm() {
     getValues,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    defaultValues: { email: "", password: "", firstName: "", lastName: "" },
+    defaultValues: {
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      userName: "",
+    },
   });
 
   const onSubmit = (data: RegisterFormData) => {
@@ -63,6 +78,7 @@ export function RegisterForm() {
         password: data.password,
         firstName: data.firstName.trim(),
         lastName: data.lastName.trim(),
+        userName: data.userName.trim(),
       },
       { onSuccess: () => router.push(returnUrl) },
     );
@@ -127,6 +143,31 @@ export function RegisterForm() {
             maxLength: { value: 50, message: "Максимум 50 символов" },
           })}
         />
+        <FormError message={errors.lastName?.message} />
+
+        <TextField
+          label="Логин"
+          icon={AtSign}
+          autoComplete="userName"
+          required
+          minLength={4}
+          placeholder="Логин"
+          {...rhfRegister("userName", {
+            required: "Логин обязателен",
+            minLength: {
+              value: 4,
+              message: "Минимальная длина 4 символа",
+            },
+            maxLength: { value: 50, message: "Максимум 50 символов" },
+            pattern: {
+              value: /^[A-Za-z][A-Za-z0-9]*$/,
+              message:
+                "Логин должен начинаться с буквы и содержать только английские буквы и цифры",
+            },
+          })}
+        />
+        <FormError message={errors.userName?.message} />
+
         <TextField
           label="E-mail"
           icon={Mail}
