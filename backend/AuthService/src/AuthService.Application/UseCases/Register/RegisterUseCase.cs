@@ -47,7 +47,7 @@ public class RegisterUseCase
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            UserName = request.FirstName + request.LastName,
+            UserName = request.UserName,
             CreatedAt = DateTime.UtcNow
         };
 
