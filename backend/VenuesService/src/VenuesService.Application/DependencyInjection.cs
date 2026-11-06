@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VenuesService.Application.UseCases.CreateVenue;
 using VenuesService.Application.UseCases.GetCities;
+using VenuesService.Application.UseCases.GetMyVenues;
 using VenuesService.Application.UseCases.GetVenues;
 
 namespace VenuesService.Application;
@@ -15,7 +16,8 @@ public static class DependencyInjection
         services
             .AddScoped<GetVenuesUseCase>()
             .AddScoped<CreateVenueUseCase>()
-            .AddScoped<GetCitiesUseCase>();
+            .AddScoped<GetCitiesUseCase>()
+            .AddScoped<GetMyVenuesUseCase>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
