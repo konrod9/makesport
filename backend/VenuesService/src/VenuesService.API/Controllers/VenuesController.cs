@@ -6,6 +6,7 @@ using VenuesService.Contracts.Requests;
 using VenuesService.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using VenuesService.API.Configuration;
+using VenuesService.Application.UseCases.GetById;
 using VenuesService.Application.UseCases.GetCities;
 using VenuesService.Application.UseCases.GetMyVenues;
 using VenuesService.Contracts.Dtos;
@@ -54,4 +55,10 @@ public class VenuesController : ControllerBase
     {
         return await useCase.Handle(cancellationToken);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<EndpointResult<VenueDto>> GetVenueById(
+        Guid id,
+        [FromServices] GetByIdUseCase useCase,
+        CancellationToken cancellationToken) => await useCase.Handle(id, cancellationToken);
 }

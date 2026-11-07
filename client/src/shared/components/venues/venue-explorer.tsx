@@ -34,8 +34,6 @@ import { VenueSorting } from "@/features/venues/venue-sorting";
 import { sportTypes, surfaces } from "@/shared/lib/data";
 import { VenueCard } from "./venue-card";
 import { Spinner } from "../ui/spinner";
-import { VenueDetailsDialog } from "../venue-details-dialog";
-import { Venue } from "@/entities/venues/types";
 
 const quickSports: (string | "Все")[] = [
   "Все",
@@ -81,14 +79,7 @@ export function VenueExplorer() {
       ? "city"
       : null;
 
-  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleVenueClick = (venue: Venue) => {
-    setSelectedVenue(venue);
-    setDialogOpen(true);
-  };
-
+  const [showFilters, setShowFilters] = useState(false);
   const ensureDistanceOrigin =
     useCallback(async (): Promise<DistanceOriginResult> => {
       if (userCoordinates) {
@@ -149,8 +140,6 @@ export function VenueExplorer() {
     if (sortBy !== "Distance" || origin || citiesPending) return;
     setFilterSorting("CreatedAt", "Desc");
   }, [sortBy, origin, citiesPending]);
-
-  const [showFilters, setShowFilters] = useState(false);
 
   //   const activeCount =
   //     (city !== "Все города" ? 1 : 0) +
@@ -341,11 +330,7 @@ export function VenueExplorer() {
       {(data?.venues.length ?? 0 > 0) ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {data?.venues.map((venue) => (
-            <VenueCard
-              onClick={handleVenueClick}
-              key={venue.id}
-              venue={venue}
-            />
+            <VenueCard key={venue.id} venue={venue} />
           ))}
         </div>
       ) : (
@@ -376,11 +361,6 @@ export function VenueExplorer() {
           </div>
         </div>
       )}
-      <VenueDetailsDialog
-        venue={selectedVenue}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      />
       <div ref={cursorRef} className="flex justify-center py-4">
         {isFetchingNextPage && <Spinner />}
       </div>
