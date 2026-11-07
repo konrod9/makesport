@@ -11,11 +11,13 @@ export function VenueCard({
   className,
   onClick,
   compact = false,
+  href = `/venues/${venue.id}`,
 }: {
   venue: Venue;
   className?: string;
   onClick?: (venue: Venue) => void;
   compact?: boolean;
+  href?: string;
 }) {
   return (
     <Link
@@ -24,7 +26,7 @@ export function VenueCard({
         "group relative flex flex-col overflow-hidden rounded-4xl border border-ink-200/70 bg-white transition-all duration-500 hover:-translate-y-1 hover:border-ink-300 hover:shadow-soft",
         className,
       )}
-      href={""}
+      href={href}
     >
       <div
         className={cn(
