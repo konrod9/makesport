@@ -16,8 +16,15 @@ import {
   Star,
   Sun,
   Wallet,
+  X,
 } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
 import { useGetVenueById } from "@/features/venues/model/use-get-venue-by-id";
 import { formatDistance } from "@/shared/lib/format";
 import { cn } from "@/shared/lib/utils";
@@ -27,8 +34,10 @@ export function VenueDetails({ id }: { id: string }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [prevVenueId, setPrevVenueId] = useState<string | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const touchStart = useRef({ x: 0, y: 0 });
   const touchEnd = useRef({ x: 0, y: 0 });
+  const didSwipe = useRef(false);
 
   if (isPending) return null; //<VenuePageSkeleton />;
   if (isError || !data?.result) notFound();
@@ -42,6 +51,7 @@ export function VenueDetails({ id }: { id: string }) {
   if (prevVenueId !== venue.id) {
     setPrevVenueId(venue.id);
     setCurrentIndex(0);
+    setIsLightboxOpen(false);
   }
 
   const goTo = (index: number) => {
@@ -52,7 +62,20 @@ export function VenueDetails({ id }: { id: string }) {
   const goNext = () => goTo(safeIndex + 1);
   const goPrev = () => goTo(safeIndex - 1);
 
-  const handleKeyDown = (event: KeyboardEvent) => {
+  const openLightbox = () => {
+    if (images.length === 0) return;
+    setIsLightboxOpen(true);
+  };
+
+  const handleImageClick = () => {
+    if (didSwipe.current) {
+      didSwipe.current = false;
+      return;
+    }
+    openLightbox();
+  };
+
+  const handleArrowKeys = (event: KeyboardEvent) => {
     if (!hasMultiple) return;
     if (event.key === "ArrowLeft") {
       event.preventDefault();
@@ -64,7 +87,22 @@ export function VenueDetails({ id }: { id: string }) {
     }
   };
 
+  const handleCarouselKeyDown = (event: KeyboardEvent) => {
+    if (event.target !== event.currentTarget) return;
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      handleArrowKeys(event);
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openLightbox();
+    }
+  };
+
   const handleTouchStart = (event: TouchEvent) => {
+    didSwipe.current = false;
     touchStart.current = {
       x: event.touches[0].clientX,
       y: event.touches[0].clientY,
@@ -85,6 +123,7 @@ export function VenueDetails({ id }: { id: string }) {
     const deltaY = touchStart.current.y - touchEnd.current.y;
 
     if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      didSwipe.current = true;
       if (deltaX > 0) goNext();
       else goPrev();
     }
@@ -108,12 +147,13 @@ export function VenueDetails({ id }: { id: string }) {
 
       <div className="mt-6 overflow-hidden rounded-[2.5rem] border border-ink-200/70 bg-white shadow-card">
         <div
-          className="group relative aspect-[16/9] max-h-[520px] w-full touch-pan-y overflow-hidden bg-ink-100 sm:aspect-[21/9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime"
+          className="group relative aspect-[16/9] max-h-[520px] w-full cursor-zoom-in touch-pan-y overflow-hidden bg-ink-100 sm:aspect-[21/9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime"
           role={hasMultiple ? "region" : undefined}
           aria-roledescription={hasMultiple ? "carousel" : undefined}
           aria-label={hasMultiple ? "Фотографии площадки" : undefined}
           tabIndex={hasMultiple ? 0 : undefined}
-          onKeyDown={handleKeyDown}
+          onClick={handleImageClick}
+          onKeyDown={handleCarouselKeyDown}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -157,6 +197,7 @@ export function VenueDetails({ id }: { id: string }) {
 
           <button
             type="button"
+            onClick={(event) => event.stopPropagation()}
             className="absolute right-5 top-5 hidden size-11 place-items-center rounded-full bg-cream/90 text-ink backdrop-blur transition-colors hover:bg-cream sm:grid"
           >
             <Share2 className="size-4" />
@@ -200,7 +241,10 @@ export function VenueDetails({ id }: { id: string }) {
             <>
               <button
                 type="button"
-                onClick={goPrev}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  goPrev();
+                }}
                 aria-label="Предыдущее фото"
                 className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-cream/85 text-ink shadow-card backdrop-blur transition-colors hover:bg-cream sm:left-5 sm:size-11"
               >
@@ -208,7 +252,10 @@ export function VenueDetails({ id }: { id: string }) {
               </button>
               <button
                 type="button"
-                onClick={goNext}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  goNext();
+                }}
                 aria-label="Следующее фото"
                 className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-cream/85 text-ink shadow-card backdrop-blur transition-colors hover:bg-cream sm:right-5 sm:size-11"
               >
@@ -227,7 +274,10 @@ export function VenueDetails({ id }: { id: string }) {
                   <button
                     key={image.id}
                     type="button"
-                    onClick={() => goTo(index)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      goTo(index);
+                    }}
                     aria-label={`Фото ${index + 1}`}
                     aria-current={index === safeIndex ? "true" : undefined}
                     className={cn(
@@ -434,6 +484,95 @@ export function VenueDetails({ id }: { id: string }) {
           </aside>
         </div>
       </div>
+
+      {images.length > 0 && (
+        <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
+          <DialogContent
+            showCloseButton={false}
+            className="fixed top-0 right-0 bottom-0 left-0 z-50 grid h-dvh w-screen max-w-none translate-x-0 translate-y-0 gap-0 overflow-hidden rounded-none border-0 bg-ink/95 p-0 shadow-none sm:max-w-none"
+            onKeyDown={handleArrowKeys}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <DialogTitle className="sr-only">
+              {venue.title} — фотографии
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Просмотр фотографий площадки. Используйте стрелки влево и вправо
+              для переключения.
+            </DialogDescription>
+
+            <div className="absolute inset-0 px-4 pb-16 pt-20 sm:px-16 sm:py-20">
+              <div className="relative h-full w-full">
+                <Image
+                  key={images[safeIndex].id}
+                  src={images[safeIndex].url}
+                  alt={`${venue.title} — фото ${safeIndex + 1}`}
+                  fill
+                  unoptimized
+                  sizes="100vw"
+                  draggable={false}
+                  className="object-contain"
+                />
+              </div>
+            </div>
+
+            <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-4 sm:p-6">
+              <span className="rounded-full bg-cream/15 px-3 py-1.5 text-xs font-semibold tabular-nums text-cream backdrop-blur">
+                {safeIndex + 1} / {images.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsLightboxOpen(false)}
+                aria-label="Закрыть"
+                className="grid size-10 place-items-center rounded-full bg-cream/15 text-cream backdrop-blur transition-colors hover:bg-cream/25 sm:size-11"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {hasMultiple && (
+              <>
+                <button
+                  type="button"
+                  onClick={goPrev}
+                  aria-label="Предыдущее фото"
+                  className="absolute left-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-cream/15 text-cream backdrop-blur transition-colors hover:bg-cream/25 sm:left-6 sm:size-12"
+                >
+                  <ChevronLeft className="size-6" />
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  aria-label="Следующее фото"
+                  className="absolute right-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-cream/15 text-cream backdrop-blur transition-colors hover:bg-cream/25 sm:right-6 sm:size-12"
+                >
+                  <ChevronRight className="size-6" />
+                </button>
+
+                <div className="absolute inset-x-0 bottom-4 z-20 flex flex-wrap justify-center gap-2 px-4">
+                  {images.map((image, index) => (
+                    <button
+                      key={image.id}
+                      type="button"
+                      onClick={() => goTo(index)}
+                      aria-label={`Фото ${index + 1}`}
+                      aria-current={index === safeIndex ? "true" : undefined}
+                      className={cn(
+                        "h-2 rounded-full transition-all",
+                        index === safeIndex
+                          ? "w-7 bg-cream"
+                          : "w-2 bg-cream/40 hover:bg-cream/70",
+                      )}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* {similar.length > 0 && (
         <section className="mt-16">
