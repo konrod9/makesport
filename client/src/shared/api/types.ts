@@ -5,3 +5,8 @@ export type PaginationVenuesResponse<T> = {
   pageSize: number;
   totalPages: number;
 };
+
+export type VenuesResponse<T> = {
+  venues: T[];
+  totalCount: number;
+};
