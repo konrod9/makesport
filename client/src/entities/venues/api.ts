@@ -11,6 +11,7 @@ import {
   WorkingHoursDto,
 } from "./types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 export type GetVenuesRequest = {
   search?: string;
@@ -73,6 +74,12 @@ export const venuesApi = {
 
     return response.data;
   },
+
+  getById: async (id: string) => {
+    const response = await apiClient.get<Envelope<Venue>>("/venues/" + id);
+
+    return response.data;
+  },
 };
 
 export const venuesQueryOptions = {
@@ -117,5 +124,16 @@ export const venuesQueryOptions = {
     queryOptions({
       queryKey: ["myVenues"],
       queryFn: () => venuesApi.getMyVenues(),
+    }),
+
+  getByIdQueryOptions: (id: string) =>
+    queryOptions({
+      queryKey: ["venues/" + id],
+      queryFn: () => venuesApi.getById(id),
+      retry: (failureCount, error) => {
+        const status = (error as AxiosError)?.response?.status;
+        if (status === 404) return false;
+        return failureCount < 2;
+      },
     }),
 };
