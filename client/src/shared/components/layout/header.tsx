@@ -116,12 +116,14 @@ export function Header() {
             Мой профиль
           </Link>
           <div className="mt-3 flex gap-2 border-t border-ink-200 pt-3">
-            <Link
-              href={routes.authLogin}
-              className="flex-1 rounded-2xl border border-ink-200 py-3 text-center text-sm font-semibold"
-            >
-              Войти
-            </Link>
+            {!isAuthenticated && (
+              <Link
+                href={routes.authLogin}
+                className="flex-1 rounded-2xl border border-ink-200 py-3 text-center text-sm font-semibold"
+              >
+                Войти
+              </Link>
+            )}
             <Link
               href={routes.add}
               className="flex-1 rounded-2xl bg-ink py-3 text-center text-sm font-semibold text-cream"
