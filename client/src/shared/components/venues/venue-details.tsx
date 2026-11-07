@@ -3,10 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useRef, useState, type KeyboardEvent, type TouchEvent } from "react";
 import {
   ArrowLeft,
   CalendarClock,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   MapPin,
   Share2,
@@ -17,14 +20,78 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { useGetVenueById } from "@/features/venues/model/use-get-venue-by-id";
 import { formatDistance } from "@/shared/lib/format";
+import { cn } from "@/shared/lib/utils";
 
 export function VenueDetails({ id }: { id: string }) {
   const { data, isPending, isError } = useGetVenueById(id);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prevVenueId, setPrevVenueId] = useState<string | null>(null);
+  const touchStart = useRef({ x: 0, y: 0 });
+  const touchEnd = useRef({ x: 0, y: 0 });
 
   if (isPending) return null; //<VenuePageSkeleton />;
   if (isError || !data?.result) notFound();
 
   const venue = data.result;
+  const images = venue.images.filter((image) => image.url);
+  const hasMultiple = images.length > 1;
+  const safeIndex =
+    images.length > 0 ? Math.min(currentIndex, images.length - 1) : 0;
+
+  if (prevVenueId !== venue.id) {
+    setPrevVenueId(venue.id);
+    setCurrentIndex(0);
+  }
+
+  const goTo = (index: number) => {
+    if (images.length === 0) return;
+    setCurrentIndex(((index % images.length) + images.length) % images.length);
+  };
+
+  const goNext = () => goTo(safeIndex + 1);
+  const goPrev = () => goTo(safeIndex - 1);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (!hasMultiple) return;
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goPrev();
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goNext();
+    }
+  };
+
+  const handleTouchStart = (event: TouchEvent) => {
+    touchStart.current = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+    };
+  };
+
+  const handleTouchMove = (event: TouchEvent) => {
+    touchEnd.current = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+    };
+  };
+
+  const handleTouchEnd = () => {
+    if (!hasMultiple) return;
+
+    const deltaX = touchStart.current.x - touchEnd.current.x;
+    const deltaY = touchStart.current.y - touchEnd.current.y;
+
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) goNext();
+      else goPrev();
+    }
+
+    touchStart.current = { x: 0, y: 0 };
+    touchEnd.current = { x: 0, y: 0 };
+  };
 
   // const similar = venues
   //   .filter((v) => v.id !== venue.id && v.city === venue.city)
@@ -40,23 +107,58 @@ export function VenueDetails({ id }: { id: string }) {
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-[2.5rem] border border-ink-200/70 bg-white shadow-card">
-        <div className="relative aspect-[16/9] max-h-[520px] w-full sm:aspect-[21/9]">
-          <Image
-            src={venue.images[0].url}
-            alt={venue.title}
-            fill
-            unoptimized
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+        <div
+          className="group relative aspect-[16/9] max-h-[520px] w-full touch-pan-y overflow-hidden bg-ink-100 sm:aspect-[21/9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime"
+          role={hasMultiple ? "region" : undefined}
+          aria-roledescription={hasMultiple ? "carousel" : undefined}
+          aria-label={hasMultiple ? "Фотографии площадки" : undefined}
+          tabIndex={hasMultiple ? 0 : undefined}
+          onKeyDown={handleKeyDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {images.length > 0 ? (
+            <div
+              className="flex h-full w-full transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${safeIndex * 100}%)` }}
+            >
+              {images.map((image, index) => (
+                <div
+                  key={image.id}
+                  className="relative h-full w-full shrink-0"
+                  aria-hidden={index !== safeIndex}
+                >
+                  <Image
+                    src={image.url}
+                    alt={`${venue.title} — фото ${index + 1}`}
+                    fill
+                    unoptimized
+                    preload={index === 0}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    draggable={false}
+                    sizes="(max-width: 1280px) 100vw, 1280px"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-ink-100 to-cream text-ink-300">
+              <MapPin className="size-10" />
+            </div>
+          )}
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
 
           <div className="absolute left-5 top-5 hidden flex-wrap gap-2 sm:flex">
             <Badge tone="lime">{venue.isFree ? "Бесплатно" : "Платно"}</Badge>
           </div>
 
-          <button className="absolute right-5 top-5 hidden size-11 place-items-center rounded-full bg-cream/90 text-ink backdrop-blur transition-colors hover:bg-cream sm:grid">
+          <button
+            type="button"
+            className="absolute right-5 top-5 hidden size-11 place-items-center rounded-full bg-cream/90 text-ink backdrop-blur transition-colors hover:bg-cream sm:grid"
+          >
             <Share2 className="size-4" />
           </button>
 
@@ -93,6 +195,52 @@ export function VenueDetails({ id }: { id: string }) {
               )}
             </p>
           </div>
+
+          {hasMultiple && (
+            <>
+              <button
+                type="button"
+                onClick={goPrev}
+                aria-label="Предыдущее фото"
+                className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-cream/85 text-ink shadow-card backdrop-blur transition-colors hover:bg-cream sm:left-5 sm:size-11"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label="Следующее фото"
+                className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-cream/85 text-ink shadow-card backdrop-blur transition-colors hover:bg-cream sm:right-5 sm:size-11"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+
+              <span
+                aria-live="polite"
+                className="absolute right-4 top-4 z-20 rounded-full bg-ink/55 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-cream backdrop-blur sm:right-20 sm:top-5"
+              >
+                {safeIndex + 1} / {images.length}
+              </span>
+
+              <div className="absolute bottom-2 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-1.5 sm:flex">
+                {images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    type="button"
+                    onClick={() => goTo(index)}
+                    aria-label={`Фото ${index + 1}`}
+                    aria-current={index === safeIndex ? "true" : undefined}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all",
+                      index === safeIndex
+                        ? "w-6 bg-cream"
+                        : "w-1.5 bg-cream/50 hover:bg-cream/80",
+                    )}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="px-6 pt-6 sm:hidden">
