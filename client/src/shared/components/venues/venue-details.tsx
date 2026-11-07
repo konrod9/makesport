@@ -52,20 +52,16 @@ export function VenueDetails({ id }: { id: string }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
 
-          <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+          <div className="absolute left-5 top-5 hidden flex-wrap gap-2 sm:flex">
             <Badge tone="lime">{venue.isFree ? "Бесплатно" : "Платно"}</Badge>
-            <Badge tone="dark">
-              <span className="size-1.5 rounded-full bg-lime" />
-              {venue.isOpen ? "Сейчас открыто" : "Закрыто"}
-            </Badge>
           </div>
 
-          <button className="absolute right-5 top-5 grid size-11 place-items-center rounded-full bg-cream/90 text-ink backdrop-blur transition-colors hover:bg-cream">
+          <button className="absolute right-5 top-5 hidden size-11 place-items-center rounded-full bg-cream/90 text-ink backdrop-blur transition-colors hover:bg-cream sm:grid">
             <Share2 className="size-4" />
           </button>
 
           <div className="absolute inset-x-5 bottom-5 sm:inset-x-8 sm:bottom-8">
-            <div className="flex flex-wrap gap-2">
+            <div className="hidden flex-wrap gap-2 sm:flex">
               {/* {venue.sports.map((s) => (
                 <span
                   key={s}
@@ -78,7 +74,7 @@ export function VenueDetails({ id }: { id: string }) {
                 {venue.sportType}
               </span>
             </div>
-            <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-cream sm:text-4xl lg:text-5xl">
+            <h1 className="mt-3 hidden font-display text-3xl font-bold leading-tight text-cream sm:block sm:text-4xl lg:text-5xl">
               {venue.title}
             </h1>
             <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-cream/75">
@@ -86,15 +82,38 @@ export function VenueDetails({ id }: { id: string }) {
                 <MapPin className="size-4" /> {venue.address.city},{" "}
                 {venue.address.street}
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="hidden items-center gap-1.5 sm:inline-flex">
                 <Star className="size-4 fill-lime text-lime" /> {venue.rating} ·{" "}
                 {venue.reviewCount} отзывов
               </span>
               {venue.distanceMeters && (
-                <span>{formatDistance(venue.distanceMeters)} от вас</span>
+                <span className="hidden sm:inline">
+                  {formatDistance(venue.distanceMeters)} от вас
+                </span>
               )}
             </p>
           </div>
+        </div>
+
+        <div className="px-6 pt-6 sm:hidden">
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="lime">{venue.isFree ? "Бесплатно" : "Платно"}</Badge>
+            <span className="rounded-full bg-ink-50 px-3 py-1 text-xs font-semibold text-ink-600">
+              {venue.sportType}
+            </span>
+          </div>
+          <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-ink">
+            {venue.title}
+          </h1>
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-500">
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="size-4 fill-lime-500 text-lime-500" />{" "}
+              {venue.rating} · {venue.reviewCount} отзывов
+            </span>
+            {venue.distanceMeters && (
+              <span>{formatDistance(venue.distanceMeters)} от вас</span>
+            )}
+          </p>
         </div>
 
         <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.5fr_1fr] lg:p-10">
