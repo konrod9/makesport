@@ -10,7 +10,6 @@ import {
 } from "@/features/venues/model/venues-filter-store";
 import { sportTypes } from "@/shared/lib/data";
 import { cn } from "@/shared/lib/utils";
-import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 import {
   ArrowUpRight,
   Crosshair,
@@ -91,8 +90,9 @@ export function MapView() {
     <div className="relative flex h-[calc(100vh-4.5rem)] min-h-[620px] w-full overflow-hidden">
       <div
         className={cn(
-          "relative z-10 flex w-full shrink-0 flex-col border-r border-ink-200 bg-cream transition-all duration-300 sm:w-[380px] lg:w-[420px]",
-          !listOpen && "hidden sm:flex",
+          "flex shrink-0 flex-col border-r border-ink-200 bg-cream transition-all duration-300",
+          "sm:relative sm:z-10 sm:w-[380px] lg:w-[420px]",
+          listOpen ? "absolute inset-0 z-20 w-full" : "hidden sm:flex",
         )}
       >
         <div className="border-b border-ink-200/70 p-5">
@@ -253,6 +253,14 @@ export function MapView() {
           </Link>
         </div>
       </div>
+      {!listOpen && (
+        <button
+          onClick={() => setListOpen(true)}
+          className="absolute left-4 top-4 z-[500] inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-4 py-2.5 text-xs font-semibold text-ink shadow-card sm:hidden"
+        >
+          <Locate className="size-3.5" /> Список
+        </button>
+      )}
       <VenuesMap
         venues={data?.venues ?? []}
         center={center}
