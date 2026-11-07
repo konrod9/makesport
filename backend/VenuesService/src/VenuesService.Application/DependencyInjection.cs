@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VenuesService.Application.UseCases.CreateVenue;
+using VenuesService.Application.UseCases.GetById;
 using VenuesService.Application.UseCases.GetCities;
 using VenuesService.Application.UseCases.GetMyVenues;
 using VenuesService.Application.UseCases.GetVenues;
@@ -17,7 +18,8 @@ public static class DependencyInjection
             .AddScoped<GetVenuesUseCase>()
             .AddScoped<CreateVenueUseCase>()
             .AddScoped<GetCitiesUseCase>()
-            .AddScoped<GetMyVenuesUseCase>();
+            .AddScoped<GetMyVenuesUseCase>()
+            .AddScoped<GetByIdUseCase>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
