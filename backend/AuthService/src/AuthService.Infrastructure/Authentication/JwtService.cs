@@ -28,6 +28,10 @@ public class JwtService : IJwtService
         if (key == null)
             return AuthServiceErrors.InvalidJwtConfiguration();
 
+        var displayName = $"{user.FirstName} {user.LastName}".Trim();
+        if (string.IsNullOrWhiteSpace(displayName))
+            displayName = user.UserName ?? "Неизвестный пользователь";
+        
         var claims = new Claim[]
         {
             new(JwtRegisteredClaimNames.Name, user.UserName ?? string.Empty),
@@ -36,8 +40,9 @@ public class JwtService : IJwtService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
             new(JwtRegisteredClaimNames.EmailVerified, user.EmailConfirmed.ToString()),
+            new("display_name", displayName)
         };
-        
+
         var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
@@ -57,9 +62,9 @@ public class JwtService : IJwtService
             .TrimEnd('=')
             .TrimEnd('+', '-')
             .Replace('/', '_');
-        
+
         var expiresAt = DateTime.UtcNow.AddDays(_options.RefreshTokenExpirationDays);
-        
+
         return RefreshToken.Create(userId, refreshToken, expiresAt);
     }
 
@@ -96,7 +101,7 @@ public class JwtService : IJwtService
     {
         if (string.IsNullOrEmpty(_options.Secret))
             return null;
-        
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         return key.KeySize >= 256 ? key : null;
     }

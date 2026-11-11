@@ -21,4 +21,20 @@ public class CurrentUserService(IHttpContextAccessor accessor) : ICurrentUserSer
             return Guid.TryParse(raw, out Guid id) ? id : null;
         }
     }
+
+    public string? DisplayName
+    {
+        get
+        {
+            var user = accessor.HttpContext?.User;
+            if (user?.Identity?.IsAuthenticated != true)
+                return null;
+
+            return user.FindFirstValue("display_name")
+                   ?? user.FindFirstValue("name")
+                   ?? user.FindFirstValue(ClaimTypes.Name);
+        }
+    }
+
+    public bool IsInRole(string role) => accessor.HttpContext?.User.IsInRole(role) ?? false;
 }
