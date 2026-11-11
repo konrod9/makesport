@@ -20,4 +20,7 @@ public static class GeneralErrors
         var forId = id == null ? string.Empty : $" по Id '{id}'";
         return Error.NotFound("record.not.found", $"{name ?? "запись"} не найдена{forId}");
     }
+
+    public static Error Unauthorized() =>
+        Error.Authentication("auth.unauthorized", "Пользователь не авторизован");
 }
