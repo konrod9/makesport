@@ -37,7 +37,6 @@
   --shadow-card: 0 18px 40px -24px rgb(16 19 18 / 0.28);
   --shadow-lime: 0 18px 40px -18px rgb(174 220 59 / 0.55);
 
-  /* ─── Animations: keyframes живут внутри @theme ─── */
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.6s ease both;
   --animate-float: float 6s ease-in-out infinite;
@@ -91,7 +90,6 @@
   }
 }
 
-/* Шрифты — отдельно, т.к. ссылаются на next/font переменные */
 @theme inline {
   --font-sans: var(--font-manrope);
   --font-display: var(--font-unbounded);
