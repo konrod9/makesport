@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3C01512F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VenuesService.IntegrationTests", "tests\VenuesService.IntegrationTests\VenuesService.IntegrationTests.csproj", "{A7B3F9DB-634E-43B0-8A9A-0171224911A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VenuesService.Domain.UnitTests", "tests\VenuesService.Domain.UnitTests\VenuesService.Domain.UnitTests.csproj", "{AAB38146-D5A2-45ED-9E8B-842F8B529860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,7 @@ Global
 		{5A36307F-F5FB-4510-AA10-CC1F53E69C5F} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{BD83059A-7D3F-4FA8-96DB-91A59A0F1AB2} = {3794616B-6C16-4204-96D0-E3EEB34BBCA4}
 		{A7B3F9DB-634E-43B0-8A9A-0171224911A8} = {3C01512F-1672-4B65-8D47-1609C980F02B}
+		{AAB38146-D5A2-45ED-9E8B-842F8B529860} = {3C01512F-1672-4B65-8D47-1609C980F02B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0D2FA282-0408-4F81-9AEB-E62B6CDBC133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +62,9 @@ Global
 		{A7B3F9DB-634E-43B0-8A9A-0171224911A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7B3F9DB-634E-43B0-8A9A-0171224911A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7B3F9DB-634E-43B0-8A9A-0171224911A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB38146-D5A2-45ED-9E8B-842F8B529860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB38146-D5A2-45ED-9E8B-842F8B529860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB38146-D5A2-45ED-9E8B-842F8B529860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB38146-D5A2-45ED-9E8B-842F8B529860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
