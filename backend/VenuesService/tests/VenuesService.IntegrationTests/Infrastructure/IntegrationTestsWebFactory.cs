@@ -49,7 +49,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<VenuesDbContext>();
-            services.RemoveAll<IVenuesReadDbContext>();
+            services.RemoveAll<IApplicationReadDbContext>();
 
             services.AddDbContextPool<VenuesDbContext>((sp, options) =>
             {
@@ -58,7 +58,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                     o => o.UseNetTopologySuite());
             });
 
-            services.AddDbContextPool<IVenuesReadDbContext, VenuesDbContext>((sp, options) =>
+            services.AddDbContextPool<IApplicationReadDbContext, VenuesDbContext>((sp, options) =>
             {
                 options.UseNpgsql(
                     _dbContainer.GetConnectionString(),

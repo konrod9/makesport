@@ -23,4 +23,10 @@ public static class GeneralErrors
 
     public static Error Unauthorized() =>
         Error.Authentication("auth.unauthorized", "Пользователь не авторизован");
+    
+    public static Error DatabaseError() =>
+        Error.Failure("database.error", "Ошибка базы данных");
+
+    public static Error OperationCancelled() =>
+        Error.Failure("operation.cancelled", "Операция была отменена в базе данных");
 }

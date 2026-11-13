@@ -14,12 +14,12 @@ namespace VenuesService.Application.UseCases.GetVenues;
 
 public class GetVenuesUseCase
 {
-    private readonly IVenuesReadDbContext _readDbContext;
+    private readonly IApplicationReadDbContext _readDbContext;
     private readonly IValidator<GetVenuesRequest> _validator;
     private readonly IFileCommunicationService _fileCommunicationService;
     private readonly IVenueSortingService _sortingService;
 
-    public GetVenuesUseCase(IVenuesReadDbContext readDbContext, IValidator<GetVenuesRequest> validator,
+    public GetVenuesUseCase(IApplicationReadDbContext readDbContext, IValidator<GetVenuesRequest> validator,
         IFileCommunicationService fileCommunicationService, IVenueSortingService sortingService)
     {
         _readDbContext = readDbContext;

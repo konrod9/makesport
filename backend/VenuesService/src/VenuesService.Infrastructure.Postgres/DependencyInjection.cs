@@ -12,11 +12,12 @@ public static class DependencyInjection
     public static IServiceCollection AddVenueStorage(this IServiceCollection services, string? dbConnectionString)
     {
         services
-            .AddScoped<IVenuesRepository, VenuesRepository>()
             .AddScoped<IGuidFactory, GuidFactory>()
             .AddScoped<IVenueSortingService, VenueSortingService>()
-            .AddDbContextPool<IVenuesReadDbContext, VenuesDbContext>(options => 
-                options.UseNpgsql(dbConnectionString, o => o.UseNetTopologySuite()));
+            .AddDbContextPool<VenuesDbContext>(options =>
+                options.UseNpgsql(dbConnectionString, o => o.UseNetTopologySuite()))
+            .AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<VenuesDbContext>())
+            .AddScoped<IApplicationReadDbContext>(sp => sp.GetRequiredService<VenuesDbContext>());
         
         return services;
     }

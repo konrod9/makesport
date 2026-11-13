@@ -7,9 +7,9 @@ namespace VenuesService.Application.UseCases.GetCities;
 
 public class GetCitiesUseCase
 {
-    private readonly IVenuesReadDbContext _readDbContext;
+    private readonly IApplicationReadDbContext _readDbContext;
 
-    public GetCitiesUseCase(IVenuesReadDbContext readDbContext)
+    public GetCitiesUseCase(IApplicationReadDbContext readDbContext)
     {
         _readDbContext = readDbContext;
     }

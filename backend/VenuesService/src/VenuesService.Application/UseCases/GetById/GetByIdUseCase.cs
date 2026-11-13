@@ -10,11 +10,11 @@ namespace VenuesService.Application.UseCases.GetById;
 
 public class GetByIdUseCase
 {
-    private readonly IVenuesReadDbContext _dbContext;
+    private readonly IApplicationReadDbContext _dbContext;
     private readonly IFileCommunicationService _fileCommunicationService;
 
     public GetByIdUseCase(
-        IVenuesReadDbContext dbContext,
+        IApplicationReadDbContext dbContext,
         IFileCommunicationService fileCommunicationService)
     {
         _dbContext = dbContext;

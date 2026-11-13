@@ -11,11 +11,11 @@ namespace VenuesService.Application.UseCases.GetMyVenues;
 
 public class GetMyVenuesUseCase
 {
-    private readonly IVenuesReadDbContext _dbContext;
+    private readonly IApplicationReadDbContext _dbContext;
     private ICurrentUserService _currentUserService;
     private readonly IFileCommunicationService _fileCommunicationService;
 
-    public GetMyVenuesUseCase(IVenuesReadDbContext dbContext, ICurrentUserService currentUserService,
+    public GetMyVenuesUseCase(IApplicationReadDbContext dbContext, ICurrentUserService currentUserService,
         IFileCommunicationService fileCommunicationService)
     {
         _dbContext = dbContext;
