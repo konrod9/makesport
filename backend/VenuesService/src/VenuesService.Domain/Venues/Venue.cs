@@ -1,4 +1,6 @@
-﻿using NetTopologySuite.Geometries;
+﻿using CSharpFunctionalExtensions;
+using NetTopologySuite.Geometries;
+using VenuesService.Domain.Shared;
 using VenuesService.Domain.Venues.ValueObjects;
 using Coordinates = VenuesService.Domain.Venues.ValueObjects.Coordinates;
 
@@ -108,7 +110,24 @@ public class Venue
             surface,
             sportType,
             userId,
-            DateTimeOffset.UtcNow, 
+            DateTimeOffset.UtcNow,
             point);
+    }
+
+    public UnitResult<Error> ApplyRating(VenueRatingStats stats)
+    {
+        if (stats.Count < 0)
+            return VenueErrors.InvalidRatingStats();
+
+        if (stats.Count == 0 && stats.Average != 0)
+            return VenueErrors.InvalidRatingStats();
+
+        if (stats.Average is < 0 or > 5)
+            return VenueErrors.InvalidRatingStats();
+
+        Rating = Math.Round(stats.Average, 1, MidpointRounding.AwayFromZero);
+        ReviewCount = stats.Count;
+
+        return UnitResult.Success<Error>();
     }
 }

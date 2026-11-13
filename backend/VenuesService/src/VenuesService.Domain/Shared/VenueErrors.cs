@@ -10,4 +10,7 @@ public static class VenueErrors
     
     public static Error OperationCancelled() =>
         Error.Failure("venue.operation.cancelled", "Операция была отменена");
+    
+    public static Error InvalidRatingStats() =>
+        Error.Failure("review.rating.stats.invalid", "Некорректная статистика рейтинга");
 }
