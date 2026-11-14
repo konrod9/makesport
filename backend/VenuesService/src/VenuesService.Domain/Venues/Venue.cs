@@ -77,6 +77,8 @@ public class Venue
     public Guid? CreatedByUserId { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
+    
+    public uint Version { get; private set; }
 
     public static Venue Create(
         VenueId id,

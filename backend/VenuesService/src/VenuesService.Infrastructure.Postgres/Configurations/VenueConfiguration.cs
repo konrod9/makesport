@@ -69,5 +69,8 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
             .HasColumnType("timestamp with time zone")
             .HasDefaultValueSql("now()")
             .IsRequired();
+        
+        builder.Property(v => v.Version)
+            .IsRowVersion();
     }
 }

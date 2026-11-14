@@ -24,6 +24,76 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("VenuesService.Domain.Reviews.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("author_id");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("author_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Published")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("VenueId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("venue_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reviews");
+
+                    b.HasIndex("AuthorId", "CreatedAt")
+                        .HasDatabaseName("ix_reviews_author_id_created_at");
+
+                    b.HasIndex("VenueId", "AuthorId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_reviews_venue_id_author_id");
+
+                    b.HasIndex("VenueId", "Rating")
+                        .HasDatabaseName("ix_reviews_venue_id_rating");
+
+                    b.HasIndex("VenueId", "Status", "CreatedAt")
+                        .HasDatabaseName("ix_reviews_venue_id_status_created_at");
+
+                    b.ToTable("reviews", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_reviews_rating", "rating BETWEEN 1 AND 5");
+
+                            t.HasCheckConstraint("ck_reviews_text_length", "text IS NULL OR char_length(text) <= 2000");
+                        });
+                });
+
             modelBuilder.Entity("VenuesService.Domain.Venues.Venue", b =>
                 {
                     b.Property<Guid>("Id")
@@ -85,6 +155,12 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.Property<Guid>("VideoId")
                         .HasColumnType("uuid");
 
@@ -92,6 +168,16 @@ namespace VenuesService.Infrastructure.Postgres.Migrations
                         .HasName("pk_venues");
 
                     b.ToTable("venues", (string)null);
+                });
+
+            modelBuilder.Entity("VenuesService.Domain.Reviews.Review", b =>
+                {
+                    b.HasOne("VenuesService.Domain.Venues.Venue", null)
+                        .WithMany()
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_venues_venue_id");
                 });
 
             modelBuilder.Entity("VenuesService.Domain.Venues.Venue", b =>

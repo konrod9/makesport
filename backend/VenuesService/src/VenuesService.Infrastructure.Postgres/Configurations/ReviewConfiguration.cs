@@ -53,7 +53,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         
         builder.Property(r => r.CreatedAt)
             .HasColumnName("created_at")
-            .HasColumnType("timestamp without time zone")
+            .HasColumnType("timestamp with time zone")
             .HasDefaultValueSql("now()")
             .IsRequired();
         
