@@ -1,3 +1,5 @@
+using CSharpFunctionalExtensions;
+
 namespace VenuesService.Domain.Shared;
 
 public static class GeneralErrors
@@ -29,4 +31,7 @@ public static class GeneralErrors
 
     public static Error OperationCancelled() =>
         Error.Failure("operation.cancelled", "Операция была отменена в базе данных");
+
+    public static Error ConcurrencyConflict() =>
+        Error.Conflict("db.concurrency.conflict", "Данные были изменены. Попробуйте ещё раз");
 }
