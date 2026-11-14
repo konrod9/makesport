@@ -37,10 +37,12 @@ public class VenuesDbContext(DbContextOptions<VenuesDbContext> options, ILogger<
         }
         catch (DbUpdateException ex) when (ex.GetBaseException() is PostgresException pg)
         {
+            logger.LogError(pg, ex.GetBaseException().Message);
             return PersistenceExceptionTranslator.Translate(pg);
         }
         catch (OperationCanceledException)
         {
+            logger.LogInformation("The operation was canceled.");
             return GeneralErrors.OperationCancelled();
         }
         catch (Exception ex)

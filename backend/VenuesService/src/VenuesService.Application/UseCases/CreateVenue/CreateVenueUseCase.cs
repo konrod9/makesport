@@ -13,15 +13,15 @@ namespace VenuesService.Application.UseCases.CreateVenue;
 public class CreateVenueUseCase
 {
     private readonly IValidator<CreateVenueRequest> _validator;
-    private readonly IVenuesRepository _repository;
+    private readonly IApplicationDbContext _dbContext;
     private readonly ILogger<CreateVenueUseCase> _logger;
     private readonly ICurrentUserService _currentUserService;
 
-    public CreateVenueUseCase(IValidator<CreateVenueRequest> validator, IVenuesRepository repository,
+    public CreateVenueUseCase(IValidator<CreateVenueRequest> validator, IApplicationDbContext dbContext,
         ILogger<CreateVenueUseCase> logger, ICurrentUserService currentUserService)
     {
         _validator = validator;
-        _repository = repository;
+        _dbContext = dbContext;
         _logger = logger;
         _currentUserService = currentUserService;
     }
@@ -53,9 +53,10 @@ public class CreateVenueUseCase
             request.SportType, 
             userId);
 
-        var result = await _repository.AddAsync(venue, cancellationToken);
-        if (result.IsFailure)
-            return result.Error;
+        var result = await _dbContext.Venues.AddAsync(venue, cancellationToken);
+        var saveResult = await _dbContext.TrySaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+            return saveResult.Error;
 
         _logger.LogInformation("Created venue {VenueId}", venue.Id);
 
