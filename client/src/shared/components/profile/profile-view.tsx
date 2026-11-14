@@ -374,7 +374,7 @@ export function ProfileView() {
                   {myVenues?.result?.venues.map((venue, index) => (
                     <Link
                       key={venue.id}
-                      href={`/venue/${venue.id}`}
+                      href={`/venues/${venue.id}`}
                       className="group flex items-center gap-3 rounded-2xl border border-ink-100 bg-cream/40 p-2.5 transition-colors hover:bg-cream"
                     >
                       <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
