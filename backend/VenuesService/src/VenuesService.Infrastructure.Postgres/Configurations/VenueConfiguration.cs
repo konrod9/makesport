@@ -9,7 +9,6 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 {
     public void Configure(EntityTypeBuilder<Venue> builder)
     {
-        // TODO: Вынести в константы ограничения длины
         builder.ToTable("venues");
 
         builder.HasKey(v => v.Id).HasName("pk_venues");
@@ -19,11 +18,11 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.Property(v => v.Title)
             .IsRequired()
-            .HasMaxLength(50)
+            .HasMaxLength(VenueConstraints.TitleMaxLength)
             .HasColumnName("name");
 
         builder.Property(v => v.Description)
-            .HasMaxLength(500)
+            .HasMaxLength(VenueConstraints.DescriptionMaxLength)
             .HasColumnName("description");
 
         builder.Property(v => v.IsOpen).HasColumnName("is_open");
@@ -45,10 +44,10 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
 
         builder.OwnsOne(v => v.Address, sa =>
         {
-            sa.Property(a => a.Street).HasMaxLength(100)
+            sa.Property(a => a.Street).HasMaxLength(VenueConstraints.StreetMaxLength)
                 .HasColumnName("street");
 
-            sa.Property(a => a.City).HasMaxLength(50)
+            sa.Property(a => a.City).HasMaxLength(VenueConstraints.CityMaxLength)
                 .HasColumnName("city");
 
             sa.Property(a => a.Building)
