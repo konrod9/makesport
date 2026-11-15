@@ -29,8 +29,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<VenuesDbContext>();
 
-        await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync()
@@ -50,6 +49,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
         {
             services.RemoveAll<VenuesDbContext>();
             services.RemoveAll<IApplicationReadDbContext>();
+            services.RemoveAll<IApplicationDbContext>();
 
             services.AddDbContextPool<VenuesDbContext>((sp, options) =>
             {
@@ -58,12 +58,8 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                     o => o.UseNetTopologySuite());
             });
 
-            services.AddDbContextPool<IApplicationReadDbContext, VenuesDbContext>((sp, options) =>
-            {
-                options.UseNpgsql(
-                    _dbContainer.GetConnectionString(),
-                    o => o.UseNetTopologySuite());
-            });
+            services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<VenuesDbContext>());
+            services.AddScoped<IApplicationReadDbContext>(sp => sp.GetRequiredService<VenuesDbContext>());
 
             services.RemoveAll<IFileCommunicationService>();
             services.AddScoped<IFileCommunicationService, FileServiceCommunicationMock>();

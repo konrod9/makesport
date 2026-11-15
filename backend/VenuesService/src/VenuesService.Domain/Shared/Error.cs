@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using VenuesService.Domain.Shared.Enums;
 
 namespace VenuesService.Domain.Shared;
@@ -10,6 +11,7 @@ public record Error
 
     public ErrorType Type { get; }
 
+    [JsonConstructor]
     private Error(IReadOnlyList<ErrorMessage> messages, ErrorType type)
     {
         Messages = messages.ToArray();
