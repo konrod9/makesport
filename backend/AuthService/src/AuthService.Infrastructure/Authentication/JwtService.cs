@@ -30,7 +30,7 @@ public class JwtService : IJwtService
 
         var displayName = $"{user.FirstName} {user.LastName}".Trim();
         if (string.IsNullOrWhiteSpace(displayName))
-            displayName = user.UserName ?? "Неизвестный пользователь";
+            displayName = user.UserName ?? "Пользователь";
         
         var claims = new Claim[]
         {

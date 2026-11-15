@@ -1,5 +1,7 @@
 using Serilog;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions.Destructurers;
 
 namespace VenuesService.API.Configuration;
 
@@ -11,7 +13,9 @@ public static class LoggingExtensions
             .ReadFrom.Configuration(configuration)
             .ReadFrom.Services(sp)
             .Enrich.FromLogContext()
-            .Enrich.WithExceptionDetails()
+            .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
+                .WithDefaultDestructurers()
+                .WithDestructurers(new ExceptionDestructurer[] { new SlimDbUpdateExceptionDestructurer() }))
             .Enrich.WithProperty("ServiceName", "VenuesService"));
         
         return services;

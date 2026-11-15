@@ -23,13 +23,16 @@ public static class ConcurrencyRetry
             }
             catch (DbUpdateConcurrencyException ex)
             {
+                var entities = string.Join(", ", ex.Entries.Select(e => e.Metadata.ClrType.Name));
+
                 if (attempt >= MaxAttempts)
                 {
-                    logger.LogWarning(ex, "Concurrency conflict after {MaxAttempts} attempts", MaxAttempts);
+                    logger.LogWarning("Concurrency conflict after {MaxAttempts} attempts on {Entities}", MaxAttempts,
+                        entities);
                     return GeneralErrors.ConcurrencyConflict();
                 }
-                
-                logger.LogInformation(ex, "Concurrency conflict, attempt {Attempt}", attempt);
+
+                logger.LogInformation("Concurrency conflict, attempt {Attempt} on {Entities}", attempt, entities);
                 dbContext.ClearChangeTracker();
             }
         }
