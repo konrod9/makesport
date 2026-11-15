@@ -2,6 +2,7 @@ using FileService.Contracts.HttpCommunication;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VenuesService.Application.UseCases.CreateReview;
 using VenuesService.Application.UseCases.CreateVenue;
 using VenuesService.Application.UseCases.GetById;
 using VenuesService.Application.UseCases.GetCities;
@@ -19,7 +20,8 @@ public static class DependencyInjection
             .AddScoped<CreateVenueUseCase>()
             .AddScoped<GetCitiesUseCase>()
             .AddScoped<GetMyVenuesUseCase>()
-            .AddScoped<GetByIdUseCase>();
+            .AddScoped<GetByIdUseCase>()
+            .AddScoped<CreateReviewUseCase>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 

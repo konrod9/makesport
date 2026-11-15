@@ -14,7 +14,10 @@ public class VenuesDbContext(DbContextOptions<VenuesDbContext> options, ILogger<
     : DbContext(options), IApplicationReadDbContext, IApplicationDbContext
 {
     public DbSet<Venue> Venues { get; set; }
-    public DbSet<Review> Reviews { get; }
+    public DbSet<Review> Reviews { get; set; }
+
+    DbSet<Venue> IApplicationDbContext.Venues => Venues;
+    DbSet<Review> IApplicationDbContext.Reviews => Reviews;
 
     public IQueryable<Venue> VenuesQuery => Venues.AsNoTracking().AsQueryable();
     public IQueryable<Review> ReviewsQuery => Reviews.AsNoTracking().AsQueryable();
@@ -23,7 +26,7 @@ public class VenuesDbContext(DbContextOptions<VenuesDbContext> options, ILogger<
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(VenuesDbContext).Assembly);
     }
-    
+
     public async Task<UnitResult<Error>> TrySaveChangesAsync(CancellationToken ct = default)
     {
         try
@@ -37,7 +40,9 @@ public class VenuesDbContext(DbContextOptions<VenuesDbContext> options, ILogger<
         }
         catch (DbUpdateException ex) when (ex.GetBaseException() is PostgresException pg)
         {
-            logger.LogError(pg, ex.GetBaseException().Message);
+            logger.LogWarning(
+                "DB constraint violation: SqlState={SqlState}, Constraint={Constraint}, Table={Table}",
+                pg.SqlState, pg.ConstraintName, pg.TableName);
             return PersistenceExceptionTranslator.Translate(pg);
         }
         catch (OperationCanceledException)

@@ -70,8 +70,7 @@ public class Review
         if (ratingResult.IsFailure)
             return ratingResult.Error;
         
-        if (string.IsNullOrWhiteSpace(authorName))
-            authorName = "Пользователь";
+        if (string.IsNullOrWhiteSpace(authorName)) authorName = "Пользователь";
         authorName = authorName.Trim();
         if (authorName.Length > ReviewsConstraints.AuthorNameMaxLength)
             authorName = authorName[..ReviewsConstraints.AuthorNameMaxLength];
