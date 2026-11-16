@@ -222,6 +222,60 @@ public class CreateReviewTests : VenuesTestsBase
         Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
+    [Fact]
+    public async Task ConcurrentCreate_ShouldKeepRatingConsistent()
+    {
+        // Arrange
+        var venueId = await CreateVenueAsync();
+        var venueIdVo = VenueId.Create(venueId);
+
+        var authorA = Guid.NewGuid();
+        var authorB = Guid.NewGuid();
+
+        // Act
+        var responses = await Task.WhenAll(
+            SendCreateReviewAsync(venueId, authorA, "Автор А", 5),
+            SendCreateReviewAsync(venueId, authorB, "Автор Б", 3));
+
+        try
+        {
+            // Assert
+            foreach (var response in responses)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                Assert.True(
+                    response.StatusCode == HttpStatusCode.OK,
+                    $"Ожидали 200, получили {(int)response.StatusCode}. Тело: {body}");
+            }
+
+            await ExecuteInDb(async db =>
+            {
+                var venue = await db.Venues.AsNoTracking().SingleAsync(v => v.Id == venueIdVo);
+                Assert.Equal(2, venue.ReviewCount);
+                Assert.Equal(4.0, venue.Rating);
+
+                var reviews = await db.Reviews.AsNoTracking().Where(r => r.VenueId == venueIdVo).ToListAsync();
+                Assert.Equal(2, reviews.Count);
+                Assert.Equal(2, reviews.Select(r => r.Id.Value).Distinct().Count());
+                Assert.Equal([3, 5], reviews.Select(r => r.Rating.Value).Order().ToArray());
+                Assert.Equal(
+                    new[] { authorA, authorB }.Order().ToArray(),
+                    reviews.Select(r => r.AuthorId).Order().ToArray());
+            });
+        }
+        finally
+        {
+            foreach (var response in responses)
+                response.Dispose();
+        }
+    }
+
+    [Fact]
+    public async Task ReviewStats_TranslatesToSql()
+    {
+        
+    }
+
     private async Task<Guid> CreateVenueAsync()
     {
         var venueId = Guid.NewGuid();
@@ -247,6 +301,16 @@ public class CreateReviewTests : VenuesTestsBase
         });
 
         return venueId;
+    }
+
+    private async Task<HttpResponseMessage> SendCreateReviewAsync(
+        Guid venueId, Guid authorId, string authorName, int rating)
+    {
+        var token = TestJwtFactory.Create(authorId, authorName);
+
+        using var request = CreateReviewRequest(venueId, token, rating, $"Отзыв: {authorName}");
+
+        return await AppHttpClient.SendAsync(request);
     }
 
     private static HttpRequestMessage CreateReviewRequest(Guid venueId, string token, int rating, string? text)
