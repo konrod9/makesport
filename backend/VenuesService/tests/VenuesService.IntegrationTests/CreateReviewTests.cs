@@ -270,12 +270,6 @@ public class CreateReviewTests : VenuesTestsBase
         }
     }
 
-    [Fact]
-    public async Task ReviewStats_TranslatesToSql()
-    {
-        
-    }
-
     private async Task<Guid> CreateVenueAsync()
     {
         var venueId = Guid.NewGuid();
