@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using VenuesService.API.Configuration;
 using VenuesService.Application.UseCases.CreateReview;
 using VenuesService.Application.UseCases.GetVenueReviews;
+using VenuesService.Application.UseCases.UpdateReview;
 using VenuesService.Contracts.Dtos.Reviews;
 using VenuesService.Contracts.Requests.Reviews;
 using VenuesService.Contracts.Responses.Reviews;
@@ -30,4 +31,13 @@ public class VenueReviewsController : ControllerBase
         [FromRoute] Guid venueId,
         [FromServices] GetVenueReviewsUseCase useCase,
         CancellationToken ct) => await useCase.Handle(request, venueId, ct);
+
+    [HttpPatch("{venueId:guid}/reviews/{reviewId:guid}")]
+    [Authorize]
+    public async Task<EndpointResult<ReviewDto>> UpdateReview(
+        [FromRoute] Guid venueId,
+        [FromRoute] Guid reviewId,
+        [FromBody] UpdateReviewRequest request,
+        [FromServices] UpdateVenueReviewUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(venueId, reviewId, request, ct);
 }
