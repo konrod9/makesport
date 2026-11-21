@@ -11,6 +11,7 @@ using VenuesService.IntegrationTests.Infrastructure;
 
 namespace VenuesService.IntegrationTests;
 
+[Collection("Integration")]
 public class GetReviewsTests : VenuesTestsBase
 {
     public GetReviewsTests(IntegrationTestsWebFactory factory) : base(factory)

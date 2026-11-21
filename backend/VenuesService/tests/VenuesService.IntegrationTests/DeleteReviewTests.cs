@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
 using VenuesService.Contracts.Enums;
 using VenuesService.Domain.Shared.Enums;
 using VenuesService.Domain.Venues.ValueObjects;
@@ -9,6 +8,7 @@ using VenuesService.IntegrationTests.Infrastructure;
 
 namespace VenuesService.IntegrationTests;
 
+[Collection("Integration")]
 public class DeleteReviewTests : VenuesTestsBase
 {
     public DeleteReviewTests(IntegrationTestsWebFactory factory) : base(factory)

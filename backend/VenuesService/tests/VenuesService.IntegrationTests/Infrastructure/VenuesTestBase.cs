@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using VenuesService.Infrastructure.Postgres.Database;
 using Microsoft.Extensions.DependencyInjection;
 using VenuesService.Contracts.Enums;
@@ -8,7 +9,7 @@ using VenuesService.Domain.Venues.ValueObjects;
 
 namespace VenuesService.IntegrationTests.Infrastructure;
 
-public class VenuesTestsBase : IClassFixture<IntegrationTestsWebFactory>
+public class VenuesTestsBase : IClassFixture<IntegrationTestsWebFactory>, IAsyncLifetime
 {
     protected VenuesTestsBase(IntegrationTestsWebFactory factory)
     {
@@ -93,10 +94,21 @@ public class VenuesTestsBase : IClassFixture<IntegrationTestsWebFactory>
         });
     }
     
+    public async Task InitializeAsync()
+    {
+        await ExecuteInDb(async db =>
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                "TRUNCATE TABLE \"reviews\", \"venues\" CASCADE;");
+        });
+    }
+    
     protected async Task ExecuteInDb(Func<VenuesDbContext, Task> action)
     {
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<VenuesDbContext>();
         await action(dbContext);
     }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 }

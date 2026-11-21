@@ -13,6 +13,7 @@ using VenuesService.IntegrationTests.Infrastructure;
 
 namespace VenuesService.IntegrationTests;
 
+[Collection("Integration")]
 public class GetVenuesTests : VenuesTestsBase
 {
     private readonly IntegrationTestsWebFactory _factory;
