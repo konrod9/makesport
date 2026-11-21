@@ -2,6 +2,7 @@ using FileService.Contracts.HttpCommunication;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VenuesService.Application.UseCases.ChangeReviewStatus;
 using VenuesService.Application.UseCases.CreateReview;
 using VenuesService.Application.UseCases.CreateVenue;
 using VenuesService.Application.UseCases.DeleteReview;
@@ -27,7 +28,8 @@ public static class DependencyInjection
             .AddScoped<CreateReviewUseCase>()
             .AddScoped<GetVenueReviewsUseCase>()
             .AddScoped<UpdateVenueReviewUseCase>()
-            .AddScoped<DeleteVenueReviewUseCase>();
+            .AddScoped<DeleteVenueReviewUseCase>()
+            .AddScoped<ChangeReviewStatusUseCase>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 

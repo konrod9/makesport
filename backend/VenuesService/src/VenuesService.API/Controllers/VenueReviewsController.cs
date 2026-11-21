@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VenuesService.API.Configuration;
+using VenuesService.Application.UseCases.ChangeReviewStatus;
 using VenuesService.Application.UseCases.CreateReview;
 using VenuesService.Application.UseCases.DeleteReview;
 using VenuesService.Application.UseCases.GetVenueReviews;
@@ -51,4 +52,12 @@ public class VenueReviewsController : ControllerBase
         [FromRoute] Guid reviewId,
         [FromServices] DeleteVenueReviewUseCase useCase,
         CancellationToken ct) => await useCase.Handle(venueId, reviewId, ct);
+
+    [HttpPatch("reviews/{reviewId:guid}/status")]
+    [Authorize(AuthPolicies.ModeratorOrAbove)]
+    public async Task<EndpointResult<ReviewDto>> ChangeStatus(
+        [FromRoute] Guid reviewId,
+        [FromBody] ChangeReviewStatusRequest request,
+        [FromServices] ChangeReviewStatusUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(reviewId, request, ct);
 }
