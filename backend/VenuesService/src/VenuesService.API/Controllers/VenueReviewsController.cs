@@ -1,7 +1,10 @@
+using MakeSport.Auth.JwtValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VenuesService.API.Configuration;
 using VenuesService.Application.UseCases.CreateReview;
+using VenuesService.Application.UseCases.DeleteReview;
 using VenuesService.Application.UseCases.GetVenueReviews;
 using VenuesService.Application.UseCases.UpdateReview;
 using VenuesService.Contracts.Dtos.Reviews;
@@ -40,4 +43,12 @@ public class VenueReviewsController : ControllerBase
         [FromBody] UpdateReviewRequest request,
         [FromServices] UpdateVenueReviewUseCase useCase,
         CancellationToken ct) => await useCase.Handle(venueId, reviewId, request, ct);
+
+    [HttpDelete("{venueId:guid}/reviews/{reviewId:guid}")]
+    [Authorize]
+    public async Task<EndpointResult> DeleteReview(
+        [FromRoute] Guid venueId,
+        [FromRoute] Guid reviewId,
+        [FromServices] DeleteVenueReviewUseCase useCase,
+        CancellationToken ct) => await useCase.Handle(venueId, reviewId, ct);
 }

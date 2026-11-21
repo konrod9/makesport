@@ -452,20 +452,6 @@ public class UpdateReviewTests : VenuesTestsBase
         Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
-    private async Task SetVenueRatingAsync(VenueId venueId, double average, int count)
-    {
-        await ExecuteInDb(async db =>
-        {
-            var venue = await db.Venues.FindAsync(venueId);
-            Assert.NotNull(venue);
-
-            var result = venue.ApplyRating(new VenueRatingStats(average, count));
-            Assert.True(result.IsSuccess);
-
-            await db.SaveChangesAsync();
-        });
-    }
-
     private async Task<HttpResponseMessage> SendUpdateAsync(
         Guid venueId,
         Guid reviewId,

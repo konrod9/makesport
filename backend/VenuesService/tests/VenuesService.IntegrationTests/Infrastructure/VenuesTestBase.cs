@@ -79,6 +79,20 @@ public class VenuesTestsBase : IClassFixture<IntegrationTestsWebFactory>
         return review.Value;
     }
 
+    protected async Task SetVenueRatingAsync(VenueId venueId, double average, int count)
+    {
+        await ExecuteInDb(async db =>
+        {
+            var venue = await db.Venues.FindAsync(venueId);
+            Assert.NotNull(venue);
+
+            var result = venue.ApplyRating(new VenueRatingStats(average, count));
+            Assert.True(result.IsSuccess);
+
+            await db.SaveChangesAsync();
+        });
+    }
+    
     protected async Task ExecuteInDb(Func<VenuesDbContext, Task> action)
     {
         await using var scope = Services.CreateAsyncScope();

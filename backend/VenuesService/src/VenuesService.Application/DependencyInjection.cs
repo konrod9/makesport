@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VenuesService.Application.UseCases.CreateReview;
 using VenuesService.Application.UseCases.CreateVenue;
+using VenuesService.Application.UseCases.DeleteReview;
 using VenuesService.Application.UseCases.GetById;
 using VenuesService.Application.UseCases.GetCities;
 using VenuesService.Application.UseCases.GetMyVenues;
@@ -25,7 +26,8 @@ public static class DependencyInjection
             .AddScoped<GetByIdUseCase>()
             .AddScoped<CreateReviewUseCase>()
             .AddScoped<GetVenueReviewsUseCase>()
-            .AddScoped<UpdateVenueReviewUseCase>();
+            .AddScoped<UpdateVenueReviewUseCase>()
+            .AddScoped<DeleteVenueReviewUseCase>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
